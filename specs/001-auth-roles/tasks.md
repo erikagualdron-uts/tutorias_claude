@@ -115,19 +115,19 @@ description: "Task list for Acceso y roles"
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T041 [P] [US2] Pruebas e2e en `backend/test/auth-login.e2e-spec.ts`: ingreso correcto por rol, `INVALID_CREDENTIALS` idéntico con correo inexistente o contraseña errónea, estudiante sin verificar → 403 `EMAIL_NOT_VERIFIED`, bloqueo tras 5 fallos con `details.retryAfterSeconds`, `GET /auth/me`, acceso a una ruta de otro rol → 403 `FORBIDDEN_ROLE`
-- [ ] T042 [P] [US2] Pruebas de enrutamiento por rol en `mobile/src/features/auth/__tests__/role-routing.test.tsx` (sin sesión → login; cada rol → su grupo; rol equivocado → redirige al propio)
+- [X] T041 [P] [US2] Pruebas e2e en `backend/test/auth-login.e2e-spec.ts`: ingreso correcto por rol, `INVALID_CREDENTIALS` idéntico con correo inexistente o contraseña errónea, estudiante sin verificar → 403 `EMAIL_NOT_VERIFIED`, bloqueo tras 5 fallos con `details.retryAfterSeconds`, `GET /auth/me`, acceso a una ruta de otro rol → 403 `FORBIDDEN_ROLE`
+- [X] T042 [P] [US2] Pruebas de enrutamiento por rol en `mobile/src/features/auth/__tests__/role-routing.test.tsx` (sin sesión → login; cada rol → su grupo; rol equivocado → redirige al propio)
 
 ### Implementation for User Story 2
 
-- [ ] T043 [US2] Implementar `AuthService.login` en `backend/src/auth/auth.service.ts`: verificar contraseña (con hash ficticio si no existe), comprobar `status = ACTIVE`, `deletedAt` nulo y, para estudiantes, `emailVerifiedAt` no nulo; registrar fallos y bloqueo (T018); crear sesión (T017) y devolver tokens y `UserSummary` (depende de T017, T018)
-- [ ] T044 [US2] Añadir `POST /auth/login` (público) y `GET /auth/me` en `backend/src/auth/auth.controller.ts` (depende de T043)
-- [ ] T045 [P] [US2] Crear `mobile/src/features/auth/screens/LoginScreen.tsx` con `TextField`, `Button`, `Banner` para bloqueos y errores traducidos, su hook `hooks/useLogin.ts` y la ruta `mobile/app/(auth)/login.tsx` que solo la renderiza
-- [ ] T046 [US2] Crear `mobile/app/_layout.tsx` y `mobile/app/index.tsx`: sin sesión → `(auth)`; con `mustChangePassword` → `change-password`; si no, grupo del rol; los layouts de cada grupo redirigen si el rol no coincide
-- [ ] T047 [P] [US2] Crear `mobile/src/components/EmptyState.tsx`, `mobile/src/features/shell/screens/EmptyTabScreen.tsx` y el grupo `mobile/app/(student)/` con las pestañas de `Design.md` (Inicio · Módulos · Cronograma · Mensajes · PQRS); cada ruta solo renderiza `EmptyTabScreen`
-- [ ] T048 [P] [US2] Crear el grupo `mobile/app/(teacher)/` con las pestañas (Dashboard · Cronograma · Mensajes · PQRS); cada ruta renderiza `EmptyTabScreen` (depende de T047)
-- [ ] T049 [P] [US2] Crear el grupo `mobile/app/(admin)/` con las pestañas (Dashboard · Módulos · Mensajes · PQRS · Más); cada ruta renderiza `EmptyTabScreen` (depende de T047)
-- [ ] T050 [US2] Añadir las claves es/en de login, pestañas, estados vacíos y mensajes de bloqueo en `mobile/src/i18n/es.json` y `en.json`
+- [X] T043 [US2] Implementar `AuthService.login` en `backend/src/auth/auth.service.ts`: verificar contraseña (con hash ficticio si no existe), comprobar `status = ACTIVE`, `deletedAt` nulo y, para estudiantes, `emailVerifiedAt` no nulo; registrar fallos y bloqueo (T018); crear sesión (T017) y devolver tokens y `UserSummary` (depende de T017, T018)
+- [X] T044 [US2] Añadir `POST /auth/login` (público) y `GET /auth/me` en `backend/src/auth/auth.controller.ts` (depende de T043)
+- [X] T045 [P] [US2] Crear `mobile/src/features/auth/screens/LoginScreen.tsx` con `TextField`, `Button`, `Banner` para bloqueos y errores traducidos, su hook `hooks/useLogin.ts` y la ruta `mobile/app/(auth)/login.tsx` que solo la renderiza
+- [X] T046 [US2] Crear `mobile/app/_layout.tsx` y `mobile/app/index.tsx`: sin sesión → `(auth)`; con `mustChangePassword` → `change-password`; si no, grupo del rol; los layouts de cada grupo redirigen si el rol no coincide
+- [X] T047 [P] [US2] Crear `mobile/src/components/EmptyState.tsx`, `mobile/src/features/shell/screens/EmptyTabScreen.tsx` y el grupo `mobile/app/(student)/` con las pestañas de `Design.md` (Inicio · Módulos · Cronograma · Mensajes · PQRS); cada ruta solo renderiza `EmptyTabScreen`
+- [X] T048 [P] [US2] Crear el grupo `mobile/app/(teacher)/` con las pestañas (Dashboard · Cronograma · Mensajes · PQRS); cada ruta renderiza `EmptyTabScreen` (depende de T047)
+- [X] T049 [P] [US2] Crear el grupo `mobile/app/(admin)/` con las pestañas (Dashboard · Módulos · Mensajes · PQRS · Más); cada ruta renderiza `EmptyTabScreen` (depende de T047)
+- [X] T050 [US2] Añadir las claves es/en de login, pestañas, estados vacíos y mensajes de bloqueo en `mobile/src/i18n/es.json` y `en.json`
 
 **Checkpoint**: US1 y US2 funcionan; el CAE sembrado ya puede ingresar.
 
