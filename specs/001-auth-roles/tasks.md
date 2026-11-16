@@ -167,17 +167,17 @@ description: "Task list for Acceso y roles"
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T061 [P] [US4] Pruebas e2e en `backend/test/auth-reset.e2e-spec.ts`: respuesta idéntica con correo existente o no, código vencido, usado o con intentos agotados, contraseña débil, cierre de todas las sesiones, restablecer quita `mustChangePassword` de un docente (FR-016a), restablecer marca verificado a un estudiante sin verificar, cuenta desactivada o con `deletedAt` no recibe código ni se restablece
-- [ ] T062 [P] [US4] Pruebas de la app en `mobile/src/features/auth/__tests__/reset.test.tsx` (flujo de dos pasos, errores por código)
+- [X] T061 [P] [US4] Pruebas e2e en `backend/test/auth-reset.e2e-spec.ts`: respuesta idéntica con correo existente o no, código vencido, usado o con intentos agotados, contraseña débil, cierre de todas las sesiones, restablecer quita `mustChangePassword` de un docente (FR-016a), restablecer marca verificado a un estudiante sin verificar, cuenta desactivada o con `deletedAt` no recibe código ni se restablece
+- [X] T062 [P] [US4] Pruebas de la app en `mobile/src/features/auth/__tests__/reset.test.tsx` (flujo de dos pasos, errores por código)
 
 ### Implementation for User Story 4
 
-- [ ] T063 [US4] Crear `PasswordResetService` en `backend/src/auth/password-reset.service.ts`: emitir el código `PASSWORD_RESET` solo para cuentas activas; al restablecer, cambiar el hash, fijar `emailVerifiedAt` si era nulo, poner `mustChangePassword` en falso y revocar todas las sesiones (depende de T015, T017)
-- [ ] T064 [US4] Añadir `POST /auth/forgot-password` y `/auth/reset-password` en `backend/src/auth/auth.controller.ts` (públicas, con límite de peticiones) (depende de T063)
-- [ ] T065 [P] [US4] Crear la plantilla del correo de recuperación es/en en `backend/src/mail/templates/reset.{es,en}.ts`
-- [ ] T066 [P] [US4] Crear `mobile/src/features/auth/screens/ForgotPasswordScreen.tsx`, su hook en `hooks/` y la ruta `mobile/app/(auth)/forgot-password.tsx` que solo la renderiza
-- [ ] T067 [P] [US4] Crear `mobile/src/features/auth/screens/ResetPasswordScreen.tsx` (código de 6 dígitos y nueva contraseña con requisitos visibles), su hook en `hooks/` y la ruta `mobile/app/(auth)/reset-password.tsx` que solo la renderiza
-- [ ] T068 [US4] Enlazar "¿Olvidaste tu contraseña?" desde `mobile/app/(auth)/login.tsx` y añadir las claves es/en en `mobile/src/i18n/es.json` y `en.json`
+- [X] T063 [US4] Crear `PasswordResetService` en `backend/src/auth/password-reset.service.ts`: emitir el código `PASSWORD_RESET` solo para cuentas activas; al restablecer, cambiar el hash, fijar `emailVerifiedAt` si era nulo, poner `mustChangePassword` en falso y revocar todas las sesiones (depende de T015, T017)
+- [X] T064 [US4] Añadir `POST /auth/forgot-password` y `/auth/reset-password` en `backend/src/auth/auth.controller.ts` (públicas, con límite de peticiones) (depende de T063)
+- [X] T065 [P] [US4] Crear la plantilla del correo de recuperación es/en en `backend/src/mail/templates/reset.{es,en}.ts`
+- [X] T066 [P] [US4] Crear `mobile/src/features/auth/screens/ForgotPasswordScreen.tsx`, su hook en `hooks/` y la ruta `mobile/app/(auth)/forgot-password.tsx` que solo la renderiza
+- [X] T067 [P] [US4] Crear `mobile/src/features/auth/screens/ResetPasswordScreen.tsx` (código de 6 dígitos y nueva contraseña con requisitos visibles), su hook en `hooks/` y la ruta `mobile/app/(auth)/reset-password.tsx` que solo la renderiza
+- [X] T068 [US4] Enlazar "¿Olvidaste tu contraseña?" desde `mobile/app/(auth)/login.tsx` y añadir las claves es/en en `mobile/src/i18n/es.json` y `en.json`
 
 **Checkpoint**: US4 funciona sola.
 
