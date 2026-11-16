@@ -191,16 +191,16 @@ description: "Task list for Acceso y roles"
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T069 [P] [US5] Pruebas e2e en `backend/test/auth-session.e2e-spec.ts`: renovar rota el token, un token ya rotado revoca la sesión, caducidad tras 30 días sin uso con el reloj controlable (y renovación de la ventana con cada uso), cerrar sesión solo afecta al dispositivo actual, restablecer contraseña cierra todos los dispositivos
-- [ ] T070 [P] [US5] Pruebas de la app en `mobile/src/features/auth/__tests__/session-restore.test.tsx` (restaura al abrir; con renovación fallida pide ingresar con aviso)
+- [X] T069 [P] [US5] Pruebas e2e en `backend/test/auth-session.e2e-spec.ts`: renovar rota el token, un token ya rotado revoca la sesión, caducidad tras 30 días sin uso con el reloj controlable (y renovación de la ventana con cada uso), cerrar sesión solo afecta al dispositivo actual, restablecer contraseña cierra todos los dispositivos
+- [X] T070 [P] [US5] Pruebas de la app en `mobile/src/features/auth/__tests__/session-restore.test.tsx` (restaura al abrir; con renovación fallida pide ingresar con aviso)
 
 ### Implementation for User Story 5
 
-- [ ] T071 [US5] Añadir `POST /auth/refresh` (público) y `POST /auth/logout` en `backend/src/auth/auth.controller.ts` usando `SessionService` (depende de T017)
-- [ ] T072 [US5] Restaurar la sesión al iniciar en `mobile/app/_layout.tsx`: leer el token de `expo-secure-store`, renovar, mostrar pantalla de carga y, si falla, volver a `(auth)/login` con aviso de sesión caducada (depende de T029, T046)
-- [ ] T073 [P] [US5] Crear `mobile/src/components/AppBar.tsx`: barra superior con avatar a la derecha que abre un menú con "Cerrar sesión" (cierra en el servidor, borra el almacén seguro y vuelve al login)
-- [ ] T074 [US5] Usar `AppBar` en los layouts de `mobile/app/(student)/`, `(teacher)/` y `(admin)/` (depende de T073)
-- [ ] T075 [US5] Añadir las claves es/en del menú de perfil, cierre de sesión y sesión caducada en `mobile/src/i18n/es.json` y `en.json`
+- [X] T071 [US5] Añadir `POST /auth/refresh` (público) y `POST /auth/logout` en `backend/src/auth/auth.controller.ts` usando `SessionService` (depende de T017)
+- [X] T072 [US5] Restaurar la sesión al iniciar en `mobile/app/_layout.tsx`: leer el token de `expo-secure-store`, renovar, mostrar pantalla de carga y, si falla, volver a `(auth)/login` con aviso de sesión caducada (depende de T029, T046)
+- [X] T073 [P] [US5] Crear `mobile/src/components/AppBar.tsx`: barra superior con avatar a la derecha que abre un menú con "Cerrar sesión" (cierra en el servidor, borra el almacén seguro y vuelve al login)
+- [X] T074 [US5] Usar `AppBar` en los layouts de `mobile/app/(student)/`, `(teacher)/` y `(admin)/` (depende de T073)
+- [X] T075 [US5] Añadir las claves es/en del menú de perfil, cierre de sesión y sesión caducada en `mobile/src/i18n/es.json` y `en.json`
 
 **Checkpoint**: US5 funciona sola.
 
