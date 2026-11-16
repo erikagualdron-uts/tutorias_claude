@@ -130,6 +130,34 @@
 - **Estado:** Aceptada
 - **Decisión:** Ejecutar iOS requiere macOS y Xcode, por lo que la demo usa un iPhone físico con Expo Go; alternativas: EAS Build con Appetize.io o un Mac en la nube. Android se prueba con el emulador de Android Studio.
 
+### D-030 · Código numérico de 6 dígitos en vez de enlace
+- **Estado:** Aceptada
+- **Decisión:** La verificación de correo y la recuperación de contraseña usan un código de 6 dígitos enviado por correo. Se guarda solo su HMAC; vence (24 h verificación, 1 h recuperación), es de un solo uso, admite 5 intentos y el nuevo código invalida el anterior. Reenvío: espera de 60 s y máximo 5 por hora.
+- **Motivo:** Un enlace exige enlaces profundos en iOS y Android; el código se escribe en la app. El límite de intentos y el vencimiento compensan los 6 dígitos.
+- **Descartado:** Enlace con token largo; contraseña de un solo uso por SMS (no hay proveedor).
+
+### D-031 · Sesión por dispositivo con 30 días de inactividad
+- **Estado:** Aceptada
+- **Decisión:** Cada dispositivo tiene su `Session` con refresh token opaco rotativo (ventana deslizante de 30 días de inactividad). Se permiten varias sesiones a la vez, el cierre de sesión afecta solo al dispositivo y presentar un token ya rotado revoca la sesión. El guard consulta usuario y sesión en cada petición.
+- **Motivo:** Cierre por dispositivo y efecto inmediato al desactivar o borrar una cuenta, sin lista negra.
+- **Descartado:** JWT largo sin sesión en servidor; lista negra en Redis.
+
+### D-032 · Registro sobre una cuenta sin verificar solo reenvía el código
+- **Estado:** Aceptada
+- **Decisión:** Si el correo existe sin verificar, el registro no cambia contraseña, nombres ni idioma: solo reenvía el código y responde igual que un alta nueva. Si está verificado o tiene borrado lógico, responde `EMAIL_ALREADY_REGISTERED`.
+- **Motivo:** Evita que alguien tome una cuenta ajena sin verificar cambiándole la contraseña.
+
+### D-033 · Recuperar la contraseña verifica el correo y quita el cambio obligatorio
+- **Estado:** Aceptada
+- **Decisión:** Restablecer con éxito marca el correo como verificado, pone `mustChangePassword` en falso y cierra todas las sesiones.
+- **Motivo:** El código demuestra que la persona controla el correo; evita dejar a un estudiante atrapado entre "verifica tu correo" y "recupera tu contraseña".
+
+### D-034 · Límites de intentos por defecto
+- **Estado:** Aceptada
+- **Decisión:** Inicio de sesión: 5 fallos por correo + IP bloquean 15 minutos y la respuesta indica el tiempo de espera. Registro y recuperación: 10 solicitudes por hora por IP. Todos son valores de configuración (`Setting` o variables de entorno), no constantes.
+- **Motivo:** Equilibra seguridad y el caso de un estudiante que se equivoca varias veces.
+- **Descartado:** Bloqueo permanente de la cuenta tras N fallos (permite bloquear a otro a propósito).
+
 ---
 
 ## Diseño

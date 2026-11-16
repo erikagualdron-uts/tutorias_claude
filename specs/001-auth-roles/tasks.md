@@ -254,9 +254,9 @@ description: "Task list for Acceso y roles"
 
 - [X] T088 [P] Crear `backend/test/log-redaction.e2e-spec.ts`: ninguna contraseña, clave temporal, código ni token aparece en los logs durante registro, login, recuperación y alta de docente
 - [X] T089 [P] Validar las respuestas de la API contra `specs/001-auth-roles/contracts/auth-api.yaml` en `backend/test/contract.e2e-spec.ts`
-- [ ] T090 [P] Revisar accesibilidad de las pantallas de acceso: objetivos de 48 px, etiquetas de accesibilidad, estados de carga y error de `Design.md` y contraste de la paleta
-- [ ] T091 [P] Verificar y ajustar la sección "Comandos" de `CLAUDE.md` con los comandos reales del proyecto creado
-- [ ] T092 [P] Confirmar que `docs/Architecture.md` y `docs/Context.md` coinciden con lo implementado (entidades, código de 6 dígitos, sesión de 30 días, prefijo `/api/v1`) y actualizarlos si cambió algo; registrar en `docs/Decisions.md` (formato D-0XX, sin reutilizar IDs) las decisiones de esta funcionalidad: código numérico de 6 dígitos en vez de enlace, sesión de 30 días de inactividad por dispositivo, sesiones en varios dispositivos, registro sobre cuenta sin verificar solo reenvía el código, recuperar la contraseña verifica el correo y quita el cambio obligatorio del docente, límites de intentos por defecto
+- [X] T090 [P] Revisar accesibilidad de las pantallas de acceso: objetivos de 48 px, etiquetas de accesibilidad, estados de carga y error de `Design.md` y contraste de la paleta
+- [X] T091 [P] Verificar y ajustar la sección "Comandos" de `CLAUDE.md` con los comandos reales del proyecto creado
+- [X] T092 [P] Confirmar que `docs/Architecture.md` y `docs/Context.md` coinciden con lo implementado (entidades, código de 6 dígitos, sesión de 30 días, prefijo `/api/v1`) y actualizarlos si cambió algo; registrar en `docs/Decisions.md` (formato D-0XX, sin reutilizar IDs) las decisiones de esta funcionalidad: código numérico de 6 dígitos en vez de enlace, sesión de 30 días de inactividad por dispositivo, sesiones en varios dispositivos, registro sobre cuenta sin verificar solo reenvía el código, recuperar la contraseña verifica el correo y quita el cambio obligatorio del docente, límites de intentos por defecto
 - [ ] T093 Revisión de seguridad de `backend/src/auth/` (comparaciones en tiempo constante, enumeración de cuentas, límites de intentos, rotación de tokens)
 - [ ] T094 Ejecutar los 17 escenarios de `specs/001-auth-roles/quickstart.md` y registrar el resultado
 
