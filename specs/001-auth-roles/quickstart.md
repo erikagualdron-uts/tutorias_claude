@@ -53,3 +53,29 @@ cd ../mobile && npm run lint && npm run typecheck && npm run test
 
 Las pruebas automáticas pasan, los 17 escenarios se comportan como se describe y no aparece
 ningún texto fijo en los componentes ni ningún secreto en el repositorio ni en los logs.
+
+## Resultado de la validación (T094)
+
+Fecha: 2026-11-16. API real (`nest start`) contra PostgreSQL, Redis y Mailpit de `docker-compose`, con correos entregados por SMTP y la cola BullMQ. Se ejecutaron por HTTP con un guion (los escenarios de la app se cubren con sus pruebas de componentes). Para la corrida se subió el límite de peticiones públicas (`THROTTLE_PUBLIC_LIMIT=1000`).
+
+| # | Resultado | Evidencia |
+|---|---|---|
+| 1 | ✅ | Correo "Verifica tu correo" con código de 6 dígitos; login → 403 `EMAIL_NOT_VERIFIED` |
+| 2 | ✅ | `@correo.uts.edu.co` y `@gmail.com` → 422 `EMAIL_DOMAIN_NOT_ALLOWED` |
+| 3 | ✅ | 5 × `CODE_INVALID`; el código correcto → `CODE_ATTEMPTS_EXCEEDED`; el reenvío responde 202 con temporizador |
+| 4 | ✅ | Reenvío tras 60 s, verificación 204 y login 200 con rol `STUDENT` |
+| 5 | ✅ | CAE sembrado: `mustChangePassword`, cambia la clave y entra como `SUPERADMIN` |
+| 6 | ✅ | `POST /teachers` → 201 con clave temporal de 12 caracteres (el diálogo con botón copiar se prueba en `teacher-flow.test.tsx`) |
+| 7 | ✅ | En la base solo hay su hash y no reaparece en ninguna respuesta |
+| 8 | ✅ | Con clave temporal, otras rutas → 403 `PASSWORD_CHANGE_REQUIRED`; `me` sigue disponible |
+| 9 | ✅ | Tras restablecer por código, `mustChangePassword` es falso |
+| 10 | ✅ | Mismo 202 y misma forma con correo existente e inexistente |
+| 11 | ✅ | Las dos sesiones abiertas → 401 tras restablecer |
+| 12 | ✅ (API) | `refresh` 200 conserva el rol; la restauración al abrir la app se prueba en `session-restore.test.tsx`. No se probó en un emulador. |
+| 13 | ✅ | Solo cae el dispositivo que cerró sesión |
+| 14 | ✅ | `INACTIVE` → `ACCOUNT_DISABLED` (sesión abierta cae en la siguiente petición); `deletedAt` → `ACCOUNT_UNAVAILABLE` |
+| 15 | ✅ (correos) | Correo en inglés y en español según el idioma guardado; el idioma de la app se prueba en `i18n.test.ts`. No se probó cambiando el idioma de un dispositivo. |
+| 16 | ✅ | 6.º intento → 429 `RATE_LIMITED` con `retryAfterSeconds` |
+| 17 | ✅ | Token de estudiante en `POST /teachers` → 403 `FORBIDDEN_ROLE` |
+
+El log de la API no contiene contraseñas, códigos ni tokens (solo las rutas mapeadas) y no registró errores. Pendiente de una persona: recorrer las pantallas en un emulador o dispositivo (escenarios 12 y 15 con interfaz).
