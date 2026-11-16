@@ -236,15 +236,15 @@ description: "Task list for Acceso y roles"
 
 ### Tests for User Story 7 ⚠️
 
-- [ ] T082 [P] [US7] Pruebas de resolución de idioma en `mobile/src/i18n/__tests__/i18n.test.ts` (es, en, y un idioma distinto → es)
-- [ ] T083 [P] [US7] Pruebas en `backend/test/mail-locale.e2e-spec.ts`: los correos de verificación y recuperación salen en el `locale` guardado del usuario
+- [X] T082 [P] [US7] Pruebas de resolución de idioma en `mobile/src/i18n/__tests__/i18n.test.ts` (es, en, y un idioma distinto → es)
+- [X] T083 [P] [US7] Pruebas en `backend/test/mail-locale.e2e-spec.ts`: los correos de verificación y recuperación salen en el `locale` guardado del usuario
 
 ### Implementation for User Story 7
 
-- [ ] T084 [US7] Hacer que `mobile/src/i18n/index.ts` reaccione al cambio de idioma del dispositivo con la app abierta
-- [ ] T085 [P] [US7] Añadir en `mobile/.eslintrc.js` una regla que prohíbe texto literal en componentes (`i18next/no-literal-string` o equivalente)
-- [ ] T086 [P] [US7] Crear `mobile/src/i18n/__tests__/parity.test.ts`: `es.json` y `en.json` tienen las mismas claves y cada `code` de error de `contracts/auth-api.yaml` tiene traducción
-- [ ] T087 [US7] Corregir los textos fijos que detecte T085 en `mobile/app/` y `mobile/src/` y revisar que las pantallas toleran textos largos en español y fuente al 200 %
+- [X] T084 [US7] Hacer que `mobile/src/i18n/index.ts` reaccione al cambio de idioma del dispositivo con la app abierta
+- [X] T085 [P] [US7] Añadir en `mobile/.eslintrc.js` una regla que prohíbe texto literal en componentes (`i18next/no-literal-string` o equivalente)
+- [X] T086 [P] [US7] Crear `mobile/src/i18n/__tests__/parity.test.ts`: `es.json` y `en.json` tienen las mismas claves y cada `code` de error de `contracts/auth-api.yaml` tiene traducción
+- [X] T087 [US7] Corregir los textos fijos que detecte T085 en `mobile/app/` y `mobile/src/` y revisar que las pantallas toleran textos largos en español y fuente al 200 %
 
 **Checkpoint**: Todas las historias funcionan.
 
