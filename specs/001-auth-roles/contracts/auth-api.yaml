@@ -1,0 +1,267 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - Auth API
+  version: 1.0.0
+  description: >
+    Contrato de acceso y roles. Los errores usan el formato único de docs/Conventions.md §4:
+    `code` estable (la app lo traduce), `message` solo para desarrolladores y `details`
+    opcional. Fechas en UTC (ISO 8601).
+servers:
+  - url: /api/v1
+paths:
+  /auth/register:
+    post:
+      summary: Registro de estudiante (solo dominio de estudiantes)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterRequest' }
+      responses:
+        '202':
+          description: Cuenta creada, o cuenta sin verificar a la que solo se reenvió el código (su contraseña no cambia); respuesta idéntica en ambos casos
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CodeSent' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '409': { description: "EMAIL_ALREADY_REGISTERED (cuenta verificada o con borrado lógico)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '422': { description: "EMAIL_DOMAIN_NOT_ALLOWED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /auth/verify-email:
+    post:
+      summary: Verifica el correo con el código de 6 dígitos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CodeRequest' }
+      responses:
+        '204': { description: Correo verificado }
+        '400': { description: "CODE_INVALID, CODE_EXPIRED o CODE_ATTEMPTS_EXCEEDED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /auth/resend-verification:
+    post:
+      summary: Reenvía el código de verificación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmailOnly' }
+      responses:
+        '202':
+          description: Respuesta idéntica exista o no la cuenta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CodeSent' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /auth/login:
+    post:
+      summary: Inicio de sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: Sesión creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthTokens' }
+        '401': { description: "INVALID_CREDENTIALS (no revela si el correo existe)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: "EMAIL_NOT_VERIFIED, ACCOUNT_DISABLED o ACCOUNT_UNAVAILABLE (borrado lógico)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /auth/refresh:
+    post:
+      summary: Renueva la sesión y rota el refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200':
+          description: Nuevos tokens
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthTokens' }
+        '401': { description: "SESSION_EXPIRED, SESSION_REVOKED o ACCOUNT_DISABLED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /auth/logout:
+    post:
+      summary: Cierra la sesión del dispositivo actual
+      security: [{ bearerAuth: [] }]
+      responses:
+        '204': { description: Sesión revocada }
+  /auth/me:
+    get:
+      summary: Usuario actual (rol, locale y obligación de cambiar la clave)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Usuario
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserSummary' }
+        '401': { description: "TOKEN_INVALID o ACCOUNT_DISABLED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /auth/forgot-password:
+    post:
+      summary: Solicita el código de recuperación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmailOnly' }
+      responses:
+        '202':
+          description: Respuesta idéntica exista o no la cuenta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CodeSent' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /auth/reset-password:
+    post:
+      summary: Restablece la contraseña con el código; cierra todas las sesiones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ResetPasswordRequest' }
+      responses:
+        '204': { description: Contraseña cambiada, correo verificado y obligación de cambio quitada }
+        '400': { description: "CODE_INVALID, CODE_EXPIRED, CODE_ATTEMPTS_EXCEEDED o PASSWORD_TOO_WEAK", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /auth/change-password:
+    post:
+      summary: Cambia la contraseña con sesión iniciada (obligatorio con clave temporal)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChangePasswordRequest' }
+      responses:
+        '204': { description: Contraseña cambiada }
+        '400': { description: "PASSWORD_TOO_WEAK o PASSWORD_SAME_AS_CURRENT", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '401': { description: "INVALID_CREDENTIALS (clave actual incorrecta)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /teachers:
+    post:
+      summary: El CAE crea un docente con clave temporal (solo SUPERADMIN)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateTeacherRequest' }
+      responses:
+        '201':
+          description: Docente creado. La clave temporal solo aparece en esta respuesta.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateTeacherResponse' }
+        '403': { description: "FORBIDDEN_ROLE", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '409': { description: "EMAIL_ALREADY_REGISTERED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '422': { description: "EMAIL_DOMAIN_NOT_ALLOWED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  responses:
+    ValidationError:
+      description: VALIDATION_FAILED o PASSWORD_TOO_WEAK
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    RateLimited:
+      description: RATE_LIMITED; `details.retryAfterSeconds` trae los segundos de espera
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer, description: Código HTTP }
+        code: { type: string, description: Código estable en UPPER_SNAKE_CASE que la app traduce }
+        message: { type: string, description: Solo para desarrolladores; la app nunca lo muestra }
+        details:
+          type: object
+          description: >
+            Datos adicionales. RATE_LIMITED incluye `retryAfterSeconds` (entero);
+            VALIDATION_FAILED incluye `fields` (campo → código de error).
+          additionalProperties: true
+    CodeSent:
+      type: object
+      required: [resendAvailableAt]
+      properties:
+        resendAvailableAt: { type: string, format: date-time }
+    EmailOnly:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+    RegisterRequest:
+      type: object
+      required: [email, password, firstName, lastName, locale]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+        firstName: { type: string }
+        lastName: { type: string }
+        locale: { type: string, enum: [es, en] }
+    CodeRequest:
+      type: object
+      required: [email, code]
+      properties:
+        email: { type: string, format: email }
+        code: { type: string, pattern: '^[0-9]{6}$' }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+        deviceLabel: { type: string }
+    ResetPasswordRequest:
+      type: object
+      required: [email, code, newPassword]
+      properties:
+        email: { type: string, format: email }
+        code: { type: string, pattern: '^[0-9]{6}$' }
+        newPassword: { type: string, minLength: 8 }
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword: { type: string }
+        newPassword: { type: string, minLength: 8 }
+    CreateTeacherRequest:
+      type: object
+      required: [email, firstName, lastName]
+      properties:
+        email: { type: string, format: email }
+        firstName: { type: string }
+        lastName: { type: string }
+    CreateTeacherResponse:
+      type: object
+      required: [user, temporaryPassword]
+      properties:
+        user: { $ref: '#/components/schemas/UserSummary' }
+        temporaryPassword: { type: string, description: Se devuelve una sola vez y no puede volver a consultarse }
+    AuthTokens:
+      type: object
+      required: [accessToken, refreshToken, user]
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        user: { $ref: '#/components/schemas/UserSummary' }
+    UserSummary:
+      type: object
+      required: [id, email, role, mustChangePassword, locale]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        role: { type: string, enum: [SUPERADMIN, TEACHER, STUDENT] }
+        mustChangePassword: { type: boolean }
+        locale: { type: string, enum: [es, en] }
+        firstName: { type: string }
+        lastName: { type: string }
