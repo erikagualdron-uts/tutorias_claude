@@ -141,19 +141,19 @@ description: "Task list for Acceso y roles"
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T051 [P] [US3] Pruebas e2e en `backend/test/teachers.e2e-spec.ts`: creación por el CAE, dominio distinto de `@correo.uts.edu.co` → 422, no CAE → 403, correo duplicado → 409, la clave temporal solo aparece en la respuesta de creación, el docente con `mustChangePassword` recibe 403 `PASSWORD_CHANGE_REQUIRED` en todo salvo cambio de clave, `me` y cierre de sesión; el cambio rechaza clave débil, igual a la actual (`PASSWORD_SAME_AS_CURRENT`) o clave actual incorrecta; tras cambiar, accede normal
-- [ ] T052 [P] [US3] Pruebas de la app en `mobile/src/features/auth/__tests__/teacher-flow.test.tsx`: el diálogo de clave temporal se muestra una vez, no se puede reabrir, y la pantalla de cambio bloquea la navegación
+- [X] T051 [P] [US3] Pruebas e2e en `backend/test/teachers.e2e-spec.ts`: creación por el CAE, dominio distinto de `@correo.uts.edu.co` → 422, no CAE → 403, correo duplicado → 409, la clave temporal solo aparece en la respuesta de creación, el docente con `mustChangePassword` recibe 403 `PASSWORD_CHANGE_REQUIRED` en todo salvo cambio de clave, `me` y cierre de sesión; el cambio rechaza clave débil, igual a la actual (`PASSWORD_SAME_AS_CURRENT`) o clave actual incorrecta; tras cambiar, accede normal
+- [X] T052 [P] [US3] Pruebas de la app en `mobile/src/features/auth/__tests__/teacher-flow.test.tsx`: el diálogo de clave temporal se muestra una vez, no se puede reabrir, y la pantalla de cambio bloquea la navegación
 
 ### Implementation for User Story 3
 
-- [ ] T053 [P] [US3] Crear `TemporaryPasswordService` en `backend/src/teachers/temporary-password.service.ts` (generador criptográfico que cumple la política de contraseñas)
-- [ ] T054 [US3] Extender `JwtAuthGuard` en `backend/src/common/guards/` para devolver 403 `PASSWORD_CHANGE_REQUIRED` a cualquier ruta salvo `/auth/change-password`, `/auth/me` y `/auth/logout` cuando `mustChangePassword` es verdadero (depende de T019)
-- [ ] T055 [US3] Crear `TeachersModule` en `backend/src/teachers/` con DTO, servicio y `POST /teachers` con `@Roles(SUPERADMIN)`: validar el dominio de docentes desde configuración, crear `User` TEACHER con `TeacherProfile`, `emailVerifiedAt` fijado y `mustChangePassword = true`, y devolver la clave temporal solo en esa respuesta, sin registrarla en logs (depende de T053)
-- [ ] T056 [US3] Añadir `POST /auth/change-password` en `backend/src/auth/auth.controller.ts`: verificar la clave actual, aplicar la política, exigir que sea distinta, quitar `mustChangePassword` (depende de T054)
-- [ ] T057 [P] [US3] Crear `mobile/src/features/auth/screens/ChangePasswordScreen.tsx` (bloquea toda la navegación hasta completar el cambio y vuelve al grupo del rol), su hook en `hooks/` y la ruta `mobile/app/change-password.tsx` que solo la renderiza
-- [ ] T058 [P] [US3] Crear `mobile/src/components/TemporaryPasswordDialog.tsx`: clave en Roboto Mono sobre bloque `Surface`, botón "Copiar" (`expo-clipboard`), aviso de cambio en el primer ingreso; al cerrarse no vuelve a mostrarla
-- [ ] T059 [US3] Crear `mobile/src/features/teachers/screens/CreateTeacherScreen.tsx` (formulario con nombres y correo, error en línea de dominio y diálogo de clave temporal al terminar), su hook en `mobile/src/features/teachers/hooks/` y la ruta `mobile/app/(admin)/more/create-teacher.tsx` que solo la renderiza (depende de T058)
-- [ ] T060 [US3] Añadir las claves es/en del alta de docente, el diálogo y el cambio de clave obligatorio en `mobile/src/i18n/es.json` y `en.json`
+- [X] T053 [P] [US3] Crear `TemporaryPasswordService` en `backend/src/teachers/temporary-password.service.ts` (generador criptográfico que cumple la política de contraseñas)
+- [X] T054 [US3] Extender `JwtAuthGuard` en `backend/src/common/guards/` para devolver 403 `PASSWORD_CHANGE_REQUIRED` a cualquier ruta salvo `/auth/change-password`, `/auth/me` y `/auth/logout` cuando `mustChangePassword` es verdadero (depende de T019)
+- [X] T055 [US3] Crear `TeachersModule` en `backend/src/teachers/` con DTO, servicio y `POST /teachers` con `@Roles(SUPERADMIN)`: validar el dominio de docentes desde configuración, crear `User` TEACHER con `TeacherProfile`, `emailVerifiedAt` fijado y `mustChangePassword = true`, y devolver la clave temporal solo en esa respuesta, sin registrarla en logs (depende de T053)
+- [X] T056 [US3] Añadir `POST /auth/change-password` en `backend/src/auth/auth.controller.ts`: verificar la clave actual, aplicar la política, exigir que sea distinta, quitar `mustChangePassword` (depende de T054)
+- [X] T057 [P] [US3] Crear `mobile/src/features/auth/screens/ChangePasswordScreen.tsx` (bloquea toda la navegación hasta completar el cambio y vuelve al grupo del rol), su hook en `hooks/` y la ruta `mobile/app/change-password.tsx` que solo la renderiza
+- [X] T058 [P] [US3] Crear `mobile/src/components/TemporaryPasswordDialog.tsx`: clave en Roboto Mono sobre bloque `Surface`, botón "Copiar" (`expo-clipboard`), aviso de cambio en el primer ingreso; al cerrarse no vuelve a mostrarla
+- [X] T059 [US3] Crear `mobile/src/features/teachers/screens/CreateTeacherScreen.tsx` (formulario con nombres y correo, error en línea de dominio y diálogo de clave temporal al terminar), su hook en `mobile/src/features/teachers/hooks/` y la ruta `mobile/app/(admin)/more/create-teacher.tsx` que solo la renderiza (depende de T058)
+- [X] T060 [US3] Añadir las claves es/en del alta de docente, el diálogo y el cambio de clave obligatorio en `mobile/src/i18n/es.json` y `en.json`
 
 **Checkpoint**: Las tres historias P1 funcionan.
 
