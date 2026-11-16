@@ -214,15 +214,15 @@ description: "Task list for Acceso y roles"
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T076 [P] [US6] Pruebas e2e en `backend/test/auth-account-state.e2e-spec.ts`: login de cuenta desactivada → 403 `ACCOUNT_DISABLED`; con `deletedAt` → 403 `ACCOUNT_UNAVAILABLE`; sesión abierta rechazada en la siguiente petición; renovación rechazada; reactivar devuelve el acceso con la contraseña vigente; el correo borrado sigue ocupado para registros; el historial (usuario y sesiones) permanece
-- [ ] T077 [P] [US6] Pruebas de la app en `mobile/src/features/auth/__tests__/account-state.test.tsx`: `ACCOUNT_DISABLED` y `ACCOUNT_UNAVAILABLE` cierran la sesión y muestran la regla que bloquea
+- [X] T076 [P] [US6] Pruebas e2e en `backend/test/auth-account-state.e2e-spec.ts`: login de cuenta desactivada → 403 `ACCOUNT_DISABLED`; con `deletedAt` → 403 `ACCOUNT_UNAVAILABLE`; sesión abierta rechazada en la siguiente petición; renovación rechazada; reactivar devuelve el acceso con la contraseña vigente; el correo borrado sigue ocupado para registros; el historial (usuario y sesiones) permanece
+- [X] T077 [P] [US6] Pruebas de la app en `mobile/src/features/auth/__tests__/account-state.test.tsx`: `ACCOUNT_DISABLED` y `ACCOUNT_UNAVAILABLE` cierran la sesión y muestran la regla que bloquea
 
 ### Implementation for User Story 6
 
-- [ ] T078 [US6] Crear `UsersService` en `backend/src/users/users.service.ts` con `setStatus` y `softDelete` que revocan todas las sesiones del usuario y nunca borran filas (para que la futura administración de cuentas los reutilice)
-- [ ] T079 [US6] Auditar `backend/src/auth/` y `backend/src/common/guards/` para que login, renovación, recuperación y registro filtren siempre por `deletedAt` y estado; el mensaje de cuenta desactivada indica la causa y a quién acudir, y el de cuenta borrada no revela más
-- [ ] T080 [US6] Tratar `ACCOUNT_DISABLED` y `ACCOUNT_UNAVAILABLE` en `mobile/src/api/client.ts` y `mobile/src/features/auth/screens/LoginScreen.tsx`: cerrar la sesión local y mostrar un `Banner` con la regla
-- [ ] T081 [US6] Añadir las claves es/en de cuenta desactivada, no disponible y a quién acudir en `mobile/src/i18n/es.json` y `en.json`
+- [X] T078 [US6] Crear `UsersService` en `backend/src/users/users.service.ts` con `setStatus` y `softDelete` que revocan todas las sesiones del usuario y nunca borran filas (para que la futura administración de cuentas los reutilice)
+- [X] T079 [US6] Auditar `backend/src/auth/` y `backend/src/common/guards/` para que login, renovación, recuperación y registro filtren siempre por `deletedAt` y estado; el mensaje de cuenta desactivada indica la causa y a quién acudir, y el de cuenta borrada no revela más
+- [X] T080 [US6] Tratar `ACCOUNT_DISABLED` y `ACCOUNT_UNAVAILABLE` en `mobile/src/api/client.ts` y `mobile/src/features/auth/screens/LoginScreen.tsx`: cerrar la sesión local y mostrar un `Banner` con la regla
+- [X] T081 [US6] Añadir las claves es/en de cuenta desactivada, no disponible y a quién acudir en `mobile/src/i18n/es.json` y `en.json`
 
 **Checkpoint**: US6 funciona sola.
 
