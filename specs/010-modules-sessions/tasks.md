@@ -152,16 +152,16 @@ description: "Task list for Módulos y sesiones (CAE)"
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T048 [P] [US4] Pruebas e2e en `tutorias_uts_back/test/modules.e2e-spec.ts` (sección de docente): docente libre (módulo y sesiones futuras cambian, pasadas no), docente ocupado (`MODULE_TEACHER_CONFLICT` con el módulo en `details`), docente desactivado, eliminado o sin rol docente (`MODULE_TEACHER_UNAVAILABLE`), periodo `CLOSED`, y registro de `MODULE_TEACHER_CHANGED` en `outbox_events`
-- [ ] T049 [P] [US4] Prueba de la app en `tutorias_uts_mobile/src/features/modules/__tests__/change-teacher.test.tsx`: la hoja solo ofrece docentes activos, muestra el conflicto devuelto y confirma con la cantidad de inscritos que serán avisados cuando hay al menos uno
+- [X] T048 [P] [US4] Pruebas e2e en `tutorias_uts_back/test/modules.e2e-spec.ts` (sección de docente): docente libre (módulo y sesiones futuras cambian, pasadas no), docente ocupado (`MODULE_TEACHER_CONFLICT` con el módulo en `details`), docente desactivado, eliminado o sin rol docente (`MODULE_TEACHER_UNAVAILABLE`), periodo `CLOSED`, y registro de `MODULE_TEACHER_CHANGED` en `outbox_events`
+- [X] T049 [P] [US4] Prueba de la app en `tutorias_uts_mobile/src/features/modules/__tests__/change-teacher.test.tsx`: la hoja solo ofrece docentes activos, muestra el conflicto devuelto y confirma con la cantidad de inscritos que serán avisados cuando hay al menos uno
 
 ### Implementation for User Story 4
 
-- [ ] T050 [P] [US4] Agregar `ChangeTeacherDto` (`teacherId` UUID) en `tutorias_uts_back/src/modules/dto/module.dto.ts`
-- [ ] T051 [US4] Agregar `changeTeacher(id, dto)` en `tutorias_uts_back/src/modules/modules.service.ts` con el mismo esquema de transacción y sesiones futuras que `changeRoom`, y la violación de `module_schedules_teacher_no_overlap` traducida; registra `MODULE_TEACHER_CHANGED`
-- [ ] T052 [US4] Agregar `PATCH /modules/:id/teacher` (`@Roles('SUPERADMIN')`) en `tutorias_uts_back/src/modules/modules.controller.ts`
-- [ ] T053 [P] [US4] Agregar `useChangeTeacher` en `tutorias_uts_mobile/src/features/modules/hooks/useModules.ts` y crear `tutorias_uts_mobile/src/features/modules/components/TeacherChangeSheet.tsx` basada en `PickerSheet` con el `ConfirmDialog` de inscritos
-- [ ] T054 [US4] Conectar la acción "Cambiar docente" en `tutorias_uts_mobile/src/features/modules/screens/ModuleDetailScreen.tsx` (oculta en periodo Cerrado) y agregar los textos `modules.changeTeacher.*` en `tutorias_uts_mobile/src/i18n/es.json` y `en.json`
+- [X] T050 [P] [US4] Agregar `ChangeTeacherDto` (`teacherId` UUID) en `tutorias_uts_back/src/modules/dto/module.dto.ts`
+- [X] T051 [US4] Agregar `changeTeacher(id, dto)` en `tutorias_uts_back/src/modules/modules.service.ts` con el mismo esquema de transacción y sesiones futuras que `changeRoom`, y la violación de `module_schedules_teacher_no_overlap` traducida; registra `MODULE_TEACHER_CHANGED`
+- [X] T052 [US4] Agregar `PATCH /modules/:id/teacher` (`@Roles('SUPERADMIN')`) en `tutorias_uts_back/src/modules/modules.controller.ts`
+- [X] T053 [P] [US4] Agregar `useChangeTeacher` en `tutorias_uts_mobile/src/features/modules/hooks/useModules.ts` y crear `tutorias_uts_mobile/src/features/modules/components/TeacherChangeSheet.tsx` basada en `PickerSheet` con el `ConfirmDialog` de inscritos
+- [X] T054 [US4] Conectar la acción "Cambiar docente" en `tutorias_uts_mobile/src/features/modules/screens/ModuleDetailScreen.tsx` (oculta en periodo Cerrado) y agregar los textos `modules.changeTeacher.*` en `tutorias_uts_mobile/src/i18n/es.json` y `en.json`
 
 **Checkpoint**: US4 funciona de forma independiente.
 
@@ -175,17 +175,17 @@ description: "Task list for Módulos y sesiones (CAE)"
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T055 [P] [US5] Pruebas e2e en `tutorias_uts_back/test/modules.e2e-spec.ts` (sección de edición): nombre y descripción editables con y sin inscritos y rechazados en periodo `CLOSED`; reemplazo de horarios sin inscritos (sesiones futuras anteriores marcadas con `deletedAt`, nuevas generadas, pasadas intactas, cruces validados, festivos omitidos); reemplazo con inscritos (`MODULE_HAS_ENROLLMENTS` con `enrolled`); eliminación sin inscritos (lógica, libera docente y salón, desaparece del listado y su detalle responde `404`); eliminación con inscritos bloqueada; periodo `CLOSED` bloquea todo; reemplazar horarios dentro de una carrera con el cierre del periodo
-- [ ] T056 [P] [US5] Pruebas de la app en `tutorias_uts_mobile/src/features/modules/__tests__/edit-delete.test.tsx`: el formulario en modo edición bloquea el campo de horarios con la regla cuando hay inscritos, el diálogo de eliminación destructivo dice que el registro se oculta y no se borra, y en periodo Cerrado no hay acciones
+- [X] T055 [P] [US5] Pruebas e2e en `tutorias_uts_back/test/modules.e2e-spec.ts` (sección de edición): nombre y descripción editables con y sin inscritos y rechazados en periodo `CLOSED`; reemplazo de horarios sin inscritos (sesiones futuras anteriores marcadas con `deletedAt`, nuevas generadas, pasadas intactas, cruces validados, festivos omitidos); reemplazo con inscritos (`MODULE_HAS_ENROLLMENTS` con `enrolled`); eliminación sin inscritos (lógica, libera docente y salón, desaparece del listado y su detalle responde `404`); eliminación con inscritos bloqueada; periodo `CLOSED` bloquea todo; reemplazar horarios dentro de una carrera con el cierre del periodo
+- [X] T056 [P] [US5] Pruebas de la app en `tutorias_uts_mobile/src/features/modules/__tests__/edit-delete.test.tsx`: el formulario en modo edición bloquea el campo de horarios con la regla cuando hay inscritos, el diálogo de eliminación destructivo dice que el registro se oculta y no se borra, y en periodo Cerrado no hay acciones
 
 ### Implementation for User Story 5
 
-- [ ] T057 [P] [US5] Agregar `UpdateModuleDto` (`name` de 1 a 120 caracteres y `description` de hasta 1000, ambos opcionales) y `ReplaceSchedulesDto` (`schedules` de al menos un elemento, mismas reglas que en creación) en `tutorias_uts_back/src/modules/dto/module.dto.ts`
-- [ ] T058 [US5] Agregar a `tutorias_uts_back/src/modules/modules.service.ts` `update(id, dto)`, `replaceSchedules(id, dto)` (transacción con `FOR SHARE` del periodo y `FOR UPDATE` del módulo, rechazo con inscritos, marca como eliminados los horarios y las sesiones futuras anteriores, inserta los nuevos horarios con las copias, genera las sesiones y devuelve `sessionsGenerated` por horario, R-5) y `remove(id)` (rechazo con inscritos, `deletedAt` en módulo, horarios y sesiones futuras)
-- [ ] T059 [US5] Agregar `PATCH /modules/:id`, `PUT /modules/:id/schedules` y `DELETE /modules/:id` (204) con `@Roles('SUPERADMIN')` en `tutorias_uts_back/src/modules/modules.controller.ts`
-- [ ] T060 [P] [US5] Agregar `useUpdateModule`, `useReplaceSchedules` y `useDeleteModule` en `tutorias_uts_mobile/src/features/modules/hooks/useModules.ts`
-- [ ] T061 [US5] Agregar el modo edición a `tutorias_uts_mobile/src/features/modules/screens/ModuleFormScreen.tsx` (periodo, docente y salón de solo lectura en edición, horarios deshabilitados con la regla si `canChangeSchedules` es falso) y las acciones "Editar" y "Eliminar" (con `ConfirmDialog` destructivo, deshabilitada con la regla si `canDelete` es falso) en `tutorias_uts_mobile/src/features/modules/screens/ModuleDetailScreen.tsx`
-- [ ] T062 [US5] Agregar los textos `modules.edit.*` y `modules.delete.*` en `tutorias_uts_mobile/src/i18n/es.json` y `en.json`
+- [X] T057 [P] [US5] Agregar `UpdateModuleDto` (`name` de 1 a 120 caracteres y `description` de hasta 1000, ambos opcionales) y `ReplaceSchedulesDto` (`schedules` de al menos un elemento, mismas reglas que en creación) en `tutorias_uts_back/src/modules/dto/module.dto.ts`
+- [X] T058 [US5] Agregar a `tutorias_uts_back/src/modules/modules.service.ts` `update(id, dto)`, `replaceSchedules(id, dto)` (transacción con `FOR SHARE` del periodo y `FOR UPDATE` del módulo, rechazo con inscritos, marca como eliminados los horarios y las sesiones futuras anteriores, inserta los nuevos horarios con las copias, genera las sesiones y devuelve `sessionsGenerated` por horario, R-5) y `remove(id)` (rechazo con inscritos, `deletedAt` en módulo, horarios y sesiones futuras)
+- [X] T059 [US5] Agregar `PATCH /modules/:id`, `PUT /modules/:id/schedules` y `DELETE /modules/:id` (204) con `@Roles('SUPERADMIN')` en `tutorias_uts_back/src/modules/modules.controller.ts`
+- [X] T060 [P] [US5] Agregar `useUpdateModule`, `useReplaceSchedules` y `useDeleteModule` en `tutorias_uts_mobile/src/features/modules/hooks/useModules.ts`
+- [X] T061 [US5] Agregar el modo edición a `tutorias_uts_mobile/src/features/modules/screens/ModuleFormScreen.tsx` (periodo, docente y salón de solo lectura en edición, horarios deshabilitados con la regla si `canChangeSchedules` es falso) y las acciones "Editar" y "Eliminar" (con `ConfirmDialog` destructivo, deshabilitada con la regla si `canDelete` es falso) en `tutorias_uts_mobile/src/features/modules/screens/ModuleDetailScreen.tsx`
+- [X] T062 [US5] Agregar los textos `modules.edit.*` y `modules.delete.*` en `tutorias_uts_mobile/src/i18n/es.json` y `en.json`
 
 **Checkpoint**: US5 funciona; la gestión de módulos queda completa.
 
