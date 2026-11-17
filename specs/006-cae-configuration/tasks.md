@@ -164,14 +164,14 @@ description: "Task list for Configuración del CAE"
 
 **Purpose**: Datos de ejemplo, documentación, decisiones y cierre según la Definición de terminado.
 
-- [ ] T049 [P] Agregar a `tutorias_uts_db/prisma/seed.ts` (idempotente) un periodo de ejemplo, una ubicación y varios salones con capacidades distintas
-- [ ] T050 [P] Actualizar `docs/Architecture.md` (§3 `config-usage/` y `settings/dropdown-lists/`; §5 entidades `Location`, `AcademicPeriod` con `UPCOMING`, `closedAt` y cierre automático, `Room`, `DropdownList` y `DropdownItem`) y `docs/Context.md` (reglas de periodo, salones y listas) en `Claude/docs/`
-- [ ] T051 [P] Registrar en `docs/Decisions.md` las decisiones D-071 (estado del periodo), D-072 (un activo y sin solapamientos en la base de datos), D-073 (listas predefinidas), D-074 (desactivar salón con módulos solo en Próximos), D-075 (eliminar ubicación elimina salones inactivos) y D-076 (solo se eliminan periodos Próximos sin módulos), con motivo y alternativas descartadas; dejar anotado en D-071 o en una nota para la spec de módulos que esa funcionalidad debe cumplir FR-013 (módulos de periodo cerrado en solo lectura), FR-022 (cupo igual a la capacidad del salón) y FR-023 (salón inactivo o eliminado no se asigna), y que debe reemplazar `ConfigUsageService`
+- [X] T049 [P] Agregar a `tutorias_uts_db/prisma/seed.ts` (idempotente) un periodo de ejemplo, una ubicación y varios salones con capacidades distintas
+- [X] T050 [P] Actualizar `docs/Architecture.md` (§3 `config-usage/` y `settings/dropdown-lists/`; §5 entidades `Location`, `AcademicPeriod` con `UPCOMING`, `closedAt` y cierre automático, `Room`, `DropdownList` y `DropdownItem`) y `docs/Context.md` (reglas de periodo, salones y listas) en `Claude/docs/`
+- [X] T051 [P] Registrar en `docs/Decisions.md` las decisiones D-071 (estado del periodo), D-072 (un activo y sin solapamientos en la base de datos), D-073 (listas predefinidas), D-074 (desactivar salón con módulos solo en Próximos), D-075 (eliminar ubicación elimina salones inactivos) y D-076 (solo se eliminan periodos Próximos sin módulos), con motivo y alternativas descartadas; dejar anotado en D-071 o en una nota para la spec de módulos que esa funcionalidad debe cumplir FR-013 (módulos de periodo cerrado en solo lectura), FR-022 (cupo igual a la capacidad del salón) y FR-023 (salón inactivo o eliminado no se asigna), y que debe reemplazar `ConfigUsageService`
 - [ ] T052 Preguntar al usuario si corrige en `CLAUDE.md` los nombres `backend/` y `mobile/` por los repositorios reales (`tutorias_uts_back`, `tutorias_uts_mobile`, `tutorias_uts_db`); no cambiarlo sin respuesta
-- [ ] T053 Ejecutar `npm run lint`, `npm run test` y `npm run test:e2e` en `tutorias_uts_back`, y `npm run lint`, `npm run typecheck` y `npm test` en `tutorias_uts_mobile`; corregir todo error
-- [ ] T054 Verificar que ningún componente nuevo contiene textos fijos, colores hexadecimales, nombres de fuente ni íconos fuera del registro (pruebas existentes en `tutorias_uts_mobile/src/__tests__/`), y revisar manualmente objetivos de 48 px, ícono en cada botón y 16 px entre botones apilados
+- [X] T053 Ejecutar `npm run lint`, `npm run test` y `npm run test:e2e` en `tutorias_uts_back`, y `npm run lint`, `npm run typecheck` y `npm test` en `tutorias_uts_mobile`; corregir todo error
+- [X] T054 Verificar que ningún componente nuevo contiene textos fijos, colores hexadecimales, nombres de fuente ni íconos fuera del registro (pruebas existentes en `tutorias_uts_mobile/src/__tests__/`), y revisar manualmente objetivos de 48 px, ícono en cada botón y 16 px entre botones apilados
 - [ ] T055 Recorrer `specs/006-cae-configuration/quickstart.md` de punta a punta en español e inglés, incluida la medición de SC-001 (menos de 5 minutos) y las comprobaciones de seguridad
-- [ ] T056 Ejecutar la skill `feature-done-check` y atender sus observaciones antes de abrir el Pull Request
+- [X] T056 Ejecutar la skill `feature-done-check` y atender sus observaciones antes de abrir el Pull Request
 
 ---
 
