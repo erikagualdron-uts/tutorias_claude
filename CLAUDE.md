@@ -73,7 +73,7 @@ npm run typecheck            # verificación de tipos
 - Logo y recursos de la UTS desde `mobile/assets/brand/`, sin modificarlos.
 - Tipografía corporativa **Myriad Pro** (Regular, Semibold, Bold) y Source Code Pro para código, solo mediante los tokens `fonts` del tema. Nunca escribir nombres de fuente ni `fontWeight` en componentes.
 - Campos de texto siempre con relleno y borde tenue (nunca sin borde).
-- Decoración solo con el patrón de hojas, plumas y libros (`BrandPattern`); nada de círculos o arcos geométricos.
+- Decoración solo con el patrón de hojas, plumas y libros (`BrandPattern`); nada de círculos o arcos geométricos. Única excepción: el anillo giratorio del `BrandLoader`, que es retroalimentación funcional y no decoración (D-080).
 - Nombre oficial: **Institución Universitaria Tecnológica de Santander – UTS** (corto: UTS). Ya no se usa "Unidades Tecnológicas".
 
 ## Forma de trabajar

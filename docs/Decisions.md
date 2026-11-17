@@ -279,16 +279,28 @@
 - **Descartado:** Un solo repositorio con carpetas `backend/` y `mobile/`.
 
 ### D-078 · Loader propio de la marca: un ícono por iteración y fases de espera
-- **Estado:** Implementada (spec 007)
+- **Estado:** Implementada (spec 007); en parte reemplazada por D-080 (anillo giratorio y sacudida; ya no se prohíben los círculos para el loader)
 - **Decisión:** Los indicadores de carga de la app son el componente `BrandLoader`: un solo ícono de la marca a la vez que cambia en cada iteración en el orden libro → pluma → hoja → libro (los mismos íconos de `BrandPattern`, ver D-049). Cada iteración dura 900 ms (aparece 250, se sostiene 400, se desvanece 250) y solo usa fundidos; con "reducir movimiento" el ícono cambia sin animación. En pantallas y áreas de contenido se muestra por fases: de 0 a 300 ms nada, de 300 a 1000 ms el loader, y pasados 1000 ms se agrega el aviso "Cargando… Esto está tardando más de lo normal."; solo aparece en la primera carga, no en actualizaciones en segundo plano. Los botones en carga muestran el loader compacto (20 px) de inmediato y sin aviso. Reemplaza al `ActivityIndicator`; las listas y tarjetas pueden seguir usando skeletons. No dibuja círculos ni arcos.
 - **Motivo:** Pedido del equipo tras probar en el emulador: el spinner del sistema se ve ajeno a la identidad institucional, y `Design.md` ya prohíbe la decoración geométrica. Un ícono que rota entre libro, pluma y hoja lo hace único. Las fases evitan destellos en cargas rápidas y avisan cuando una carga se demora.
 - **Descartado:** Mantener el spinner del sistema; un spinner circular propio (sería una figura geométrica); mostrar los tres íconos a la vez; mostrar el loader siempre de inmediato (parpadea en cargas rápidas).
 
 ### D-079 · Fechas de calendario: se eligen y se muestran como dd/mm/YYYY
-- **Estado:** Aceptada (pendiente de implementar con el ciclo SDD: `/speckit-specify`)
+- **Estado:** Aceptada e implementada (spec 008)
 - **Decisión:** Los campos de día de calendario (inicio y fin de un periodo) se eligen en un selector de fecha del sistema (`@react-native-community/datetimepicker`, compatible con Expo Go) detrás del componente `DateField`; no se escriben a mano. Se muestran como dd/mm/YYYY en español e inglés, también en los listados. El valor interno y el de la API siguen siendo `YYYY-MM-DD`, sin conversión de zona horaria. El selector bloquea fechas que rompen una regla (la fecha de fin debe ser posterior a la de inicio) y el servidor sigue validando.
 - **Motivo:** Pedido del equipo tras probar en el emulador: escribir `AAAA-MM-DD` es incómodo y propenso a errores. Sustituye al campo de texto de la tarea T023 y a la nota R-8 de la spec 006.
 - **Descartado:** Campo de texto con formato dd/mm/YYYY (admite fechas mal escritas); formato según el idioma del dispositivo (se pidió un formato fijo).
+
+### D-080 · Loader v2: anillo giratorio y sacudida suave de entrada y salida
+- **Estado:** Aceptada (pendiente de implementar con el ciclo SDD; la implementación actual de la spec 007 todavía no tiene el anillo ni la sacudida)
+- **Decisión:** El `BrandLoader` rodea el ícono con un anillo giratorio (pista tenue más un arco de 90° que da una vuelta por segundo; 64 px en el tamaño regular y 28 px en el compacto) y entra y sale con una sacudida lateral suave (entrada de 350 ms y salida de 250 ms, de unos 6 px y con amortiguación) mientras se desvanece. La sacudida no se usa en los botones ni antes de los 300 ms de espera. Con "reducir movimiento" no hay sacudida ni giro: el anillo queda fijo y su arco pulsa, el ícono cambia sin fundido y la entrada y la salida son un fundido de 150 ms. La secuencia libro → pluma → hoja, las fases de espera y el aviso de demora de D-078 se mantienen.
+- **Motivo:** Pedido del equipo tras probar el loader en el emulador: hace falta una señal visual clara de que la app está trabajando y una entrada y salida más suaves. Esto revierte la parte de D-078 que prohibía círculos y arcos: el anillo es retroalimentación funcional, no decoración, así que no contradice la regla de `Design.md` contra la decoración geométrica y queda como su única excepción.
+- **Descartado:** Puntos orbitando alrededor del ícono; tres puntos pulsantes debajo; rebote de escala o giro leve como animación de entrada y salida.
+
+### D-081 · Días de calendario con utilidades propias, sin librería de fechas
+- **Estado:** Aceptada e implementada (spec 008)
+- **Decisión:** Los días de calendario (sin hora) son texto `YYYY-MM-DD` y se manejan con un único módulo, `src/date/day.ts` (`isValidDay`, `parseDay`, `formatDay`, `toDay`, `dayToDate`, `addDays`, `compareDays`, `todayInBogota`). No se agrega dayjs, date-fns ni otra librería de fechas. Al selector del sistema se le entrega un `Date` a mediodía local y de él se leen solo el año, el mes y el día locales. "Hoy" se calcula en `America/Bogota`. En iOS el selector va en una hoja inferior propia (`DatePickerSheet`) con Confirmar y Cancelar, porque el selector del sistema no tiene botones y sin ellos no se podría cancelar conservando el valor.
+- **Motivo:** El día de calendario no tiene hora ni zona; tratarlo como texto evita los corrimientos de un día por zona horaria o cambio de horario. Solo se necesitan ocho funciones pequeñas y probadas (en tres zonas horarias), que no justifican una dependencia. Cumple la regla de `Conventions.md` de tener una sola vía de fechas.
+- **Descartado:** dayjs o date-fns (dependencia para pocas operaciones); `Date` en UTC o `toISOString().slice(0, 10)` (dan el día UTC, que cerca de la medianoche no es el elegido); selector en línea dentro del formulario (ocupa pantalla); aplicar el valor al girar la rueda de iOS (no habría cómo cancelar).
 
 ---
 

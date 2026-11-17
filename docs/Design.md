@@ -174,7 +174,7 @@ Animations make the app feel smooth, never slow. Use `react-native-reanimated`, 
 - **Screen transitions:** native stack slide; modals and sheets rise from the bottom.
 - **State changes:** badges, progress bars and capacity bars animate their change over 250ms. Numbers in metric cards count up once on first load.
 - **Skeletons:** shimmer loop of 1.2s in `Screen` and `Card` tones.
-- **Brand loader:** one brand icon at a time (book, feather, leaf), 900ms per icon with fades only (see Loader); instant swap with reduce motion.
+- **Brand loader:** one brand icon at a time (book, feather, leaf), 900ms per icon, inside a ring that spins once per second, with a smooth sideways shake of 6px when it enters (350ms) and leaves (250ms) (see Loader); with reduce motion, no shake or spin, an instant icon swap and a pulsing ring.
 - **Haptics:** light impact on primary actions; success, warning and error notification haptics after enrolling, cancelling and failed actions.
 - **Reduce motion:** when the system setting is on, remove movement, shimmer and count-up, and keep only fades.
 - **Performance:** animations run on the UI thread; keep 60 fps. No animation is allowed to delay a user action.
@@ -187,7 +187,7 @@ The app must feel institutional. The official assets come from the UTS corporate
 - **Where it appears:** splash, login, password recovery and change-password screens, profile or About screen, email headers, and (as a single-color silhouette) the Android notification icon.
 - **Where it does not:** repeated on every screen or inside cards.
 - **Institutional palette:** primary green, deep green, lime and cream from the Colors section. Use them in gradients and shapes before introducing any other color.
-- **Signature details:** a 4px lime line under hero titles, and the Brand pattern (below) over the green gradient headers. Geometric shapes such as circles, arcs or blobs are not used as decoration.
+- **Signature details:** a 4px lime line under hero titles, and the Brand pattern (below) over the green gradient headers. Geometric shapes such as circles, arcs or blobs are not used as decoration; the only exception is the functional loading ring of the Brand loader (D-080).
 - **Photography:** only authorized campus images, always under a deep-green overlay at 60% when text sits on top.
 - **Naming:** the app is called "UTS Tutorías". The official name of the institution is **Institución Universitaria Tecnológica de Santander – UTS** (Resolución MEN 019103 of 23 July 2026; the acronym UTS is kept). The full name appears in the login footer, the About screen and emails; in short texts use "UTS". The former name "Unidades Tecnológicas de Santander" is not used anywhere in the app.
 
@@ -243,7 +243,7 @@ Every text field must read clearly as a field: it always has **both a fill and a
 - **Disabled:** 60% opacity, no glow.
 - **Same style for:** textareas (grow up to 6 lines, counter inside the bottom-right corner), dropdown triggers (with a chevron), the search field and the chat composer.
 - **Passwords** have a show/hide toggle. **Dropdowns** open as bottom sheets with a searchable list (values come from the administrable lists).
-- **Date fields** (calendar days such as the start and end of an academic period): same look as any input, with a leading calendar icon. They show the date as **dd/mm/YYYY** in both languages and the user **picks** it from the system date picker (Android dialog, iOS bottom sheet); the field is not typed by hand, so an invalid date cannot be entered. The chosen day is kept as `YYYY-MM-DD` for the API and never goes through a time zone conversion. When a rule depends on another field (an end date must be after the start date), the picker blocks the dates that break it and the rule is still explained below the field.
+- **Date fields** (calendar days such as the start and end of an academic period): same look as any input, with a leading calendar icon. They show the date as **dd/mm/YYYY** in both languages and the user **picks** it from the system date picker (Android dialog; iOS bottom sheet with Confirm and Cancel buttons, 16px apart; cancelling keeps the previous value); the field is not typed by hand, so an invalid date cannot be entered. The chosen day is kept as `YYYY-MM-DD` for the API and never goes through a time zone conversion. When a rule depends on another field (an end date must be after the start date), the picker blocks the dates that break it and the rule is still explained below the field.
 - **Contrast note:** the border is intentionally soft (about 1.6:1 on white). The field is identified by its fill, label and icon together. If the institution requires a strict 3:1 boundary, use #8C968A as the border color.
 
 ### Chips and segmented controls
@@ -263,17 +263,19 @@ Dialogs: 20px radius, Level 3, max 320px wide, title + body + two buttons (cance
 Bottom, above the tab bar. #132F20 fill, white text, 8px radius, 4s. Success confirmations only; errors that need action use banners or inline messages.
 
 ### Loader (BrandLoader)
-The app's own loading indicator replaces the system spinner everywhere (`ActivityIndicator` is not used). It is a single brand icon that changes on every iteration (an open book, then a feather, then a leaf, and back to the book), so loading feels institutional and unique. It reuses the icons of the Brand pattern (see D-049 for why `mdi` is allowed) and never draws circles or arcs.
+The app's own loading indicator replaces the system spinner everywhere (`ActivityIndicator` is not used). It is a single brand icon that changes on every iteration (an open book, then a feather, then a leaf, and back to the book), surrounded by a spinning ring that says "loading", and it enters and leaves with a smooth sideways shake. It reuses the icons of the Brand pattern (see D-049 for why `mdi` is allowed). The ring is functional feedback, not decoration, so it is the one allowed use of a circle in the app (D-080).
 
-- **Sequence:** one icon at a time, always in the same order: open book → feather → leaf → open book… Each iteration lasts 900ms: fade in 250ms, hold 400ms, fade out 250ms, and the next icon starts right after. The loop restarts from the book whenever the loader mounts.
-- **Waiting phases** (screens and content areas, counted from the start of the load): 0 to 300ms nothing is shown (a fast load never shows a flash); 300 to 1000ms the loader alone; after 1000ms the loader stays and a message appears below it: `Cargando… Esto está tardando más de lo normal.` / `Loading… This is taking longer than usual.` (Body style, #575756, centered, text from the translation files). The loader and the message leave together when the load ends or fails.
-- **Buttons:** a button in loading state shows the compact loader immediately, with no 300ms wait and no message, because the person has just pressed it and needs instant feedback.
+- **Sequence:** one icon at a time, always in the same order: open book → feather → leaf → open book… Each iteration lasts 900ms: fade in 250ms, hold 400ms, fade out 250ms, and the next icon starts right after. The loop restarts from the book whenever the loader appears.
+- **Ring:** a thin circle around the icon made of a faint track and a moving arc. Track: the icon color at 20% opacity (derived). Arc: the icon color, a quarter of the circle (90°), round ends, turning once per second at constant speed. Regular size: 64px across, 3px stroke; compact size: 28px across, 2px stroke. The icon stays centered and upright inside it; the ring never touches the message below.
+- **Entrance and exit shake:** when the loader appears (after the waiting phase) and when it leaves, the whole loader (icon and ring) moves sideways in a smooth, damped shake while it fades. Entrance: 350ms, offsets 0 → -6px → +6px → -3px → +3px → 0 with the standard easing, opacity 0 → 100%. Exit: 250ms, offsets 0 → +6px → -6px → +3px → 0, opacity 100% → 0%. The exit plays while the content is already showing and never delays it.
+- **Waiting phases** (screens and content areas, counted from the start of the load): 0 to 300ms nothing is shown (a fast load never shows a flash or a shake); 300 to 1000ms the loader alone; after 1000ms the loader stays and a message appears below it: `Cargando… Esto está tardando más de lo normal.` / `Loading… This is taking longer than usual.` (Body style, #575756, centered, text from the translation files). The loader and the message leave together when the load ends or fails.
+- **Buttons:** a button in loading state shows the compact loader (icon and ring) immediately, with no 300ms wait, no shake and no message, because the person has just pressed it and needs instant feedback. It must fit inside the button without changing its size.
 - **First load only:** the loader appears while a screen has no data yet. Background refreshes of data that is already visible never show it or hide the content.
-- **Look:** the icon centered, in #34531F (white on filled buttons and on dark surfaces). No ring, track or background shape around it.
-- **Sizes:** 48px for a full screen or a content area, 20px compact (inside buttons and inline rows).
-- **Motion:** only fades, no movement or scaling. With reduce motion, the icon changes every 900ms with no fade (instant swap); the phases and the message stay the same.
+- **Look:** the icon and the ring in #34531F on light surfaces; the near-white text color on dark surfaces (never lime) and white on filled buttons. No background shape behind it.
+- **Sizes:** the icon is 48px (regular, screens and content areas) or 20px (compact, buttons and inline rows); the ring adds 8px around the icon on each side (64px and 28px across).
+- **Motion:** the icons fade; the ring spins; the loader shakes only when it enters and leaves. With reduce motion: no shake and no spinning; the icon changes every 900ms with no fade (instant swap), the ring stays still and its arc pulses between 40% and 100% opacity every 1.2s so the app still looks busy, and the entrance and exit are a 150ms fade. The phases and the message stay the same.
 - **Where:** full-screen and content-area loading, and the loading state of buttons. List and card layouts may still use skeleton shapes (see States).
-- **Accessibility:** one element with the role `progressbar`, the label `Loading…` from the translation files and the busy state; the icon is hidden from screen readers and the label does not change with the icon. The delay message is announced once when it appears.
+- **Accessibility:** one element with the role `progressbar`, the label `Loading…` from the translation files and the busy state; the icon and the ring are hidden from screen readers and the label does not change with the icon. The delay message is announced once when it appears.
 - **Component:** one `BrandLoader` component with a `size` prop (`regular` or `compact`) and an optional `color`; no animation or timer runs while it is not mounted.
 
 ### Avatars
@@ -439,7 +441,7 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 - Do keep 16px between stacked buttons.
 - Do keep animations short, on the UI thread, and respect the reduce-motion setting.
 - Don't use any other icon library, emoji as icons, or a modified UTS logo.
-- Don't use geometric shapes (circles, arcs, blobs) as decoration; use the Brand pattern.
+- Don't use geometric shapes (circles, arcs, blobs) as decoration; use the Brand pattern. The loading ring of the Brand loader is feedback, not decoration, and is allowed.
 - Do give every text field a fill and a soft border so it reads as an input.
 - Do keep student schedules read-only; actions on sessions belong to teachers and the CAE.
 - Don't expose temporary passwords or SMTP passwords after the moment of creation or saving.
