@@ -266,12 +266,15 @@ Bottom, above the tab bar. #132F20 fill, white text, 8px radius, 4s. Success con
 The app's own loading indicator replaces the system spinner everywhere (`ActivityIndicator` is not used). It is a single brand icon that changes on every iteration (an open book, then a feather, then a leaf, and back to the book), so loading feels institutional and unique. It reuses the icons of the Brand pattern (see D-049 for why `mdi` is allowed) and never draws circles or arcs.
 
 - **Sequence:** one icon at a time, always in the same order: open book → feather → leaf → open book… Each iteration lasts 900ms: fade in 250ms, hold 400ms, fade out 250ms, and the next icon starts right after. The loop restarts from the book whenever the loader mounts.
-- **Look:** the icon centered, in #34531F (white on filled buttons and on dark surfaces). No ring, track, label or background shape around it.
+- **Waiting phases** (screens and content areas, counted from the start of the load): 0 to 300ms nothing is shown (a fast load never shows a flash); 300 to 1000ms the loader alone; after 1000ms the loader stays and a message appears below it: `Cargando… Esto está tardando más de lo normal.` / `Loading… This is taking longer than usual.` (Body style, #575756, centered, text from the translation files). The loader and the message leave together when the load ends or fails.
+- **Buttons:** a button in loading state shows the compact loader immediately, with no 300ms wait and no message, because the person has just pressed it and needs instant feedback.
+- **First load only:** the loader appears while a screen has no data yet. Background refreshes of data that is already visible never show it or hide the content.
+- **Look:** the icon centered, in #34531F (white on filled buttons and on dark surfaces). No ring, track or background shape around it.
 - **Sizes:** 48px for a full screen or a content area, 20px compact (inside buttons and inline rows).
-- **Motion:** only fades, no movement or scaling. With reduce motion, the icon changes every 900ms with no fade (instant swap).
+- **Motion:** only fades, no movement or scaling. With reduce motion, the icon changes every 900ms with no fade (instant swap); the phases and the message stay the same.
 - **Where:** full-screen and content-area loading, and the loading state of buttons. List and card layouts may still use skeleton shapes (see States).
-- **Accessibility:** one element with the role `progressbar`, the label `Loading…` from the translation files and the busy state; the icon is hidden from screen readers and the label does not change with the icon.
-- **Component:** one `BrandLoader` component with a `size` prop (`regular` or `compact`) and an optional `color`; no animation runs while it is not mounted.
+- **Accessibility:** one element with the role `progressbar`, the label `Loading…` from the translation files and the busy state; the icon is hidden from screen readers and the label does not change with the icon. The delay message is announced once when it appears.
+- **Component:** one `BrandLoader` component with a `size` prop (`regular` or `compact`) and an optional `color`; no animation or timer runs while it is not mounted.
 
 ### Avatars
 Circle, 40px in lists and 48px in conversation lists. Fallback: initials on #F2F4EF with #132F20 text.
@@ -411,7 +414,7 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 - **Settings**: grouped list rows (Data, Dropdown lists, Academic periods, Institutional emails, SMTP) with chevrons. SMTP form: host, port, user, password (masked, never shown after saving), from address, and a tonal "Send test email" button with inline success or error result. Save is a Primary button pinned at the bottom.
 
 ## States
-- **Loading**: the brand loader (see Loader) for screens and content areas, or skeleton shapes in #F2F4EF with a slow shimmer for list and card layouts; never a blank screen. Buttons show the compact brand loader and stay the same width while submitting.
+- **Loading**: the brand loader (see Loader) for screens and content areas, or skeleton shapes in #F2F4EF with a slow shimmer for list and card layouts; never a blank screen for more than 300ms (the screen background stays and the loader starts after 300ms, see Loader). Buttons show the compact brand loader and stay the same width while submitting.
 - **Empty**: 48px #575756 icon, one-line title, one-line explanation, and a Primary or Tonal button when there is a next step (e.g. `Browse modules`).
 - **Error**: inline message with a "Try again" tonal button. Network failure shows a banner `You are offline` (#F8E9D4).
 - **Rule feedback**: every blocked action explains the rule in plain language (capacity, conflict, cancellation window, domain). The text comes from the translation files.

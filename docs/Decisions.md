@@ -185,6 +185,7 @@
 - **Estado:** Aceptada
 - **Decisión:** La decoración de las pantallas de acceso, el splash y las tarjetas destacadas usa un patrón de íconos de hoja, pluma y libro (inspirados en los elementos del escudo), con el componente `BrandPattern`. Se permite el set `mdi` solo para estos íconos decorativos si `solar` no tiene equivalente.
 - **Motivo:** Dar identidad institucional sin figuras geométricas genéricas y sin reproducir ni alterar el escudo oficial.
+- **Nota (D-078):** los mismos íconos de hoja, pluma y libro se usan también, de forma funcional y no decorativa, en el loader de la marca (`BrandLoader`); siguen saliendo del registro de íconos y la regla del set `mdi` no cambia.
 - **Descartado:** Círculos y arcos decorativos; usar el escudo como textura.
 
 ### D-050 · Campos de texto con relleno y borde tenue
@@ -277,11 +278,11 @@
 - **Motivo:** Es la estructura real del trabajo; documentarla evita que las specs y las guías apunten a carpetas que no existen.
 - **Descartado:** Un solo repositorio con carpetas `backend/` y `mobile/`.
 
-### D-078 · Loader propio de la marca: un ícono por iteración
-- **Estado:** Aceptada (pendiente de implementar con el ciclo SDD: `/speckit-specify`)
-- **Decisión:** Los indicadores de carga de la app son el componente `BrandLoader`: un solo ícono de la marca a la vez que cambia en cada iteración en el orden libro → pluma → hoja → libro (los mismos íconos de `BrandPattern`, ver D-049). Cada iteración dura 900 ms (aparece 250, se sostiene 400, se desvanece 250) y solo usa fundidos; con "reducir movimiento" el ícono cambia sin animación. Reemplaza al `ActivityIndicator` en pantallas, áreas de contenido y botones en carga (versión compacta de 20 px); las listas y tarjetas pueden seguir usando skeletons. No dibuja círculos ni arcos.
-- **Motivo:** Pedido del equipo tras probar en el emulador: el spinner del sistema se ve ajeno a la identidad institucional, y `Design.md` ya prohíbe la decoración geométrica. Un ícono que va rotando entre libro, pluma y hoja hace el loader único y propio de la UTS.
-- **Descartado:** Mantener el spinner del sistema; un spinner circular propio (sería una figura geométrica); mostrar los tres íconos a la vez (la propuesta del equipo es uno por iteración).
+### D-078 · Loader propio de la marca: un ícono por iteración y fases de espera
+- **Estado:** Implementada (spec 007)
+- **Decisión:** Los indicadores de carga de la app son el componente `BrandLoader`: un solo ícono de la marca a la vez que cambia en cada iteración en el orden libro → pluma → hoja → libro (los mismos íconos de `BrandPattern`, ver D-049). Cada iteración dura 900 ms (aparece 250, se sostiene 400, se desvanece 250) y solo usa fundidos; con "reducir movimiento" el ícono cambia sin animación. En pantallas y áreas de contenido se muestra por fases: de 0 a 300 ms nada, de 300 a 1000 ms el loader, y pasados 1000 ms se agrega el aviso "Cargando… Esto está tardando más de lo normal."; solo aparece en la primera carga, no en actualizaciones en segundo plano. Los botones en carga muestran el loader compacto (20 px) de inmediato y sin aviso. Reemplaza al `ActivityIndicator`; las listas y tarjetas pueden seguir usando skeletons. No dibuja círculos ni arcos.
+- **Motivo:** Pedido del equipo tras probar en el emulador: el spinner del sistema se ve ajeno a la identidad institucional, y `Design.md` ya prohíbe la decoración geométrica. Un ícono que rota entre libro, pluma y hoja lo hace único. Las fases evitan destellos en cargas rápidas y avisan cuando una carga se demora.
+- **Descartado:** Mantener el spinner del sistema; un spinner circular propio (sería una figura geométrica); mostrar los tres íconos a la vez; mostrar el loader siempre de inmediato (parpadea en cargas rápidas).
 
 ### D-079 · Fechas de calendario: se eligen y se muestran como dd/mm/YYYY
 - **Estado:** Aceptada (pendiente de implementar con el ciclo SDD: `/speckit-specify`)
