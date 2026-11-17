@@ -102,6 +102,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - Un estudiante puede **volver a inscribirse** a un módulo que canceló, mientras no se haya llenado el cupo máximo.
 - El CAE solo puede **cambiar el salón** de un módulo si la capacidad del nuevo salón es **mayor o igual** a la cantidad de estudiantes inscritos. De lo contrario, el sistema bloquea el cambio.
 - Un salón o un docente no puede tener dos módulos en el mismo horario dentro del periodo; terminar a la hora en que otro empieza no es un cruce.
+- Los horarios de un módulo van **de 6:00 a. m. a 6:00 p. m.** (hora de Bogotá): ninguno puede empezar antes ni terminar después. El límite vive en configuración (`MODULE_EARLIEST_TIME` y `MODULE_LATEST_TIME`) y se aplica en el backend (ver D-089).
 - Un módulo puede tener **varios horarios semanales** (por ejemplo martes y jueves). El CAE solo cambia esos horarios mientras el módulo **no tenga inscritos**; con inscritos, la hora de una sesión o de las futuras la cambia el docente (D-084).
 - El CAE solo elimina (lógico) un módulo **sin inscritos**. Cambiar el docente o el salón se aplica a las sesiones futuras y las pasadas conservan lo que tenían (D-086).
 - Los módulos de un periodo **Cerrado** son de solo lectura, también frente a los festivos.

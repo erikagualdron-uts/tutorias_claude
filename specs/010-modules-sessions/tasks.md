@@ -231,6 +231,7 @@ description: "Task list for Módulos y sesiones (CAE)"
 - [ ] T080 Verificar que ningún componente nuevo contiene textos fijos, colores hexadecimales, nombres de fuente ni íconos fuera del registro (pruebas existentes en `tutorias_uts_mobile/src/__tests__/`), que `es.json` y `en.json` tienen las mismas claves, y revisar manualmente objetivos de 48 px, ícono a la izquierda en cada botón y 16 px entre botones apilados
 - [ ] T081 Recorrer `specs/010-modules-sessions/quickstart.md` de punta a punta en español e inglés, con modo oscuro, fuente grande y "reducir movimiento", incluida la medición de SC-001 y SC-010, y anotar los resultados con fecha en la sección "Resultados"
 - [ ] T082 Ejecutar la skill `feature-done-check`, atender sus observaciones, marcar `Status` de la spec como implementada, comprobar que D-087 y la spec 011 dejan escrito que la inscripción no se publica sin las notificaciones (spec 013) o sin un consumidor del outbox, y abrir el Pull Request
+- [X] T083 Limitar los horarios de módulos a 06:00–18:00 (D-089): variables `MODULE_EARLIEST_TIME` y `MODULE_LATEST_TIME` en `tutorias_uts_back/src/config/env.ts` y `.env.example`, validación y código `MODULE_SCHEDULE_OUT_OF_HOURS` en `schedules.service.ts`, selector y esquema de la app, textos es/en, contrato, spec, `Context.md` y `Decisions.md`; pruebas en `modules.e2e-spec.ts`, `modules-edit.e2e-spec.ts` y `schemas.test.ts`
 
 ---
 

@@ -344,6 +344,12 @@
 - **Motivo:** Las reglas de salones de la spec 006 ya cubren los casos que dejarían clases sin salón en el periodo activo; para el docente, bloquear su baja amplía la spec 001 y puede impedir desactivar cuentas que deben cerrarse de inmediato. Marcarlo da al CAE lo que necesita para reasignar.
 - **Descartado:** Impedir desactivar a un docente con módulos en el periodo activo; reasignar o cancelar sus sesiones automáticamente (decidir por el CAE).
 
+### D-089 · Horario de los módulos: de 6:00 a. m. a 6:00 p. m.
+- **Estado:** Aceptada e implementada (spec 010; pedida por el equipo el 2026-11-17)
+- **Decisión:** Un horario semanal de módulo no puede empezar antes de las 06:00 ni terminar después de las 18:00 (hora de Bogotá; terminar a las 18:00 en punto sí se permite). El backend lo valida al crear el módulo y al reemplazar horarios y responde `422 MODULE_SCHEDULE_OUT_OF_HOURS` con `details.earliest` y `details.latest`. Los límites son configuración (`MODULE_EARLIEST_TIME` y `MODULE_LATEST_TIME`, por defecto `06:00` y `18:00`); la app solo ofrece horas dentro de esa ventana y repite la regla en el formulario.
+- **Motivo:** La institución dicta tutorías en horario diurno; sin límite se podían crear módulos de madrugada o de noche, y los límites de horas no se escriben fijos en el código (CLAUDE.md).
+- **Descartado:** Límite solo en la app (el servidor es quien aplica las reglas); límite fijo en el código; reutilizar `MODULE_SCHEDULE_INVALID` (no diría al CAE cuál es la ventana permitida).
+
 ---
 
 ## Plantilla para nuevas decisiones

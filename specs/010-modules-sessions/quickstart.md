@@ -48,4 +48,12 @@ Deben cubrir, como mínimo: módulo con un horario y con dos; hora de fin no pos
 
 ## Resultados
 
-_(Se completa al cerrar la funcionalidad.)_
+**2026-11-17 · Verificaciones automáticas** (incluye el límite de horario 06:00–18:00, D-089)
+
+| Repositorio | Resultado |
+|---|---|
+| `tutorias_uts_back` | 47 pruebas unitarias y 222 e2e pasan; lint y tipos limpios |
+| `tutorias_uts_mobile` | 49 suites y 336 pruebas pasan; lint y tipos limpios; paridad es/en |
+| `tutorias_uts_db` | migración y seed aplicados y repetibles |
+
+**Pendiente (manual, necesita emulador):** recorrido 1 a 11 en español e inglés, modo oscuro, fuente grande y "reducir movimiento", con los tiempos de SC-001 y SC-010 y la comprensión de bloqueos de SC-007 (T080 y T081).

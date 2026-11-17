@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-17
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Spec 010: Módulos y sesiones (CAE). Es la siguiente funcionalidad natural y la base de todo lo demás. Incluye: CRUD de módulos con docente, salón y horario; generación de sesiones semanales; validación de que salón y docente no se crucen; cupo igual a la capacidad del salón; cambio de salón con la regla de capacidad; respeto al periodo cerrado."
 
@@ -152,7 +152,7 @@ El CAE mantiene los festivos en los que no se dictan tutorías. Puede importar l
 
 - **FR-001**: Solo el rol CAE (SUPERADMIN) MUST poder crear, editar, eliminar y reasignar módulos; el servidor MUST rechazar a cualquier otro rol en cada operación.
 - **FR-002**: Un módulo MUST pertenecer a un periodo Próximo o Activo, y tener nombre, descripción opcional, docente, salón y al menos un horario semanal.
-- **FR-003**: Un horario semanal MUST definir día de la semana, hora de inicio y hora de fin en hora de Bogotá, con la fin posterior al inicio y en el mismo día. Un módulo MAY tener varios horarios semanales y estos no pueden solaparse entre sí.
+- **FR-003**: Un horario semanal MUST definir día de la semana, hora de inicio y hora de fin en hora de Bogotá, con la fin posterior al inicio y en el mismo día. El horario MUST quedar dentro de la franja configurada, por defecto de 06:00 a 18:00 (inicio no anterior a 06:00 y fin no posterior a 18:00); fuera de ella se rechaza indicando la franja (D-089). Un módulo MAY tener varios horarios semanales y estos no pueden solaparse entre sí.
 - **FR-004**: Al crear un módulo, el sistema MUST generar una sesión por cada ocurrencia semanal de cada horario, de la fecha de inicio a la de fin del periodo, guardadas en UTC.
 - **FR-005**: Si el periodo ya está en curso, el sistema MUST generar solo las sesiones que aún no han comenzado.
 - **FR-005a**: Al generar o regenerar sesiones, el sistema MUST omitir las fechas registradas como festivo.

@@ -117,6 +117,7 @@ Se escribe en la misma transacción que el cambio (R-10). No se borra (no tiene 
 
 | Code | HTTP | Cuándo |
 |---|---|---|
+| `MODULE_SCHEDULE_OUT_OF_HOURS` | 422 | Un horario empieza antes de `MODULE_EARLIEST_TIME` (06:00) o termina después de `MODULE_LATEST_TIME` (18:00); `details`: `earliest` y `latest` |
 | `MODULE_SCHEDULE_INVALID` | 422 | Hora de fin no posterior al inicio, día fuera de 1 a 7, horas fuera de rango o sin horarios |
 | `MODULE_SCHEDULE_SELF_OVERLAP` | 409 | Dos horarios del mismo módulo se solapan |
 | `MODULE_TEACHER_CONFLICT` | 409 | El docente tiene otro módulo solapado; `details` trae módulo, día y horas |

@@ -57,7 +57,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
         '422':
-          description: MODULE_SCHEDULE_INVALID (fin no posterior al inicio)
+          description: MODULE_SCHEDULE_INVALID (fin no posterior al inicio) o MODULE_SCHEDULE_OUT_OF_HOURS (fuera de la franja configurada, 06:00 a 18:00; `details` trae `earliest` y `latest`)
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
@@ -139,7 +139,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
         '422':
-          description: MODULE_SCHEDULE_INVALID (fin no posterior al inicio)
+          description: MODULE_SCHEDULE_INVALID (fin no posterior al inicio) o MODULE_SCHEDULE_OUT_OF_HOURS (fuera de la franja configurada, 06:00 a 18:00; `details` trae `earliest` y `latest`)
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
