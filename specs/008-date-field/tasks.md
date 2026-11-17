@@ -133,8 +133,8 @@ description: "Task list for Campo de fecha con selector"
 - [X] T030 [P] Actualizar `docs/Decisions.md` en el repositorio `Claude`: D-079 pasa de "pendiente de implementar" a "Implementada" (spec 008) y registrar D-080, "Fechas de calendario con utilidades propias, sin librería de fechas", con motivo (texto `YYYY-MM-DD` evita desfases de zona horaria, solo se necesitan ocho funciones pequeñas) y descartados (dayjs, date-fns, `Date` en UTC)
 - [X] T031 [P] Revisar `docs/Architecture.md`, `docs/Design.md` y `docs/Conventions.md`: citar `src/date/day.ts` como el módulo único de fechas de calendario, y confirmar que la sección Date fields de `Design.md` describe también la hoja de iOS con Confirmar y Cancelar; corregir solo lo que difiera
 - [X] T032 [P] Anotar en `specs/006-cae-configuration/tasks.md` (T023) y `research.md` (R-8) que el campo de texto `AAAA-MM-DD` fue sustituido por la spec 008 (D-079)
-- [ ] T033 Recorrer `specs/008-date-field/quickstart.md` en Android y en iOS (Expo Go), pasos 1 a 12, y anotar cualquier desvío
-- [ ] T034 Ejecutar `/feature-done-check` y atender los pendientes antes de unir la rama
+- [X] T033 Recorrer `specs/008-date-field/quickstart.md` en Android y en iOS (Expo Go), pasos 1 a 12, y anotar cualquier desvío
+- [X] T034 Ejecutar `/feature-done-check` y atender los pendientes antes de unir la rama
 
 ---
 
