@@ -17,7 +17,10 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 | Término | Significado |
 |---|---|
-| **Módulo** | Una tutoría académica. Tiene docente, salón, horario y estudiantes inscritos. |
+| **Módulo** | Una tutoría académica. Tiene docente, salón, horario semanal y estudiantes inscritos. Pertenece a un periodo académico. |
+| **Periodo académico** | Semestre en el que se dictan los módulos (ej. 2026-2), con fecha de inicio y fin. |
+| **Sesión** | Cada ocurrencia semanal de un módulo, en una fecha y hora concretas. |
+| **UTS** | Institución Universitaria Tecnológica de Santander (antes Unidades Tecnológicas de Santander). Cambió su carácter académico por la Resolución MEN 019103 del 23 de julio de 2026 y conserva la sigla UTS. |
 | **CAE** | Centro de Administración Estudiantil. Es quien administra la plataforma (rol SUPERADMIN). |
 | **PQRS** | Peticiones, quejas, reclamos y sugerencias. |
 | **Borrado lógico** | El registro no se elimina de la base de datos, solo se marca como eliminado. |
@@ -31,6 +34,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 1. **Configuración**
    - Datos generales: cantidad de salones, capacidad de personas por salón, etc.
    - Listas desplegables administrables.
+   - Periodos académicos (semestres): crear, definir fechas de inicio y fin, y cuál está activo.
    - Correos institucionales de docentes.
    - SMTP: configuración del servicio de envío de correos.
 2. **Módulos**
@@ -87,6 +91,9 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 ### Módulos, cupos y horarios
 - **Solo el CAE** crea módulos y define su docente, salón y horario.
+- Los módulos se organizan en un **listado por periodo académico** (semestre). El estudiante ve y se inscribe a los módulos del periodo activo.
+- Cada módulo **se repite semanalmente** en su día y hora durante todo el periodo. Cada semana es una **sesión** que puede cancelarse o reprogramarse de forma individual.
+- La inscripción es al módulo (todas sus sesiones del periodo).
 - El **cupo máximo** de un módulo se calcula automáticamente según la capacidad del salón asignado.
 - Al llegar al cupo, el sistema **bloquea** nuevas inscripciones.
 - Un estudiante **no puede inscribirse** a dos módulos que se crucen en horario.
@@ -148,4 +155,8 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 ## 10. Preguntas abiertas
 
-Ninguna por ahora. Agregar aquí las que surjan durante el desarrollo.
+- [ ] Cuando el docente cambia la hora o cancela, ¿afecta solo esa sesión (esa semana) o también las semanas restantes? *(Supuesto actual: solo esa sesión.)*
+- [ ] Cuando el estudiante cancela, ¿cancela su inscripción al módulo completo o solo su asistencia a una sesión? *(Supuesto actual: la inscripción al módulo.)*
+- [ ] Al reprogramar una sesión, ¿también se valida que no choque con otras tutorías de los estudiantes inscritos?
+- [ ] ¿Se excluyen festivos o semanas sin tutoría dentro del periodo?
+- [ ] ¿Un módulo puede tener más de un horario semanal (por ejemplo lunes y miércoles)? *(El modelo de datos ya lo permite.)*

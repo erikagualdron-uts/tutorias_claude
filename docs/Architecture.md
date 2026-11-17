@@ -76,6 +76,7 @@
     │   ├── teachers/
     │   ├── students/
     │   ├── rooms/         # salones y ubicaciones
+    │   ├── periods/       # periodos académicos (semestres)
     │   ├── modules/       # tutorías
     │   ├── enrollments/   # inscripciones
     │   ├── chat/
@@ -101,8 +102,10 @@
 | `TeacherProfile` | userId, nombres, datos de contacto |
 | `StudentProfile` | userId, nombres, programa |
 | `Room` | id, nombre, ubicación, capacidad, deletedAt |
-| `Module` | id, nombre, descripción, teacherId, roomId, status, cupo (derivado de `Room.capacidad`) |
-| `ModuleSession` | id, moduleId, startsAt, endsAt, status (SCHEDULED / CANCELLED) |
+| `AcademicPeriod` | id, nombre (ej. 2026-2), startsOn, endsOn, status (ACTIVE / CLOSED) |
+| `Module` | id, periodId, nombre, descripción, teacherId, roomId, status, cupo (derivado de `Room.capacidad`) |
+| `ModuleSchedule` | id, moduleId, dayOfWeek, startTime, endTime (horario semanal; un módulo puede tener varios) |
+| `ModuleSession` | id, moduleId, originalStartsAt, startsAt, endsAt, status (SCHEDULED / RESCHEDULED / CANCELLED) |
 | `Enrollment` | id, studentId, moduleId, status (ACTIVE / CANCELLED), createdAt |
 | `Conversation` | id, type (DIRECT / MODULE), moduleId?, createdAt |
 | `ConversationMember` | conversationId, userId, lastReadAt |
@@ -118,12 +121,22 @@ Notas:
 - Los borrados lógicos usan `deletedAt`; siempre se filtra por él en las consultas.
 - Todas las fechas se guardan en **UTC**. La app las muestra en la zona horaria `America/Bogota`.
 
+### Tutorías recurrentes por periodo
+
+- Un módulo pertenece a un `AcademicPeriod` y define su horario en `ModuleSchedule` (día de la semana y hora local).
+- Al crear el módulo, el backend **genera una `ModuleSession` por cada semana** del periodo (de `startsOn` a `endsOn`), convirtiendo la hora local de `America/Bogota` a UTC.
+- La `Enrollment` es al **módulo**, no a cada sesión: el estudiante queda inscrito en todas las sesiones del periodo.
+- Cancelar o reprogramar una sesión modifica solo esa `ModuleSession` (guarda `originalStartsAt` para trazabilidad) y notifica a los inscritos.
+- Si el CAE cambia salón o docente de un módulo, se aplica a las sesiones futuras.
+- Solo un periodo puede estar `ACTIVE` a la vez; el estudiante ve los módulos del periodo activo.
+- Al cerrar un periodo, sus módulos pasan a solo lectura.
+
 ## 6. Reglas críticas que se validan en el backend
 
 | Regla | Cómo se garantiza |
 |---|---|
 | Cupo máximo = capacidad del salón | Al inscribir: transacción con bloqueo de fila sobre el módulo, se cuenta la inscripción activa y se compara con `Room.capacidad`. |
-| Sin cruces de horario del estudiante | Antes de inscribir: consulta si ya tiene sesiones activas que se solapen. |
+| Sin cruces de horario del estudiante | Antes de inscribir: compara los `ModuleSchedule` de sus módulos activos del mismo periodo (mismo día y horas que se solapen). |
 | Sin cruces de salón ni docente | Al crear o mover un módulo o sesión: validación de disponibilidad. |
 | Cambio de salón | Solo si `nuevoSalón.capacidad >= inscritosActivos`. |
 | Cancelación del estudiante | Se rechaza si falta menos de **1 hora** para `startsAt`. |
@@ -187,7 +200,10 @@ Para Android, se usa el emulador de Android Studio sin ningún inconveniente.
 
 ## 13. Decisiones pendientes
 
-- [ ] ¿Las tutorías son **recurrentes semanalmente** o sesiones únicas? Esto define cómo se usa `ModuleSession`.
+- [ ] Alcance de los cambios del docente: ¿una sola sesión o las semanas restantes? (supuesto actual: una sola sesión)
+- [ ] Alcance de la cancelación del estudiante: ¿módulo completo o una sesión? (supuesto actual: inscripción al módulo)
+- [ ] ¿Se valida el cruce con los horarios de los estudiantes al reprogramar una sesión?
+- [ ] ¿Festivos o semanas sin tutoría dentro del periodo?
 - [ ] ¿Dónde se desplegará el backend?
 - [ ] ¿Se cuenta con Mac, iPhone físico o cuenta Apple Developer para la demo?
 - [ ] ¿Qué proveedor de SMTP usa la institución?

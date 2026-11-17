@@ -173,7 +173,36 @@
 ### D-047 · Elementos visuales de la universidad
 - **Estado:** Aceptada
 - **Decisión:** El logo oficial y los recursos de marca de la UTS se usan sin modificar, en splash, login, perfil y correos. Los demás elementos usan la paleta institucional.
-- **Pendiente:** La universidad debe entregar los archivos oficiales (logo a color, logo blanco, símbolo) y confirmar las reglas de uso del manual vigente.
+- **Pendiente:** La universidad debe entregar los archivos oficiales (logo a color, logo blanco, símbolo) y confirmar las reglas de uso del manual vigente. Con el cambio de carácter académico es posible que el logo y la paleta se actualicen: confirmar antes de publicar.
+
+### D-048 · Nuevo nombre de la institución
+- **Estado:** Aceptada
+- **Decisión:** La institución se llama **Institución Universitaria Tecnológica de Santander – UTS** (Resolución MEN 019103 del 23 de julio de 2026); en textos cortos, "UTS". La app sigue llamándose "UTS Tutorías". El nombre anterior ("Unidades Tecnológicas de Santander") no se usa en la app.
+- **Motivo:** La institución cambió su carácter académico y conserva la sigla.
+- **Pendiente:** Confirmar si los dominios de correo (`@uts.edu.co`, `@correo.uts.edu.co`) y el manual de identidad cambian con el Plan de Transición de la universidad.
+
+### D-049 · Patrón de marca con hojas, plumas y libros
+- **Estado:** Aceptada
+- **Decisión:** La decoración de las pantallas de acceso, el splash y las tarjetas destacadas usa un patrón de íconos de hoja, pluma y libro (inspirados en los elementos del escudo), con el componente `BrandPattern`. Se permite el set `mdi` solo para estos íconos decorativos si `solar` no tiene equivalente.
+- **Motivo:** Dar identidad institucional sin figuras geométricas genéricas y sin reproducir ni alterar el escudo oficial.
+- **Descartado:** Círculos y arcos decorativos; usar el escudo como textura.
+
+### D-050 · Campos de texto con relleno y borde tenue
+- **Estado:** Aceptada
+- **Decisión:** Todo campo tiene relleno (#F2F4EF sobre tarjeta blanca, blanco sobre fondo de pantalla) y borde de 1 px #C9D0C3, con ícono a la izquierda. En foco, borde de 2 px #4E7A2F con halo suave.
+- **Motivo:** Que se reconozcan claramente como campos editables.
+- **Nota:** El borde es tenue a propósito (aprox. 1.6:1); si se exige contraste estricto de 3:1, usar #8C968A.
+
+### D-067 · Implementación del patrón de marca y del splash (spec 003)
+- **Estado:** Aceptada
+- **Decisión:** `BrandPattern` usa listas fijas de ubicaciones (`header`: 14 íconos, `hero`: 3) y el registro `src/icons/` declara `mdi:leaf`, `mdi:feather` y `mdi:book-open-page-variant` como únicos íconos `mdi`; el plugin de Iconify empaqueta `solar` y `mdi`. El splash es una imagen estática (`assets/brand/splash-light.png` y `splash-dark.png`, logo blanco sin modificar sobre el degradado y el patrón) porque el splash nativo no dibuja componentes. Los correos no se tocan: hoy solo dicen "UTS Tutorías" y no nombran a la institución.
+- **Motivo:** Cumplir D-049 y D-050 sin romper la regla de "solo Iconify" ni agregar texto nuevo a los correos.
+- **Descartado:** SVG propio para el patrón; posiciones aleatorias por render.
+
+### D-068 · Variantes blancas del logo según el tema
+- **Estado:** Aceptada
+- **Decisión:** El logo de marca usa `logo-uts-no-bg-letras-blancas.png` (símbolo lima y letras blancas) en tema claro y `logo-uts-blanco.png` (todo blanco) en tema oscuro, siempre sobre el degradado verde y sin insignia blanca detrás. El logo a color queda para superficies blancas (correos).
+- **Motivo:** La cabecera es verde en ambos temas; el logo blanco sobre una insignia blanca no se veía.
 
 ---
 
@@ -195,12 +224,6 @@
 ### D-063 · Commits con Conventional Commits
 - **Estado:** Aceptada
 - **Decisión:** Formato `type(scope): description`, con ramas `NNN-feature-name` generadas por Spec Kit.
-
-### D-066 · Logo en un solo PNG a color y retiro de otras librerías de íconos
-- **Estado:** Aceptada
-- **Decisión:** La universidad entregó un único `logo-uts.png` a color (632x210, fondo transparente) en `mobile/assets/brand/`. Sobre el degradado verde va dentro de una insignia blanca de 16 px de radio; el splash usa fondo blanco (`#0B1710` en modo oscuro). Se retiran `@expo/vector-icons` y `expo-symbols`: todos los íconos son Iconify `solar`.
-- **Motivo:** El logo no se recolorea (`Design.md`) y su texto gris no se lee sobre verde oscuro. El manual de identidad está en `docs/brand/man-12.pdf`.
-- **Descartado:** Versión blanca dibujada por nosotros (prohibido); usar el logo directo sobre el degradado (ilegible). Si la universidad entrega `uts-logo-white.svg`, se reemplaza la insignia.
 
 ---
 

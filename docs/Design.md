@@ -7,6 +7,8 @@ The UTS institutional green is used for primary actions and active states. The l
 
 Three roles share one app: `SUPERADMIN` (CAE), `TEACHER`, `STUDENT`. Each role gets its own navigation and screens but the same components.
 
+The visual feel is **modern and smooth**: soft shadows, generous radii, subtle gradients in the institutional greens, fluid micro-animations and consistent line icons. The identity of the university is present through its official logo, colors and brand elements (see "University brand elements").
+
 ## Colors
 Source: UTS corporate identity manual. Colors marked *(brand)* come directly from the manual; colors marked *(derived)* were added to complete the system.
 
@@ -20,7 +22,14 @@ Source: UTS corporate identity manual. Colors marked *(brand)* come directly fro
 - **Surface Warm** (#F8E9D4): Announcements, important notices — UTS Cream *(brand, Pantone 451 C)*
 - **Text Primary** (#132F20): Titles, names, primary content — UTS Deep Green *(brand)*
 - **Text Secondary** (#575756): Metadata, timestamps, descriptions — Cool Gray 4 *(brand)*
-- **Border** (#E5E5E5): Card outlines, dividers
+- **Border** (#E5E5E5): Dividers, input outlines
+- **Screen** (#F2F4EF): Background of list and dashboard screens, so white cards stand out softly
+- **Card** (#FFFFFF): Cards, metric cards, sheets
+- **Gradient Brand** (#34531F → #132F20, 135°): Hero cards, login header, splash. Always paired with white text.
+- **Input Fill** (#F2F4EF): Fill of text fields placed on white cards. On the Screen background, fields use a white fill instead. *(derived)*
+- **Input Border** (#C9D0C3): 1px border of every text field, soft by design *(derived)*
+- **Input Border Focus** (#4E7A2F): 2px border when a field is focused *(derived)*
+- **Placeholder** (#767676): Placeholder text inside fields
 - **Success** (#2BA640): Available, resolved, active. Icon or fill only, not text on white.
 - **Warning** (#FB8C00): Last spots, in review, rescheduled. Icon or fill with #132F20 text, not text on white.
 - **Error** (#B3261E): Failures, blocked actions, cancellations *(derived)*
@@ -33,6 +42,7 @@ Source: UTS corporate identity manual. Colors marked *(brand)* come directly fro
 - **Text Primary** (#F2F4EF)
 - **Text Secondary** (#B3B3B3) *(brand, Cool Gray 5 C)*
 - **Border** (rgba(255,255,255,0.08))
+- **Input Fill** (#0B1710) with a 1px `rgba(255,255,255,0.16)` border; focus border #C3D730
 - Sent chat bubbles use #34531F with white text; received bubbles use #132F20.
 
 ### Chart palette
@@ -76,7 +86,14 @@ Roboto is used everywhere for its neutral versatility. Spanish text runs roughly
 Metadata lines use the separator " · " in this order: `Prof. Name · Mon 10:00–12:00 · Room 301`.
 
 ## Elevation
-Minimal. Level 0: flat with 1px #E5E5E5 border — default for cards. Level 1: 0 1px 2px rgba(0,0,0,0.1) — top app bar on scroll and bottom tab bar. Level 2: 0 4px 32px rgba(0,0,0,0.1) — menus and popovers. Level 3: 0 8px 40px rgba(0,0,0,0.2) — bottom sheets, dialogs, and modals. In dark mode, borders replace shadows (rgba(255,255,255,0.05)).
+Soft and layered. Shadows are tinted with the deep green (#132F20), never pure black, to keep the look warm and smooth.
+
+- **Level 0:** flat. Screen background, dividers, inputs.
+- **Level 1 (cards):** `0 2px 8px rgba(19,47,32,0.06)`. Default for cards and metric cards. No border.
+- **Level 2 (raised):** `0 8px 24px rgba(19,47,32,0.10)`. Hero cards, floating buttons, pressed-and-lifted states, menus and popovers.
+- **Level 3 (overlays):** `0 16px 48px rgba(19,47,32,0.18)`. Bottom sheets, dialogs and modals.
+
+On Android, map each level to the closest `elevation` value. In dark mode, shadows are replaced by a 1px `rgba(255,255,255,0.06)` border and a slightly lighter surface.
 
 ## Spacing
 - Base unit: 8px
@@ -89,12 +106,96 @@ Minimal. Level 0: flat with 1px #E5E5E5 border — default for cards. Level 1: 0
 - Tablets: lists become 2 columns from 600px width
 
 ## Border Radius
-- 2px: Small badges
 - 4px: Tooltips, message tail corner
-- 8px: Banners, inputs, metric cards, schedule blocks
-- 12px: Cards, bottom sheets (top corners 16px)
-- 16px: Chat bubbles
+- 8px: Small badges, schedule blocks
+- 12px: Inputs, banners
+- 16px: Cards, metric cards, chat bubbles
+- 20px: Hero cards, dialogs
+- 24px: Top corners of bottom sheets, login card, curved header bottom (32px)
 - 9999px: Buttons, chips, avatars, composer, capacity pills
+
+## Iconography (Iconify)
+
+**All icons come from Iconify. No other icon library is allowed** (no `@expo/vector-icons`, no Lucide, no emoji as icons, no hand-pasted SVGs for UI icons).
+
+- **Icon set:** `solar` for the whole app. Style `-linear` by default and `-bold` for the active or selected state (for example `solar:home-2-linear` and `solar:home-2-bold`). Use another set (`mdi`) only when `solar` lacks the icon, and record it in `Decisions.md`.
+- **Package:** `react-native-iconify` (pure JS plus `react-native-svg`), because it works in Expo Go, which the iPhone demo depends on. Do not use `@huymobile/react-native-iconify`: it needs native modules and a development build.
+- **One registry:** every icon is declared in a single file, `mobile/src/icons/`, with the Iconify name written as a literal string (the library does not accept names from variables). Components import icons from that file through a shared `Icon` wrapper.
+- **Sizes:** 16px in metadata lines, 20px inside buttons and inputs, 24px in the tab bar and app bar, 40px in empty states.
+- **Color:** always from theme tokens. Icons in dark text use `textPrimary` or `neutral`; the accent lime follows the same rule as text (never on light backgrounds).
+- **Accessibility:** an icon next to a text label is decorative and hidden from screen readers; an icon-only control has an `accessibilityLabel` and a 48px touch target.
+
+Reference names (verify each one exists on icones.js.org before using it):
+
+| Meaning | Iconify name |
+|---|---|
+| Home / Dashboard | `solar:home-2-linear` |
+| Modules | `solar:book-2-linear` |
+| Schedule | `solar:calendar-linear` |
+| Messages / chat | `solar:chat-round-dots-linear` |
+| PQRS | `solar:clipboard-text-linear` |
+| More | `solar:hamburger-menu-linear` |
+| Teacher / user | `solar:user-linear` |
+| Students / group | `solar:users-group-rounded-linear` |
+| Room / location | `solar:map-point-linear` |
+| Time | `solar:clock-circle-linear` |
+| Sign in | `solar:login-3-linear` |
+| Sign out | `solar:logout-2-linear` |
+| Create account | `solar:user-plus-linear` |
+| Email | `solar:letter-linear` |
+| Password | `solar:lock-password-linear` |
+| Show / hide password | `solar:eye-linear` / `solar:eye-closed-linear` |
+| Add | `solar:add-circle-linear` |
+| Edit | `solar:pen-linear` |
+| Delete | `solar:trash-bin-trash-linear` |
+| Send | `solar:plain-linear` |
+| Search | `solar:magnifer-linear` |
+| Notifications | `solar:bell-linear` |
+| Settings | `solar:settings-linear` |
+| Back | `solar:arrow-left-linear` |
+| Success | `solar:check-circle-linear` |
+| Warning | `solar:danger-triangle-linear` |
+| Error / close | `solar:close-circle-linear` |
+
+## Motion and feel
+Animations make the app feel smooth, never slow. Use `react-native-reanimated`, `expo-linear-gradient` and `expo-haptics`.
+
+- **Durations:** 150ms for press feedback, 250ms for standard transitions, 350ms for sheets and screen changes. Nothing above 400ms.
+- **Easing:** `cubic-bezier(0.2, 0, 0, 1)` for movement; spring (damping 20, stiffness 200) for bottom sheets and dialogs.
+- **Press feedback:** buttons scale to 0.97, cards to 0.98, with a 100ms return.
+- **Entrance:** the first screen of list items fades in and rises 8px, staggered 40ms, up to 8 items. Never animate items that scroll into view later.
+- **Screen transitions:** native stack slide; modals and sheets rise from the bottom.
+- **State changes:** badges, progress bars and capacity bars animate their change over 250ms. Numbers in metric cards count up once on first load.
+- **Skeletons:** shimmer loop of 1.2s in `Screen` and `Card` tones.
+- **Haptics:** light impact on primary actions; success, warning and error notification haptics after enrolling, cancelling and failed actions.
+- **Reduce motion:** when the system setting is on, remove movement, shimmer and count-up, and keep only fades.
+- **Performance:** animations run on the UI thread; keep 60 fps. No animation is allowed to delay a user action.
+
+## University brand elements
+The app must feel institutional. The official assets come from the UTS corporate identity manual and are provided by the university; they live in `mobile/assets/brand/`:
+
+- `logo-uts-no-bg-letras-blancas.png` (lime mark with white letters, transparent background) is the **brand logo in light theme**; `logo-uts-blanco.png` (all white, transparent background) is the **brand logo in dark theme** and in the splash. Both go over the green gradient, never over white. `logo-uts.png` (full color) is reserved for white surfaces such as emails. App icon and splash complete the set.
+- **Never** redraw, recolor, stretch, rotate, outline or add effects to the logo. Respect the clear space and minimum size from the manual.
+- **Where it appears:** splash, login, password recovery and change-password screens, profile or About screen, email headers, and (as a single-color silhouette) the Android notification icon.
+- **Where it does not:** repeated on every screen or inside cards.
+- **Institutional palette:** primary green, deep green, lime and cream from the Colors section. Use them in gradients and shapes before introducing any other color.
+- **Signature details:** a 4px lime line under hero titles, and the Brand pattern (below) over the green gradient headers. Geometric shapes such as circles, arcs or blobs are not used as decoration.
+- **Photography:** only authorized campus images, always under a deep-green overlay at 60% when text sits on top.
+- **Naming:** the app is called "UTS Tutorías". The official name of the institution is **Institución Universitaria Tecnológica de Santander – UTS** (Resolución MEN 019103 of 23 July 2026; the acronym UTS is kept). The full name appears in the login footer, the About screen and emails; in short texts use "UTS". The former name "Unidades Tecnológicas de Santander" is not used anywhere in the app.
+
+### Brand pattern (leaves, feathers and books)
+A decorative pattern inspired by the elements of the university crest replaces any geometric decoration. It is not a reproduction of the crest: the official crest only appears as the official logo asset.
+
+- **Icons:** a leaf, a feather and an open book, from Iconify (`mdi:leaf`, `mdi:feather`, `mdi:book-open-page-variant`; verify the names on icones.js.org). These decorative icons may come from `mdi` when `solar` has no equivalent (see D-049).
+- **Component:** one `BrandPattern` component with a fixed list of placements (position in %, size, rotation, icon). The list is deterministic, never random per render, so the layout does not jump.
+- **Style:** about 14 icons in the login header, sizes 30 to 64px, rotations between -30° and 30°, a mix of the three icons staggered (not in straight rows). White at 8-12% opacity; up to 3 icons in lime #C3D730 at 14-18% for warmth. In dark mode, white at 6%.
+- **Clear zone:** nothing is placed in the central area where the logo and title sit, so the logo keeps its clear space and the text stays legible.
+- **Clipping:** icons may be cut by the edge of the header or card; that is intended.
+- **Where:** headers of login, registration, password recovery and change-password screens, the splash background, and hero cards (3 icons at 10%, bottom-right corner). Never on regular content screens, lists or inside cards.
+- **Behavior:** static. A single 350ms fade-in on first show; with reduce motion, no animation. The pattern ignores touches and is hidden from screen readers.
+- **Performance:** memoize the component and never re-render it with the keyboard.
+
+
 
 ## Navigation
 Bottom tab bar, 64px plus safe area, white, 1px #E5E5E5 top border, Level 1. Active tab: icon inside a 56 x 32px #F2F4EF pill, icon and label in #34531F with weight 700. Inactive: #575756. Unread tab badge: #B3261E circle with white number, 16px min. Top app bar 56px, white, Level 1 on scroll, screen title left, user avatar right (opens profile and sign out).
@@ -109,19 +210,32 @@ After login, the app routes to the tab set of the user's role. If `mustChangePas
 ## Components
 
 ### Buttons
-- **Primary**: #34531F fill, white text, 48px height (40px compact), 16px horizontal padding, 9999px radius, pressed #132F20. Full width on forms and card actions.
-- **Outlined**: 1px #E5E5E5 border, #132F20 text, transparent fill.
-- **Tonal**: #F2F4EF fill, #132F20 text.
-- **Destructive**: #B3261E fill, white text, pressed #6D100A. Always opens a confirmation dialog.
-- **Accent** (dark surfaces only): #C3D730 fill, #132F20 text.
-- **Disabled**: #F2F4EF fill, #878787 text. A disabled action always shows a helper line below explaining why.
-- Icon buttons: 48px touch area, 24px icon, #575756.
+- **Every button has a leading icon** (Iconify, 20px) followed by its label, with an 8px gap between icon and text. Exceptions: inline text links, and icon-only controls (send, close, back, toolbar), which have an `accessibilityLabel` and a 48px touch target. A "Next" style action may use a trailing arrow icon instead.
+- **Spacing:** buttons stacked vertically are separated by **16px** (never less than 12px); buttons side by side by 12px; a button group is separated from other content by 24px. Buttons never touch each other.
+- **Primary**: #34531F fill, white text and icon, 52px height (44px compact), 20px horizontal padding, 9999px radius, Level 1, pressed #132F20 with scale 0.97. Full width on forms and card actions.
+- **Outlined**: 1px #E5E5E5 border, #132F20 text and icon, transparent fill.
+- **Tonal**: #F2F4EF fill, #132F20 text and icon.
+- **Destructive**: #B3261E fill, white text and icon, pressed #6D100A. Always opens a confirmation dialog.
+- **Accent** (dark surfaces only): #C3D730 fill, #132F20 text and icon.
+- **Disabled**: #F2F4EF fill, #878787 text and icon. A disabled action always shows a helper line below explaining why.
+- **Loading**: the icon is replaced by a spinner; the button keeps its width.
+- Icon-only buttons: 48px touch area, 24px icon, #575756.
 
 ### Inputs
-- 48px height, #F2F4EF fill, 8px radius, 16px horizontal padding, label above (Label style).
-- Focus: 2px #4E7A2F border. Error: 1px #B3261E border and message in #B3261E below. Password fields have a show/hide toggle.
-- Textareas grow up to 6 lines, with a character counter when there is a limit.
-- Dropdowns open as bottom sheets with a searchable list (values come from the administrable lists).
+Every text field must read clearly as a field: it always has **both a fill and a soft border**.
+
+- **Size and shape:** 52px height, 12px radius, 16px horizontal padding. The label sits above the field in Label style (8px gap).
+- **Fill and border:**
+  - On a white card or sheet: fill #F2F4EF + 1px #C9D0C3 border.
+  - On the Screen background (#F2F4EF): fill #FFFFFF + the same border.
+- **Icons:** a leading 20px icon in #575756 (email, lock, search, and so on) and, when needed, a trailing icon button (show/hide password, clear, dropdown chevron).
+- **Placeholder:** #767676, Body style.
+- **Focus:** 2px #4E7A2F border, fill #FFFFFF, soft glow `0 0 0 4px rgba(78,122,47,0.15)`, label turns #34531F. The change animates over 150ms.
+- **Error:** 1px #B3261E border, glow `rgba(179,38,30,0.12)`, and the message below with an error icon, in #B3261E.
+- **Disabled:** 60% opacity, no glow.
+- **Same style for:** textareas (grow up to 6 lines, counter inside the bottom-right corner), dropdown triggers (with a chevron), the search field and the chat composer.
+- **Passwords** have a show/hide toggle. **Dropdowns** open as bottom sheets with a searchable list (values come from the administrable lists).
+- **Contrast note:** the border is intentionally soft (about 1.6:1 on white). The field is identified by its fill, label and icon together. If the institution requires a strict 3:1 boundary, use #8C968A as the border color.
 
 ### Chips and segmented controls
 - Chip: 9999px radius, #F2F4EF fill, #132F20 text, 14px weight 500, 8px/12px padding. Selected: #34531F fill, white text.
@@ -134,7 +248,7 @@ After login, the app routes to the tab set of the user's role. If `mustChangePas
 #F8E9D4 fill, #132F20 text, 8px radius, 12px/16px padding, optional leading icon. Used for announcements, connection status and important notices.
 
 ### Dialogs and bottom sheets
-Dialogs: 12px radius, Level 3, max 320px wide, title + body + two buttons (cancel left, confirm right). Bottom sheets: 16px top radius, drag handle, Level 3, used for details, pickers and filters.
+Dialogs: 20px radius, Level 3, max 320px wide, title + body + two buttons (cancel left, confirm right). Bottom sheets: 24px top radius, drag handle, Level 3, used for details, pickers and filters.
 
 ### Toasts
 Bottom, above the tab bar. #132F20 fill, white text, 8px radius, 4s. Success confirmations only; errors that need action use banners or inline messages.
@@ -144,13 +258,32 @@ Circle, 40px in lists and 48px in conversation lists. Fallback: initials on #F2F
 
 ## Screen patterns
 
+### Login (and password recovery, change password)
+Modern and branded, built to be calm and easy to tap.
+
+- **Header:** brand gradient (#34531F → #132F20) over about 35% of the screen height, with a 32px curved bottom edge, the Brand pattern (leaves, feathers and books) behind the content, the UTS logo centered directly on the gradient (`logo-uts-no-bg-letras-blancas` in light theme, `logo-uts-blanco` in dark theme, no badge behind it), and "UTS Tutorías" in Screen Title style (white) with the 4px lime line below. The logo shrinks when the keyboard opens.
+- **Form card:** white, 24px top radius, Level 3, overlapping the header by 24px. 24px padding.
+- **Content, top to bottom, with these gaps:**
+  1. Title "Sign in" and a one-line subtitle (8px between them).
+  2. 24px, then the email input with a leading `solar:letter-linear` icon.
+  3. 16px, then the password input with a leading `solar:lock-password-linear` icon and a trailing show/hide icon button.
+  4. 8px, then a right-aligned text link "Forgot your password?" (text link, no icon).
+  5. 24px, then the **primary button** "Sign in" with the leading `solar:login-3-linear` icon, full width, 52px.
+  6. 16px, then a divider with the word "or" (16px above and below its text).
+  7. 16px, then the **outlined button** "Create student account" with the leading `solar:user-plus-linear` icon, full width.
+- **Footer:** "Institución Universitaria Tecnológica de Santander" in Metadata style, centered, 24px below the last button.
+- **Errors:** an inline error banner with an icon above the primary button; field errors under the field in #B3261E.
+- **States:** the primary button shows a spinner while signing in; inputs and buttons are disabled meanwhile.
+- **Keyboard:** the form scrolls and stays visible above the keyboard; pressing "done" on the password field submits.
+- Student registration, password recovery and the teacher's change-password screen reuse the same header, card and spacing.
+
 ### Module card (students)
-Container: white, 1px #E5E5E5 border, 12px radius, 16px padding, Level 0. One column on phones.
+Container: white (Card), 16px radius, 16px padding, Level 1 soft shadow, no border. One column on phones. Pressed state scales to 0.98.
 
 Layout, top to bottom:
 1. Card Title: module name (2 lines max) with a status badge at the top right.
 2. Teacher row: avatar 24px + teacher name.
-3. Schedule row: calendar icon + `Mon 10:00–12:00`.
+3. Schedule row: calendar icon + `Weekly · Mon 10:00–12:00`.
 4. Room row: location icon + `Room 301 · Building B`.
 5. Capacity: text `18/30 spots` (Body Small) above a 4px progress bar.
 6. Action button, full width.
@@ -169,7 +302,7 @@ Capacity bar colors: under 80% #34531F; 80% to 99% #FB8C00; 100% #575756.
 
 Enrolling and cancelling both use a confirmation sheet showing module, day, time and room. Cancelling uses a destructive confirm button. A student who cancelled can enroll again while spots remain.
 
-Above the list: search field and a horizontally scrolling chip bar to filter (All, Available, Enrolled, by day). Pull to refresh. Skeleton cards while loading.
+Above the list: search field and a horizontally scrolling chip bar to filter (All, Available, Enrolled, by day) and a period selector chip (default: the active academic period, e.g. `2026-2`). Pull to refresh. Skeleton cards while loading.
 
 ### Weekly schedule (all roles)
 Header: week label (`Nov 3 – 9`), previous/next arrows and a "Today" tonal button. Below it, a day strip with seven day pills (weekday letter + number). Today has a 1px #34531F ring; the selected day is filled #34531F with white text. A dot under a day means it has sessions.
@@ -191,6 +324,8 @@ Tapping a block opens a bottom sheet with the full detail. **Students: read-only
 - **Cancel session**: Destructive button with a confirmation dialog stating how many students will be notified.
 - Under 2 hours to start: both actions are disabled with the helper `You can no longer change this session: less than 2 hours left`.
 
+Week navigation is limited to the dates of the active academic period; outside them, show `Outside the academic period`. Sessions repeat weekly, so each week shows the same module blocks unless a session was rescheduled or cancelled.
+
 Empty day: icon, `No sessions this day`.
 
 ### Messages
@@ -206,7 +341,7 @@ The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 - Date separators: centered neutral chip (`Today`, `Yesterday`, date).
 - Message states: sending (clock icon, 60% opacity), sent (single check), failed (red icon with "Tap to retry").
 - Teacher announcements to a module are not bubbles: they are full-width banner cards (#F8E9D4) labeled "Announcement" with the teacher's name.
-- Composer: pinned above the keyboard, #F2F4EF pill input (min 48px, grows to 5 lines), 48px circular send button (#34531F, white icon). The send button is disabled while the input is empty.
+- Composer: pinned above the keyboard, #F2F4EF pill input with a 1px #C9D0C3 border (min 48px, grows to 5 lines), 48px circular send button (#34531F, white icon). The send button is disabled while the input is empty.
 - Typing indicator: three #575756 dots animating, in a received-style bubble.
 - Connection: while reconnecting, a #F8E9D4 banner under the app bar says `Reconnecting…`. Messages typed offline stay in the "sending" state and are sent when the connection returns.
 - Lists load newest first with infinite scroll upward.
@@ -223,9 +358,9 @@ The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 ### Dashboards
 Layout: Screen Title, an optional period selector chip (`This week`, `This month`, `Semester`), then content blocks stacked with 16px gaps.
 
-**Metric card**: #F2F4EF fill, 8px radius, 16px padding, 2 per row. Metric Number on top, label in Metadata style below, optional trend (arrow icon + `+5%`, #34531F up, #B3261E down when higher is worse, with explanatory text, never color alone).
+**Metric card**: white fill, 16px radius, 16px padding, Level 1, 2 per row, on the Screen background. Metric Number on top, label in Metadata style below, optional trend (arrow icon + `+5%`, #34531F up, #B3261E down when higher is worse, with explanatory text, never color alone).
 
-**Hero card** (next session, for teachers and students): #34531F fill, white text, 12px radius, 16px padding. Shows `Next tutoring`, module name, day and time, room, and (for teachers) student count. Button "View details" in Accent style. If there is no next session, show a #F2F4EF card with `No upcoming sessions`.
+**Hero card** (next session, for teachers and students): Brand gradient fill (#34531F → #132F20), white text, 20px radius, 20px padding, Level 2, with the lime 4px line under the title and 3 decorative leaf, feather and book icons at 10% in the bottom-right corner (see Brand pattern). Shows `Next tutoring`, module name, day and time, room, and (for teachers) student count. Button "View details" in Accent style, with a leading icon. If there is no next session, show a #F2F4EF card with `No upcoming sessions`.
 
 **Capacity bars**: label left, `18/30` right, 8px bar below (same color rules as the module card).
 
@@ -253,7 +388,7 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 - **Create teacher**: form (name, institutional email, other data). Email validated against the allowed domain with an inline error. On success, a dialog shows the **temporary password** once, in Roboto Mono on a #F2F4EF block with a "Copy" button, and the note that the teacher must change it at first login.
 - **Rooms**: card or row with name, location and capacity (`30 people`).
 - **Module management**: change room or teacher via a bottom sheet picker. When the selected room has less capacity than the enrolled students, the option is disabled and the message in #B3261E reads `Not enough capacity: 32 enrolled, this room holds 30`. Changing room, teacher or schedule shows a confirmation that states how many students will be notified.
-- **Settings**: grouped list rows (Data, Dropdown lists, Institutional emails, SMTP) with chevrons. SMTP form: host, port, user, password (masked, never shown after saving), from address, and a tonal "Send test email" button with inline success or error result. Save is a Primary button pinned at the bottom.
+- **Settings**: grouped list rows (Data, Dropdown lists, Academic periods, Institutional emails, SMTP) with chevrons. SMTP form: host, port, user, password (masked, never shown after saving), from address, and a tonal "Send test email" button with inline success or error result. Save is a Primary button pinned at the bottom.
 
 ## States
 - **Loading**: skeleton shapes in #F2F4EF with a slow shimmer; never a blank screen. Buttons show a spinner and stay the same width while submitting.
@@ -276,7 +411,13 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 - Don't use #2BA640 or #FB8C00 as text color on white; use them as icons or fills.
 - Don't use red for anything other than errors, cancellations, destructive actions, unread tab badges and the "now" line.
 - Do clamp card titles to 2 lines with ellipsis for consistent lists.
-- Do keep cards flat (border, no shadow); reserve shadows for sheets, dialogs and menus.
+- Do give cards a soft Level 1 shadow on the Screen background; use stronger shadows only for raised elements, sheets and dialogs.
+- Do use Iconify icons from the `solar` set for every icon, and put a leading icon in every button.
+- Do keep 16px between stacked buttons.
+- Do keep animations short, on the UI thread, and respect the reduce-motion setting.
+- Don't use any other icon library, emoji as icons, or a modified UTS logo.
+- Don't use geometric shapes (circles, arcs, blobs) as decoration; use the Brand pattern.
+- Do give every text field a fill and a soft border so it reads as an input.
 - Do keep student schedules read-only; actions on sessions belong to teachers and the CAE.
 - Don't expose temporary passwords or SMTP passwords after the moment of creation or saving.
 - Don't use custom scrollbars; rely on native scrolling.

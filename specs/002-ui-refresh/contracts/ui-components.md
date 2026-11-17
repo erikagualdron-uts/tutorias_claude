@@ -34,8 +34,8 @@ Las pantallas no escriben colores, radios, sombras ni espaciados literales.
 | Componente | Garantía |
 |---|---|
 | `Card` | Fondo `card`, radio 16, `shadows.level1`, sin borde |
-| `AuthLayout` | Cabecera con `gradients.brand`, borde inferior curvo de 32, logo blanco centrado y tarjeta de formulario (radio 24, `level3`) que solapa 24 px; el logo se reduce con el teclado; formulario desplazable |
-| `BrandLogo` | Muestra el SVG oficial de `assets/brand/` sin modificarlo (`uts-logo`, `uts-logo-white`, `uts-logo-mark`) |
+| `AuthLayout` | Cabecera con `gradients.brand`, borde inferior curvo de 32, logo centrado (variante según el tema) y tarjeta de formulario (radio 24, `level3`) que solapa 24 px; el logo se reduce con el teclado; formulario desplazable |
+| `BrandLogo` | Muestra el logo oficial de `assets/brand/` sin modificarlo: `logo-uts-no-bg-letras-blancas.png` en tema claro y `logo-uts-blanco.png` en tema oscuro, directamente sobre el degradado |
 | `FadeInView` | Entrada con fundido y subida de 8 px en 250 ms; con reducir movimiento, solo fundido |
 
 ## Invariantes comprobables
