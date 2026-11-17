@@ -15,7 +15,7 @@
 - Q: Si un estudiante canceló solo una sesión, ¿puede reactivarla después? → A: Sí, mientras falte más de 1 hora y haya cupo.
 - Q: Si cancela el módulo completo y la próxima sesión empieza en menos de 1 hora, ¿qué pasa? → A: Se permite y aplica desde la siguiente sesión; la que empieza en menos de 1 hora se mantiene.
 - Q: Cuando un estudiante cancela solo una sesión, ¿ese lugar queda libre para otro o el cupo se mide por inscripciones activas? → A: El cupo se mide por sesión (opción B): cada sesión tiene como cupo la capacidad del salón y su lugar queda libre al cancelarla; un estudiante nuevo solo puede inscribirse al módulo si hay lugar en todas sus sesiones futuras.
-- Q: Para cambiar el salón, ¿la capacidad nueva debe cubrir los asistentes de la sesión futura más llena o todos los inscritos activos? → A: Los asistentes de la sesión futura más llena (opción A); la regla de `Context.md` y `CLAUDE.md` se reescribe así y se registra como decisión nueva.
+- Q: Para cambiar el salón, ¿la capacidad nueva debe cubrir los asistentes de la sesión futura más llena o todos los inscritos activos? → A: Se mantiene la regla vigente (Principio II de la constitución): la capacidad nueva debe ser mayor o igual a los inscritos activos del módulo. Se descartó cambiarla porque exigía enmendar la constitución.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -82,17 +82,17 @@ El estudiante ve la lista de módulos en los que está inscrito, con docente, sa
 
 ### User Story 4 - Inscritos reales en la gestión del CAE (Priority: P2)
 
-Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de verdad: el CAE ve la cantidad de inscritos de cada módulo, no puede cambiar el salón a uno con capacidad menor que los asistentes de la sesión futura más llena, no puede cambiar los horarios ni eliminar un módulo con inscritos, y el cupo disponible refleja los inscritos reales.
+Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de verdad: el CAE ve la cantidad de inscritos de cada módulo, no puede cambiar el salón a uno con capacidad menor que los inscritos, no puede cambiar los horarios ni eliminar un módulo con inscritos, y el cupo disponible refleja los inscritos reales.
 
 **Why this priority**: Cierra el circuito entre la inscripción y la gestión del CAE, pero depende de que ya existan inscritos (historia 1).
 
-**Independent Test**: Con un módulo con 5 inscritos en un salón de 30, intentar cambiar a un salón de capacidad 4 (se bloquea con la regla), editar sus horarios y eliminarlo (se bloquean mostrando cuántos hay), y cambiar a un salón de capacidad 5 (se permite y el cupo cambia a 5). Con 5 inscritos de los que 2 cancelaron cada una de las sesiones restantes (3 asistentes como máximo por sesión), un salón de capacidad 3 se permite.
+**Independent Test**: Con un módulo con 5 inscritos en un salón de 30, intentar cambiar a un salón de capacidad 4 (se bloquea con la regla), editar sus horarios y eliminarlo (se bloquean mostrando cuántos hay), y cambiar a un salón de capacidad 5 (se permite y el cupo cambia a 5).
 
 **Acceptance Scenarios**:
 
-1. **Given** un módulo con inscritos, **When** el CAE abre el listado o el detalle, **Then** ve la cantidad real de inscritos activos, los asistentes de la sesión futura más llena y los cupos disponibles.
-2. **Given** un módulo cuya sesión futura más llena tiene 5 asistentes, **When** el CAE elige un salón con capacidad menor que 5, **Then** el cambio se bloquea mostrando la regla y esa cantidad de asistentes.
-3. **Given** un módulo cuya sesión futura más llena tiene 5 asistentes, **When** el CAE elige un salón con capacidad 5 o mayor, **Then** el cambio se aplica y el cupo es la nueva capacidad.
+1. **Given** un módulo con inscritos, **When** el CAE abre el listado o el detalle, **Then** ve la cantidad real de inscritos activos y los cupos disponibles.
+2. **Given** un módulo con 5 inscritos activos, **When** el CAE elige un salón con capacidad menor que 5, **Then** el cambio se bloquea mostrando la regla y los inscritos.
+3. **Given** un módulo con 5 inscritos activos, **When** el CAE elige un salón con capacidad 5 o mayor, **Then** el cambio se aplica y el cupo es la nueva capacidad.
 4. **Given** un módulo con inscritos, **When** el CAE intenta cambiar sus horarios o eliminarlo, **Then** se bloquea indicando cuántos estudiantes lo impiden.
 5. **Given** un módulo cuyos inscritos cancelaron todos, **When** el CAE intenta cambiar sus horarios o eliminarlo, **Then** se permite, porque ya no hay inscritos activos.
 6. **Given** una cuenta de estudiante que el CAE desactiva o elimina, **When** se calculan los cupos, **Then** su inscripción se conserva en el historial pero deja de ocupar cupo.
@@ -129,7 +129,7 @@ Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de 
 - **FR-011**: El estudiante MUST ver sus módulos inscritos con docente, salón, horario y sus próximas sesiones (fecha y hora de Bogotá, estado y, si fue cancelada, el motivo: del estudiante, del docente o festivo).
 - **FR-012**: Las inscripciones y cancelaciones de un periodo Cerrado MUST ser de solo lectura: no se crean ni se cancelan, y se conservan como historial.
 - **FR-013**: Los módulos cuyo docente o salón no están disponibles (D-088) MUST NOT ofrecerse para nuevas inscripciones; los inscritos conservan su inscripción.
-- **FR-014**: La cantidad de inscritos de un módulo MUST ser la real en el listado y el detalle del CAE, y las reglas de la spec 010 MUST aplicarse con ella: el CAE no cambia el salón a uno con capacidad menor que los asistentes de la sesión futura más llena, ni edita los horarios ni elimina un módulo con inscritos activos.
+- **FR-014**: La cantidad de inscritos de un módulo MUST ser la real en el listado y el detalle del CAE, y las reglas de la spec 010 MUST aplicarse con ella: el CAE no cambia el salón a uno con capacidad menor que los inscritos activos, ni edita los horarios ni elimina un módulo con inscritos activos.
 - **FR-015**: Una inscripción de una cuenta de estudiante desactivada o eliminada MUST conservarse en el historial y dejar de ocupar cupo.
 - **FR-016**: Cada inscripción y cancelación MUST registrar quién, qué módulo o sesión y cuándo, para trazabilidad, sin exponer datos personales de otros estudiantes.
 - **FR-017**: Los borrados MUST ser lógicos; ninguna inscripción ni cancelación se elimina físicamente.
@@ -166,6 +166,6 @@ Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de 
 - Una inscripción tardía (con el periodo ya comenzado) cubre solo las sesiones que aún no han ocurrido.
 - El estudiante opera desde la app móvil; el docente ve el conteo de sus inscritos en su cronograma, que corresponde a otra spec.
 - El cronograma semanal de solo lectura del estudiante es otra funcionalidad; aquí solo se listan sus módulos y próximas sesiones.
-- La regla de cambio de salón pasa de "inscritos" a "asistentes de la sesión futura más llena": al planificar se actualiza `Context.md`, `CLAUDE.md` y `Architecture.md` y se registra una decisión nueva (D-090). Editar horarios y eliminar el módulo siguen bloqueados mientras haya inscritos activos.
+- La regla de cambio de salón no cambia (capacidad nueva mayor o igual a los inscritos activos). Con el cupo por sesión puede haber más inscritos activos que capacidad en casos raros (cancelaciones de sesiones distintas); la regla sigue contando inscritos y es la más estricta. Editar horarios y eliminar el módulo siguen bloqueados mientras haya inscritos activos.
 - Las horas se muestran en `America/Bogota` y se guardan en UTC, igual que en la spec 010.
 - El límite de 1 hora para cancelar vive en configuración, como el de 2 horas del docente (spec 012).
