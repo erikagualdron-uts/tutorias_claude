@@ -210,6 +210,7 @@ components:
         endTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
     Conflict:
       type: object
+      nullable: true
       properties:
         moduleName: { type: string }
         dayOfWeek: { type: integer, minimum: 1, maximum: 7 }
@@ -256,7 +257,7 @@ components:
             está disponible (`blockReason`); FULL si availableSeats es 0; LAST_SPOTS con el 80 % o más
             ocupado
         blockReason: { type: string, nullable: true, enum: [SCHEDULE_CONFLICT, UNAVAILABLE, null] }
-        conflict: { allOf: [{ $ref: '#/components/schemas/Conflict' }], nullable: true }
+        conflict: { $ref: '#/components/schemas/Conflict' }
         enrollment: { $ref: '#/components/schemas/EnrollmentRef' }
     StudentModulePage:
       type: object
@@ -272,6 +273,8 @@ components:
                 periodId: { type: string, format: uuid, nullable: true, description: Periodo activo mostrado }
     StudentSession:
       type: object
+      nullable: true
+      description: Una sesión futura del módulo (null cuando no hay próxima sesión)
       properties:
         id: { type: string, format: uuid }
         startsAt: { type: string, format: date-time }
@@ -314,7 +317,7 @@ components:
           properties:
             module: { $ref: '#/components/schemas/StudentModule' }
             readOnly: { type: boolean, description: El periodo está Cerrado }
-            nextSession: { allOf: [{ $ref: '#/components/schemas/StudentSession' }], nullable: true }
+            nextSession: { $ref: '#/components/schemas/StudentSession' }
             upcomingSessions: { type: integer }
     EnrollmentPage:
       type: object
