@@ -281,6 +281,8 @@ The app's own loading indicator replaces the system spinner everywhere (`Activit
 ### Avatars
 Circle, 40px in lists and 48px in conversation lists. Fallback: initials on #F2F4EF with #132F20 text.
 
+**Profile menu** (avatar in the app bar): the 40px avatar has a 1px #575756 outline so it stays visible in dark mode. The menu opens right under the avatar (app bar height plus the top safe area), has a 1px border and holds the Sign out item: 48px high, 1px #B3261E outline with rounded corners, and icon and text in #B3261E so it reads as the session action.
+
 ## Screen patterns
 
 ### Login (and password recovery, change password)
