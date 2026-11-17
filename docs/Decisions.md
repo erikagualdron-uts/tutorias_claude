@@ -130,34 +130,6 @@
 - **Estado:** Aceptada
 - **Decisión:** Ejecutar iOS requiere macOS y Xcode, por lo que la demo usa un iPhone físico con Expo Go; alternativas: EAS Build con Appetize.io o un Mac en la nube. Android se prueba con el emulador de Android Studio.
 
-### D-030 · Código numérico de 6 dígitos en vez de enlace
-- **Estado:** Aceptada
-- **Decisión:** La verificación de correo y la recuperación de contraseña usan un código de 6 dígitos enviado por correo. Se guarda solo su HMAC; vence (24 h verificación, 1 h recuperación), es de un solo uso, admite 5 intentos y el nuevo código invalida el anterior. Reenvío: espera de 60 s y máximo 5 por hora.
-- **Motivo:** Un enlace exige enlaces profundos en iOS y Android; el código se escribe en la app. El límite de intentos y el vencimiento compensan los 6 dígitos.
-- **Descartado:** Enlace con token largo; contraseña de un solo uso por SMS (no hay proveedor).
-
-### D-031 · Sesión por dispositivo con 30 días de inactividad
-- **Estado:** Aceptada
-- **Decisión:** Cada dispositivo tiene su `Session` con refresh token opaco rotativo (ventana deslizante de 30 días de inactividad). Se permiten varias sesiones a la vez, el cierre de sesión afecta solo al dispositivo y presentar un token ya rotado revoca la sesión. El guard consulta usuario y sesión en cada petición.
-- **Motivo:** Cierre por dispositivo y efecto inmediato al desactivar o borrar una cuenta, sin lista negra.
-- **Descartado:** JWT largo sin sesión en servidor; lista negra en Redis.
-
-### D-032 · Registro sobre una cuenta sin verificar solo reenvía el código
-- **Estado:** Aceptada
-- **Decisión:** Si el correo existe sin verificar, el registro no cambia contraseña, nombres ni idioma: solo reenvía el código y responde igual que un alta nueva. Si está verificado o tiene borrado lógico, responde `EMAIL_ALREADY_REGISTERED`.
-- **Motivo:** Evita que alguien tome una cuenta ajena sin verificar cambiándole la contraseña.
-
-### D-033 · Recuperar la contraseña verifica el correo y quita el cambio obligatorio
-- **Estado:** Aceptada
-- **Decisión:** Restablecer con éxito marca el correo como verificado, pone `mustChangePassword` en falso y cierra todas las sesiones.
-- **Motivo:** El código demuestra que la persona controla el correo; evita dejar a un estudiante atrapado entre "verifica tu correo" y "recupera tu contraseña".
-
-### D-034 · Límites de intentos por defecto
-- **Estado:** Aceptada
-- **Decisión:** Inicio de sesión: 5 fallos por correo + IP bloquean 15 minutos y la respuesta indica el tiempo de espera. Registro y recuperación: 10 solicitudes por hora por IP. Todos son valores de configuración (`Setting` o variables de entorno), no constantes.
-- **Motivo:** Equilibra seguridad y el caso de un estudiante que se equivoca varias veces.
-- **Descartado:** Bloqueo permanente de la cuenta tras N fallos (permite bloquear a otro a propósito).
-
 ---
 
 ## Diseño
@@ -181,6 +153,28 @@
 - **Estado:** Aceptada
 - **Decisión:** Se agrega una pantalla de inicio sencilla para el estudiante, que no estaba en el alcance original.
 
+### D-044 · Íconos: Iconify obligatorio con el set Solar
+- **Estado:** Aceptada
+- **Decisión:** Todos los íconos de la app vienen de Iconify, con el set `solar` (estilo `linear`, y `bold` para el estado activo). Paquete: `react-native-iconify`. Los íconos se declaran en un registro único.
+- **Motivo:** Consistencia visual y acceso a un catálogo enorme. `react-native-iconify` es JavaScript más `react-native-svg`, por lo que funciona en Expo Go (ver D-029).
+- **Descartado:** `@expo/vector-icons`, Lucide y otras librerías; `@huymobile/react-native-iconify`, porque exige un build de desarrollo y no funciona en Expo Go.
+
+### D-045 · Todos los botones llevan ícono y separación de 16 px
+- **Estado:** Aceptada
+- **Decisión:** Todo botón tiene un ícono a la izquierda (excepto enlaces de texto y botones solo de ícono). Entre botones apilados, como en el inicio de sesión, hay 16 px.
+- **Motivo:** Mejor reconocimiento visual y evitar toques equivocados por botones pegados.
+
+### D-046 · Estilo visual moderno y fluido
+- **Estado:** Aceptada
+- **Reemplaza:** la regla anterior de tarjetas planas con borde y sin sombra.
+- **Decisión:** Tarjetas con sombra suave teñida de verde, radios de 16 a 24 px, fondo de pantalla `#F2F4EF` con tarjetas blancas, degradado de marca en cabeceras y tarjetas destacadas, y micro-animaciones con Reanimated que respetan "reducir movimiento".
+- **Motivo:** Una apariencia actual y agradable, sin sacrificar rendimiento ni accesibilidad.
+
+### D-047 · Elementos visuales de la universidad
+- **Estado:** Aceptada
+- **Decisión:** El logo oficial y los recursos de marca de la UTS se usan sin modificar, en splash, login, perfil y correos. Los demás elementos usan la paleta institucional.
+- **Pendiente:** La universidad debe entregar los archivos oficiales (logo a color, logo blanco, símbolo) y confirmar las reglas de uso del manual vigente.
+
 ---
 
 ## Proceso
@@ -202,17 +196,11 @@
 - **Estado:** Aceptada
 - **Decisión:** Formato `type(scope): description`, con ramas `NNN-feature-name` generadas por Spec Kit.
 
-### D-064 · Tres repositorios: back, mobile y db
+### D-066 · Logo en un solo PNG a color y retiro de otras librerías de íconos
 - **Estado:** Aceptada
-- **Decisión:** El código vive en `tutorias_uts_back` (API NestJS), `tutorias_uts_mobile` (app Expo) y `tutorias_uts_db` (esquema Prisma, migraciones, seed y `docker-compose.yml`). Las carpetas `backend/` y `mobile/` de los documentos corresponden a la raíz de los dos primeros. El esquema Prisma tiene una sola fuente (`tutorias_uts_db/prisma/schema.prisma`); el back lo copia con `npm run prisma:generate` para generar su cliente.
-- **Motivo:** Es como el equipo ya creó los repositorios; separar la base de datos permite que sus migraciones evolucionen sin tocar la API.
-- **Descartado:** Monorepo con `backend/` y `mobile/` (el plan original); esquema duplicado a mano en el back (se desincroniza).
-
-### D-065 · Herramientas del scaffold vigente: Vitest y oxlint en el backend
-- **Estado:** Aceptada
-- **Decisión:** El backend usa Vitest (pruebas) y oxlint (lint) con Prettier, que es lo que genera NestJS 12; la app usa Jest y ESLint (`eslint-config-expo`). `Conventions.md` §3 y §6 se actualizan.
-- **Motivo:** Es el scaffold oficial actual y evita configurar a mano Jest y ESLint sobre ESM.
-- **Descartado:** Jest + ESLint en el backend (el texto original de `Conventions.md`).
+- **Decisión:** La universidad entregó un único `logo-uts.png` a color (632x210, fondo transparente) en `mobile/assets/brand/`. Sobre el degradado verde va dentro de una insignia blanca de 16 px de radio; el splash usa fondo blanco (`#0B1710` en modo oscuro). Se retiran `@expo/vector-icons` y `expo-symbols`: todos los íconos son Iconify `solar`.
+- **Motivo:** El logo no se recolorea (`Design.md`) y su texto gris no se lee sobre verde oscuro. El manual de identidad está en `docs/brand/man-12.pdf`.
+- **Descartado:** Versión blanca dibujada por nosotros (prohibido); usar el logo directo sobre el degradado (ilegible). Si la universidad entrega `uts-logo-white.svg`, se reemplaza la insignia.
 
 ---
 

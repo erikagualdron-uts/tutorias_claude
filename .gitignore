@@ -1,0 +1,21 @@
+# Dependencies and builds
+node_modules/
+dist/
+build/
+coverage/
+.expo/
+web-build/
+
+# Secrets and local config (never commit; keep .env.example without real values)
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+
+# Logs and OS/editor files
+*.log
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.idea/
