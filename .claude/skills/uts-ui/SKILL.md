@@ -34,13 +34,36 @@ La fuente de verdad es `docs/Design.md`. Léelo antes de construir (secciones Co
 - Nada de animaciones que retrasen una acción ni mayores a 400 ms. Mantener 60 fps.
 
 ## 4. Pantalla de inicio de sesión
-Seguir el patrón "Login" de `Design.md` al pie de la letra: cabecera con degradado y logo blanco, tarjeta blanca superpuesta, campos con ícono, botón principal "Iniciar sesión" con ícono, **16 px** de separación, divisor "o", botón outlined "Crear cuenta de estudiante" con ícono, y pie con el nombre de la universidad. Reutilizar la misma estructura para registro, recuperación y cambio de clave temporal.
+Seguir el patrón "Login" de `Design.md` al pie de la letra: cabecera con degradado, patrón de marca (`BrandPattern`) y logo blanco, tarjeta blanca superpuesta, campos con ícono, botón principal "Iniciar sesión" con ícono, **16 px** de separación, divisor "o", botón outlined "Crear cuenta de estudiante" con ícono, y pie con el nombre de la universidad. Reutilizar la misma estructura para registro, recuperación y cambio de clave temporal.
 
 ## 5. Elementos de la universidad
 - Usar los recursos oficiales de `mobile/assets/brand/` (logo a color, logo blanco, símbolo). **Nunca** redibujar, recolorear, deformar ni agregar efectos al logo; respetar espacio libre y tamaño mínimo del manual.
 - Si los archivos oficiales no existen todavía, **dejar un marcador de posición claro y avisar al usuario**; no inventar ni aproximar un logo.
 - El logo aparece en splash, login y pantallas de acceso, perfil o About, correos y (en silueta) el ícono de notificación de Android; no se repite en cada pantalla.
-- Detalles de identidad: línea lima de 4 px bajo títulos destacados, círculos decorativos blancos al 6-10 % sobre el degradado, fotos solo autorizadas y con superposición verde.
+- Detalles de identidad: línea lima de 4 px bajo títulos destacados, el patrón de marca sobre el degradado, fotos solo autorizadas y con superposición verde.
+- **Nombre:** "Institución Universitaria Tecnológica de Santander – UTS" (corto: UTS). Nunca "Unidades Tecnológicas". Va en los archivos de traducción, no en el código.
+
+## 6. Patrón de marca (hojas, plumas y libros)
+- **Prohibido decorar con figuras geométricas** (círculos, arcos, manchas). La decoración es el patrón de hoja, pluma y libro, inspirado en los elementos del escudo. No es una reproducción del escudo.
+- Usar `assets/BrandPattern.tsx` como plantilla de `mobile/src/components/BrandPattern.tsx`. Las posiciones son una lista fija (nunca aleatoria por render) y el centro, donde van logo y título, queda libre.
+- Íconos: `mdi:leaf`, `mdi:feather`, `mdi:book-open-page-variant` (verificar nombres; se permite `mdi` solo para estos íconos decorativos). Declararlos en el registro `src/icons/` con nombre literal.
+- Blanco al 8-12 % (6 % en modo oscuro) y máximo 3 íconos en lima al 14-18 %. Estático; fundido de entrada de 350 ms; sin animación con "reducir movimiento". Ignora toques y se oculta a los lectores de pantalla.
+- Solo en cabeceras de acceso (login, registro, recuperación, cambio de clave), splash y tarjetas destacadas (3 íconos al 10 %). Nunca en pantallas de contenido.
+
+## 7. Campos de texto
+- **Todo campo tiene relleno y borde tenue**; nunca un campo sin borde ni relleno. 52 px de alto, radio 12, etiqueta arriba, ícono a la izquierda de 20 px.
+- Sobre tarjeta blanca: relleno `inputFill` + borde `inputBorder` (1 px). Sobre el fondo de pantalla: relleno blanco + el mismo borde.
+- Foco: borde de 2 px `inputBorderFocus`, relleno blanco, halo suave, 150 ms. Error: borde `error`, halo suave y mensaje debajo con ícono. Deshabilitado: 60 % de opacidad.
+- Mismo estilo en áreas de texto, selectores desplegables (con flecha), búsqueda y el campo de escritura del chat.
+- El borde es tenue a propósito (aprox. 1.6:1). Si se exige contraste estricto de 3:1, usar #8C968A.
+
+## 8. Tipografía
+- Fuente corporativa **Myriad Pro** (Regular, Semibold, Bold) y **Source Code Pro** para código. Los estilos con tamaños y pesos están en `Design.md`, sección Typography.
+- Los nombres de fuente viven **solo** en `fonts` del tema. Prohibido escribir `fontFamily` o `fontWeight` dentro de componentes: usar los estilos del tema (`typography.body`, `typography.button`, etc.).
+- Cada peso es un archivo (`MyriadPro-Regular`, `-Semibold`, `-Bold`) en `mobile/assets/fonts/`. Cargarlos con `useFonts` y mantener el splash hasta que estén listos.
+- El peso medio (500) ya no existe: usar Semibold.
+- **Licencia:** Myriad Pro es comercial. Si los archivos oficiales no existen todavía, usar el respaldo **Source Sans 3** cambiando solo `fonts` en el tema, y avisar al usuario; nunca copiar la fuente de otra fuente sin licencia.
+- Al probar, revisar que los textos en español no se recorten y que el tamaño de fuente del sistema al 200 % no rompa el diseño.
 
 ## Reglas de color (siguen vigentes)
 - Acción principal `primary` con texto blanco. `accent` (#C3D730) nunca como texto o ícono sobre fondo claro (contraste 1.6:1).
@@ -51,4 +74,4 @@ Seguir el patrón "Login" de `Design.md` al pie de la letra: cabecera con degrad
 ## Antes de terminar
 - Revisar la tabla de contraste de `Design.md` para cualquier combinación nueva.
 - Probar con textos en español (30 % más largos) y con el tamaño de fuente del sistema al 200 %.
-- Confirmar: cero imports de librerías de íconos distintas a Iconify, cero hexadecimales en componentes, todos los botones con ícono y 16 px entre apilados.
+- Confirmar: cero imports de librerías de íconos distintas a Iconify, cero hexadecimales en componentes, todos los botones con ícono, 16 px entre apilados, todos los campos con relleno y borde, ninguna figura geométrica decorativa y ningún `fontFamily` o `fontWeight` escrito en componentes.

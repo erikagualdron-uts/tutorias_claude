@@ -21,6 +21,12 @@ export const colors = {
     errorPressed: '#6D100A',
     onPrimary: '#FFFFFF',
     onAccent: '#132F20',
+    // Campos de texto. Sobre el fondo `screen`, usar `inputFillOnScreen`.
+    inputFill: '#F2F4EF',
+    inputFillOnScreen: '#FFFFFF',
+    inputBorder: '#C9D0C3', // Tenue a propósito (~1.6:1). Contraste estricto 3:1: '#8C968A'
+    inputBorderFocus: '#4E7A2F',
+    placeholder: '#767676',
   },
   dark: {
     primary: '#C3D730',
@@ -42,6 +48,11 @@ export const colors = {
     errorPressed: '#6D100A',
     onPrimary: '#132F20',
     onAccent: '#132F20',
+    inputFill: '#0B1710',
+    inputFillOnScreen: '#132F20',
+    inputBorder: 'rgba(255,255,255,0.16)',
+    inputBorderFocus: '#C3D730',
+    placeholder: '#B3B3B3',
   },
 } as const;
 
@@ -72,6 +83,7 @@ export const radius = {
 } as const;
 
 export const touchTarget = 48;
+export const inputHeight = 52;
 export const buttonHeight = { default: 52, compact: 44 } as const;
 export const iconSize = { inline: 16, button: 20, nav: 24, empty: 40 } as const;
 
@@ -92,17 +104,35 @@ export const motion = {
   shimmer: 1200,
 } as const;
 
+// Fuentes. Único lugar donde aparecen nombres de fuente: ningún componente los escribe.
+// En React Native cada peso es un archivo distinto; no usar `fontWeight` con fuentes propias.
+// Cargar con useFonts() y mantener el splash hasta que carguen (archivos en mobile/assets/fonts/).
+export const fonts = {
+  // Corporativa (requiere los archivos y una licencia que cubra apps móviles)
+  regular: 'MyriadPro-Regular',
+  semibold: 'MyriadPro-Semibold',
+  bold: 'MyriadPro-Bold',
+  mono: 'SourceCodePro_400Regular', // @expo-google-fonts/source-code-pro
+  // Respaldo mientras llegan los archivos: Source Sans 3 (@expo-google-fonts/source-sans-3)
+  //   regular: 'SourceSans3_400Regular',
+  //   semibold: 'SourceSans3_600SemiBold',
+  //   bold: 'SourceSans3_700Bold',
+  // (verificar los nombres exactos al instalar el paquete)
+} as const;
+
+// Myriad Pro es más estrecha y de menor altura x que Roboto: tamaños +1 px.
+// El antiguo peso medio (500) ahora es Semibold.
 export const typography = {
-  screenTitle: { fontFamily: 'Roboto_700Bold', fontSize: 24, lineHeight: 32 },
-  sectionTitle: { fontFamily: 'Roboto_500Medium', fontSize: 18, lineHeight: 24 },
-  cardTitle: { fontFamily: 'Roboto_500Medium', fontSize: 16, lineHeight: 22 },
-  metricNumber: { fontFamily: 'Roboto_700Bold', fontSize: 28, lineHeight: 36 },
-  body: { fontFamily: 'Roboto_400Regular', fontSize: 14, lineHeight: 20 },
-  bodySmall: { fontFamily: 'Roboto_400Regular', fontSize: 12, lineHeight: 18 },
-  metadata: { fontFamily: 'Roboto_400Regular', fontSize: 12, lineHeight: 16 },
-  label: { fontFamily: 'Roboto_500Medium', fontSize: 12, lineHeight: 16, letterSpacing: 0.24 },
-  button: { fontFamily: 'Roboto_500Medium', fontSize: 14, lineHeight: 20 },
-  code: { fontFamily: 'RobotoMono_400Regular', fontSize: 14, lineHeight: 20 },
+  screenTitle: { fontFamily: fonts.bold, fontSize: 26, lineHeight: 32 },
+  sectionTitle: { fontFamily: fonts.semibold, fontSize: 19, lineHeight: 26 },
+  cardTitle: { fontFamily: fonts.semibold, fontSize: 17, lineHeight: 22 },
+  metricNumber: { fontFamily: fonts.bold, fontSize: 30, lineHeight: 36 },
+  body: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 22 },
+  bodySmall: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 18 },
+  metadata: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 18 },
+  label: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 16, letterSpacing: 0.24 },
+  button: { fontFamily: fonts.semibold, fontSize: 15, lineHeight: 20 },
+  code: { fontFamily: fonts.mono, fontSize: 14, lineHeight: 20 },
 } as const;
 
 export type ThemeMode = keyof typeof colors;
