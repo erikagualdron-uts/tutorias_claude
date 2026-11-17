@@ -18,7 +18,7 @@ Si algo no está en estos archivos, **pregunta antes de decidir**. No inventes r
 
 - **App:** React Native + Expo (TypeScript), Expo Router, TanStack Query, Zustand, i18next, socket.io-client.
 - **Backend:** NestJS (TypeScript), PostgreSQL, Prisma, Socket.IO, BullMQ + Redis, Nodemailer.
-- **Carpetas:** `mobile/` (app), `backend/` (API), `docs/` (documentación).
+- **Repositorios:** `tutorias_uts_mobile` (app), `tutorias_uts_back` (API), `tutorias_uts_db` (esquema Prisma, migraciones, seed y `docker-compose.yml`) y `Claude` (`docs/`, `specs/` y esta guía). En la documentación, `mobile/` y `backend/` significan la raíz de `tutorias_uts_mobile` y `tutorias_uts_back` (D-077).
 
 ## Comandos
 
@@ -26,16 +26,16 @@ Si algo no está en estos archivos, **pregunta antes de decidir**. No inventes r
 
 ```bash
 # Infraestructura local (PostgreSQL y Redis)
-docker compose up -d
+cd tutorias_uts_db && docker compose up -d
 
 # Backend
-cd backend
+cd tutorias_uts_back
 npm run start:dev            # API en modo desarrollo
 npm run test                 # pruebas
-npx prisma migrate dev       # aplicar migraciones
+# Las migraciones se crean y aplican en tutorias_uts_db: npx prisma migrate dev
 
 # App móvil
-cd mobile
+cd tutorias_uts_mobile
 npx expo start               # servidor de desarrollo
 npm run lint                 # lint
 npm run typecheck            # verificación de tipos

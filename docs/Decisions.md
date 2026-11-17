@@ -271,6 +271,12 @@
 - **Motivo:** Un periodo cerrado es historial; los periodos vacíos creados por error se pueden quitar mientras estén Próximos.
 - **Descartado:** Permitir eliminar periodos cerrados sin módulos.
 
+### D-077 · El código vive en tres repositorios hermanos
+- **Estado:** Aceptada
+- **Decisión:** `tutorias_uts_mobile` (app Expo), `tutorias_uts_back` (API NestJS) y `tutorias_uts_db` (esquema Prisma, migraciones, seed y `docker-compose.yml`) son repositorios separados; `Claude` guarda `docs/`, `specs/` y `CLAUDE.md`. El esquema se edita solo en `tutorias_uts_db` y el backend lo copia con `scripts/sync-schema.mjs` para generar su cliente. En `docs/` y `specs/`, `mobile/` y `backend/` nombran la raíz de `tutorias_uts_mobile` y `tutorias_uts_back`; las rutas de `backend/prisma/` y `docker-compose.yml` corresponden a `tutorias_uts_db`. Cubre lo que `specs/001-auth-roles/tasks.md` cita como D-064, que no estaba escrito aquí.
+- **Motivo:** Es la estructura real del trabajo; documentarla evita que las specs y las guías apunten a carpetas que no existen.
+- **Descartado:** Un solo repositorio con carpetas `backend/` y `mobile/`.
+
 ---
 
 ## Plantilla para nuevas decisiones
