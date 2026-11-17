@@ -1,5 +1,7 @@
 # Contrato: componente `BrandLoader`
 
+> **Reemplazado por la spec 009** (`specs/009-brand-loader-v2/contracts/brand-loader.md`): el loader ahora lleva un anillo giratorio y entra y sale con una sacudida. Este documento describe la versión 1.
+
 Interfaz que la funcionalidad 007 expone al resto de la app. Ubicación: `tutorias_uts_mobile/src/components/BrandLoader.tsx`.
 
 ## Propiedades

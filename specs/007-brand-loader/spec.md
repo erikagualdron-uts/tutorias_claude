@@ -110,8 +110,8 @@ Todo estado de carga de la app existente usa el loader de la marca; no queda nin
 - **FR-001**: La app MUST mostrar, como único indicador de carga, un loader propio con **un solo ícono de la marca a la vez**, centrado y sin anillo, pista ni forma alrededor. El único texto que puede acompañarlo es el aviso de demora de FR-016.
 - **FR-002**: El loader MUST cambiar de ícono en cada iteración en el orden fijo **libro abierto → pluma → hoja → libro abierto**, y MUST empezar siempre por el libro cuando se muestra.
 - **FR-003**: Cada iteración MUST durar 900 ms: el ícono aparece en 250 ms, se sostiene 400 ms y se desvanece en 250 ms, y el siguiente empieza de inmediato.
-- **FR-004**: El loader MUST usar solo fundidos: sin movimiento, giro ni escalado.
-- **FR-005**: El loader MUST NOT dibujar círculos, arcos ni otras figuras geométricas, de acuerdo con las reglas de diseño del proyecto.
+- **FR-004**: El loader MUST usar solo fundidos: sin movimiento, giro ni escalado. *(Reemplazado por la spec 009: el loader v2 lleva anillo y sacudida.)*
+- **FR-005**: El loader MUST NOT dibujar círculos, arcos ni otras figuras geométricas, de acuerdo con las reglas de diseño del proyecto. *(Reemplazado por la spec 009: el loader v2 lleva anillo y sacudida.)*
 
 **Tamaños y colores**
 
