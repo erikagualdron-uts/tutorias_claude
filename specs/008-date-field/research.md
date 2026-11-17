@@ -8,6 +8,7 @@ No quedaron `NEEDS CLARIFICATION` en el contexto técnico; estas son las decisio
 - **Motivo**: ya decidido en `docs/Architecture.md` y D-079; funciona en Expo Go (sin compilación nativa propia), tiene diálogo en Android y vista en iOS, y admite `minimumDate` y `maximumDate`.
 - **Alternativas**: librerías con modal propio (dependencias extra y estilo ajeno al sistema); calendario propio (mucho código, accesibilidad por rehacer); campo de texto con máscara (descartado en D-079: admite fechas mal escritas).
 - **Riesgo**: la API del paquete cambia entre versiones mayores (nombre del evento de cambio, `display`). **Verificar al instalar** la forma exacta de `onChange`/`onValueChange` y de `DateTimePickerAndroid.open` en la versión resuelta antes de escribir el componente.
+- **Verificado (T002)**: `npx expo install` resolvió la versión **9.2.1** y añadió su plugin en `app.json`. En esa versión `onChange` está **obsoleto**: se usan `onValueChange(event, date)` y `onDismiss()`. `DateTimePickerAndroid.open({ value, mode: 'date', minimumDate, maximumDate, onValueChange, onDismiss })` abre el diálogo y el componente de iOS acepta `display`, `locale`, `themeVariant`, `minimumDate` y `maximumDate`. `DateField` usa solo `onValueChange` y `onDismiss`.
 
 ## R-2. Android frente a iOS
 

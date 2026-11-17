@@ -53,8 +53,7 @@ Hoja inferior con título (la etiqueta del campo), el selector, y dos botones ap
 | `dateField.placeholder` | dd/mm/aaaa | dd/mm/yyyy |
 | `dateField.hint` | Abre un selector de fecha | Opens a date picker |
 | `dateField.empty` | Sin seleccionar | Not selected |
-| `dateField.confirm` | Confirmar | Confirm |
-| `dateField.cancel` | Cancelar | Cancel |
+| `common.confirm` / `common.cancel` (ya existentes) | Confirmar / Cancelar | Confirm / Cancel |
 | `validation.invalidDate` | Elige una fecha válida. | Choose a valid date. |
 | `periods.form.startsOn` | Fecha de inicio | Start date |
 | `periods.form.endsOn` | Fecha de fin | End date |
