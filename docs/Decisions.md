@@ -141,7 +141,7 @@
 - **Pendiente:** Confirmar los valores con el manual de marca vigente de la UTS (el consultado parece ser una versión anterior).
 
 ### D-041 · Tipografía Roboto
-- **Estado:** Aceptada
+- **Estado:** Reemplazada por D-051
 - **Decisión:** Roboto en toda la app.
 - **Motivo:** Es gratuita y funciona bien en móvil. La fuente institucional (Myriad Pro) no está disponible en Google Fonts.
 
@@ -193,16 +193,14 @@
 - **Motivo:** Que se reconozcan claramente como campos editables.
 - **Nota:** El borde es tenue a propósito (aprox. 1.6:1); si se exige contraste estricto de 3:1, usar #8C968A.
 
-### D-067 · Implementación del patrón de marca y del splash (spec 003)
+### D-051 · Tipografía corporativa Myriad Pro
 - **Estado:** Aceptada
-- **Decisión:** `BrandPattern` usa listas fijas de ubicaciones (`header`: 14 íconos, `hero`: 3) y el registro `src/icons/` declara `mdi:leaf`, `mdi:feather` y `mdi:book-open-page-variant` como únicos íconos `mdi`; el plugin de Iconify empaqueta `solar` y `mdi`. El splash es una imagen estática (`assets/brand/splash-light.png` y `splash-dark.png`, logo blanco sin modificar sobre el degradado y el patrón) porque el splash nativo no dibuja componentes. Los correos no se tocan: hoy solo dicen "UTS Tutorías" y no nombran a la institución.
-- **Motivo:** Cumplir D-049 y D-050 sin romper la regla de "solo Iconify" ni agregar texto nuevo a los correos.
-- **Descartado:** SVG propio para el patrón; posiciones aleatorias por render.
-
-### D-068 · Variantes blancas del logo según el tema
-- **Estado:** Aceptada
-- **Decisión:** El logo de marca usa `logo-uts-no-bg-letras-blancas.png` (símbolo lima y letras blancas) en tema claro y `logo-uts-blanco.png` (todo blanco) en tema oscuro, siempre sobre el degradado verde y sin insignia blanca detrás. El logo a color queda para superficies blancas (correos).
-- **Motivo:** La cabecera es verde en ambos temas; el logo blanco sobre una insignia blanca no se veía.
+- **Reemplaza:** D-041 (Roboto).
+- **Decisión:** La app usa **Myriad Pro** (Regular, Semibold y Bold), la fuente institucional de la UTS, y **Source Code Pro** para código. Los nombres de fuente viven solo en los tokens `fonts` del tema. El peso medio (500) pasa a Semibold (600) y los tamaños suben 1 px porque Myriad Pro es más estrecha.
+- **Motivo:** Coherencia con la identidad de la universidad.
+- **Pendiente:** Myriad Pro es una fuente comercial. La universidad debe entregar los archivos con una licencia que cubra su uso dentro de una app móvil. Mientras tanto se usa **Source Sans 3** (gratuita) con los mismos tokens.
+- **Implementación (spec 005):** Hoy corre con Source Sans 3 (400, 600, 700) y Source Code Pro (400). Los nombres de fuente y los archivos que carga la app viven solo en `src/theme/fonts.ts`; para pasar a Myriad Pro se agregan los archivos con licencia en `assets/fonts/` y se cambian los valores de `fontAssets` en ese archivo. El splash se mantiene hasta que cargan las fuentes, con un máximo de 5 s (`FONT_LOAD_TIMEOUT_MS`); si falla o se agota, la app sigue con la fuente del sistema.
+- **Descartado:** Cargar Myriad Pro desde Adobe Fonts (no está pensado para incrustarse en apps móviles) y copiarla desde un equipo sin confirmar la licencia.
 
 ---
 

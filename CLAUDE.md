@@ -71,6 +71,7 @@ npm run typecheck            # verificación de tipos
 - **Todo botón lleva ícono a la izquierda** (salvo enlaces de texto y botones solo de ícono). Entre botones apilados hay **16 px**.
 - Estilo moderno y fluido: tarjetas con sombra suave, radios de 16 a 24 px, degradados de marca y animaciones cortas con Reanimated, respetando "reducir movimiento".
 - Logo y recursos de la UTS desde `mobile/assets/brand/`, sin modificarlos.
+- Tipografía corporativa **Myriad Pro** (Regular, Semibold, Bold) y Source Code Pro para código, solo mediante los tokens `fonts` del tema. Nunca escribir nombres de fuente ni `fontWeight` en componentes.
 - Campos de texto siempre con relleno y borde tenue (nunca sin borde).
 - Decoración solo con el patrón de hojas, plumas y libros (`BrandPattern`); nada de círculos o arcos geométricos.
 - Nombre oficial: **Institución Universitaria Tecnológica de Santander – UTS** (corto: UTS). Ya no se usa "Unidades Tecnológicas".

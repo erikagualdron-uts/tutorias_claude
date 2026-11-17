@@ -67,21 +67,28 @@ Source: UTS corporate identity manual. Colors marked *(brand)* come directly fro
 | #2BA640 on #FFFFFF | 3.2:1 | **Fails for text.** Icons and fills only |
 
 ## Typography
-- **Display / Body Font**: Roboto — loaded from Google Fonts
-- **Code Font**: Roboto Mono — used for temporary passwords and SMTP values
+- **Corporate Font**: **Myriad Pro**, the institutional typeface of the UTS. Weights used: Regular (400), Semibold (600) and Bold (700).
+- **Code Font**: **Source Code Pro**, used for temporary passwords, filing numbers and SMTP values (Myriad Pro has no monospaced version).
+- **Fallback while the license or files are pending**: **Source Sans 3** (free, open source, very similar proportions) with the same three weights. Switching between Myriad Pro and the fallback is a single change in the `fonts` tokens of the theme; no component writes a font name.
 
-Roboto is used everywhere for its neutral versatility. Spanish text runs roughly 25-30% longer than English, so layouts must tolerate longer labels (wrap or clamp titles, never clip critical labels such as buttons and statuses).
+**Licensing:** Myriad Pro is a commercial font. The app can only embed it with a license that covers mobile app distribution, and the font files must be provided by the university (see D-051). Do not copy the fonts from a computer without confirming the license.
 
-- **Screen Title**: Roboto 24px/32px, weight 700
-- **Section Title**: Roboto 18px/24px, weight 500
-- **Card Title**: Roboto 16px/22px, weight 500, max 2 lines, ellipsis
-- **Metric Number**: Roboto 28px/36px, weight 700
-- **Body**: Roboto 14px/20px, weight 400
-- **Body Small**: Roboto 12px/18px, weight 400
-- **Metadata**: Roboto 12px/16px, weight 400, #575756
-- **Label**: Roboto 12px/16px, weight 500, tracking 0.02em
-- **Button Text**: Roboto 14px/20px, weight 500
-- **Code**: Roboto Mono 14px/20px, weight 400
+**Weights:** the earlier medium weight (500) is now **Semibold (600)**, since Myriad Pro has no medium weight. In React Native each weight is a separate font file; never rely on `fontWeight` with custom fonts.
+
+**Size adjustment:** Myriad Pro is narrower and has a smaller x-height than the previous typeface, so sizes grow by 1px to keep the same legibility. Spanish text is still about 25-30% longer than English, so layouts must tolerate longer labels (wrap or clamp titles, never clip critical labels such as buttons and statuses).
+
+If a component spec elsewhere in this file mentions a size or weight, the named type style below prevails.
+
+- **Screen Title**: Myriad Pro 26px/32px, Bold
+- **Section Title**: Myriad Pro 19px/26px, Semibold
+- **Card Title**: Myriad Pro 17px/22px, Semibold, max 2 lines, ellipsis
+- **Metric Number**: Myriad Pro 30px/36px, Bold
+- **Body**: Myriad Pro 15px/22px, Regular
+- **Body Small**: Myriad Pro 13px/18px, Regular
+- **Metadata**: Myriad Pro 13px/18px, Regular, #575756
+- **Label**: Myriad Pro 12px/16px, Semibold, tracking 0.02em
+- **Button Text**: Myriad Pro 15px/20px, Semibold
+- **Code**: Source Code Pro 14px/20px, Regular
 
 Metadata lines use the separator " · " in this order: `Prof. Name · Mon 10:00–12:00 · Room 301`.
 
@@ -174,7 +181,7 @@ Animations make the app feel smooth, never slow. Use `react-native-reanimated`, 
 ## University brand elements
 The app must feel institutional. The official assets come from the UTS corporate identity manual and are provided by the university; they live in `mobile/assets/brand/`:
 
-- `logo-uts-no-bg-letras-blancas.png` (lime mark with white letters, transparent background) is the **brand logo in light theme**; `logo-uts-blanco.png` (all white, transparent background) is the **brand logo in dark theme** and in the splash. Both go over the green gradient, never over white. `logo-uts.png` (full color) is reserved for white surfaces such as emails. App icon and splash complete the set.
+- `uts-logo.svg` (full color), `uts-logo-white.svg` (for green and dark backgrounds), `uts-logo-mark.svg` (symbol only), app icon and splash.
 - **Never** redraw, recolor, stretch, rotate, outline or add effects to the logo. Respect the clear space and minimum size from the manual.
 - **Where it appears:** splash, login, password recovery and change-password screens, profile or About screen, email headers, and (as a single-color silhouette) the Android notification icon.
 - **Where it does not:** repeated on every screen or inside cards.
@@ -238,7 +245,7 @@ Every text field must read clearly as a field: it always has **both a fill and a
 - **Contrast note:** the border is intentionally soft (about 1.6:1 on white). The field is identified by its fill, label and icon together. If the institution requires a strict 3:1 boundary, use #8C968A as the border color.
 
 ### Chips and segmented controls
-- Chip: 9999px radius, #F2F4EF fill, #132F20 text, 14px weight 500, 8px/12px padding. Selected: #34531F fill, white text.
+- Chip: 9999px radius, #F2F4EF fill, #132F20 text, Button Text style, 8px/12px padding. Selected: #34531F fill, white text.
 - Segmented control: 40px height, #F2F4EF track, selected segment white with Level 1.
 
 ### Badges
@@ -261,7 +268,7 @@ Circle, 40px in lists and 48px in conversation lists. Fallback: initials on #F2F
 ### Login (and password recovery, change password)
 Modern and branded, built to be calm and easy to tap.
 
-- **Header:** brand gradient (#34531F → #132F20) over about 35% of the screen height, with a 32px curved bottom edge, the Brand pattern (leaves, feathers and books) behind the content, the UTS logo centered directly on the gradient (`logo-uts-no-bg-letras-blancas` in light theme, `logo-uts-blanco` in dark theme, no badge behind it), and "UTS Tutorías" in Screen Title style (white) with the 4px lime line below. The logo shrinks when the keyboard opens.
+- **Header:** brand gradient (#34531F → #132F20) over about 35% of the screen height, with a 32px curved bottom edge, the Brand pattern (leaves, feathers and books) behind the content, the white UTS logo centered, and "UTS Tutorías" in Screen Title style (white) with the 4px lime line below. The logo shrinks when the keyboard opens.
 - **Form card:** white, 24px top radius, Level 3, overlapping the header by 24px. 24px padding.
 - **Content, top to bottom, with these gaps:**
   1. Title "Sign in" and a one-line subtitle (8px between them).
@@ -333,7 +340,7 @@ The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 
 **Alerts** (announcements, cancellations, changes): list rows with a leading 40px circular icon, title, one-line body, relative time, and an unread dot (#34531F, 8px). Icon circle colors by type: announcement #F8E9D4 with #132F20 icon; reschedule #FB8C00 tint with #132F20 icon; cancellation #B3261E tint with #B3261E icon; PQRS update #F2F4EF with #34531F icon. Tapping an alert deep-links to the related module, session or PQRS.
 
-**Chats**: conversation list. Row: 48px avatar, name (weight 500), last message (1 line, #575756), time on the right, and a #34531F pill with the unread count (white text). Module chats show a small group icon. Floating "New message" button (56px circle, #34531F, white icon) for the people the role is allowed to message: students pick one of their module teachers; teachers pick a student of their modules or the CAE; the CAE picks a teacher.
+**Chats**: conversation list. Row: 48px avatar, name (Semibold), last message (1 line, #575756), time on the right, and a #34531F pill with the unread count (white text). Module chats show a small group icon. Floating "New message" button (56px circle, #34531F, white icon) for the people the role is allowed to message: students pick one of their module teachers; teachers pick a student of their modules or the CAE; the CAE picks a teacher.
 
 **Chat screen**:
 - App bar with avatar, name and a subtitle (`Module name` or connection state).
@@ -349,7 +356,7 @@ The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 ### PQRS
 **Status chips**: Filed (Neutral badge), In review (Warning badge), Resolved (Success badge). Type labels: Petition, Complaint, Claim, Suggestion.
 
-**Filing screen (students and teachers)**: single column form. Type as a chip group (single select), Subject input, Description textarea with counter. Primary full-width "Submit". After submitting: confirmation screen with a check icon, the filing number in Roboto Mono, and a button "View my PQRS".
+**Filing screen (students and teachers)**: single column form. Type as a chip group (single select), Subject input, Description textarea with counter. Primary full-width "Submit". After submitting: confirmation screen with a check icon, the filing number in Source Code Pro, and a button "View my PQRS".
 
 **My PQRS (students and teachers)**: card list, each card with the subject (2 lines), type label, status badge, and relative date (`3 days ago`). Detail screen: header with subject and status, a vertical status timeline (dots connected by a 2px #E5E5E5 line; completed dots #34531F), and the conversation thread below, using the same bubble style as chat. Users can reply only while the PQRS is not resolved.
 
@@ -385,7 +392,7 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 
 ### Admin management patterns
 - **Lists (teachers, students, rooms)**: search field, filter chips (All, Active, Inactive), rows with avatar, name, email (Metadata) and a status badge (Active neutral-success, Inactive neutral). Overflow menu per row: Edit, Deactivate/Reactivate, Delete. Deleting is a logical delete and always uses a destructive confirmation dialog; its text says the record is hidden, not erased.
-- **Create teacher**: form (name, institutional email, other data). Email validated against the allowed domain with an inline error. On success, a dialog shows the **temporary password** once, in Roboto Mono on a #F2F4EF block with a "Copy" button, and the note that the teacher must change it at first login.
+- **Create teacher**: form (name, institutional email, other data). Email validated against the allowed domain with an inline error. On success, a dialog shows the **temporary password** once, in Source Code Pro on a #F2F4EF block with a "Copy" button, and the note that the teacher must change it at first login.
 - **Rooms**: card or row with name, location and capacity (`30 people`).
 - **Module management**: change room or teacher via a bottom sheet picker. When the selected room has less capacity than the enrolled students, the option is disabled and the message in #B3261E reads `Not enough capacity: 32 enrolled, this room holds 30`. Changing room, teacher or schedule shows a confirmation that states how many students will be notified.
 - **Settings**: grouped list rows (Data, Dropdown lists, Academic periods, Institutional emails, SMTP) with chevrons. SMTP form: host, port, user, password (masked, never shown after saving), from address, and a tonal "Send test email" button with inline success or error result. Save is a Primary button pinned at the bottom.
