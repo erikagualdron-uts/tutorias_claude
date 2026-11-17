@@ -56,4 +56,4 @@ Deben cubrir, como mínimo: módulo con un horario y con dos; hora de fin no pos
 | `tutorias_uts_mobile` | 49 suites y 336 pruebas pasan; lint y tipos limpios; paridad es/en |
 | `tutorias_uts_db` | migración y seed aplicados y repetibles |
 
-**Pendiente (manual, necesita emulador):** recorrido 1 a 11 en español e inglés, modo oscuro, fuente grande y "reducir movimiento", con los tiempos de SC-001 y SC-010 y la comprensión de bloqueos de SC-007 (T080 y T081).
+**2026-11-17 · Recorrido manual y revisión visual (T080, T081):** hecho por el equipo en español e inglés, con modo oscuro y fuente grande. Una observación (avatar sin borde en oscuro y menú de perfil demasiado abajo) se corrigió en `AppBar.tsx`; el resto, sin observaciones. Los tiempos de SC-001 y SC-010 y SC-007 no se registraron por escrito.
