@@ -71,7 +71,7 @@
 ## Phase 6: Polish y cierre
 
 - [X] T028 [P] Actualizar `docs/Design.md` (sección Inputs y Brand pattern) en el repo de docs solo si el resultado difiere de lo ya escrito, y añadir una decisión a `docs/Decisions.md` si algo cambió respecto de D-049 y D-050
-- [ ] T029 Recorrer `quickstart.md` completo en dispositivo o emulador: claro y oscuro, "reducir movimiento", fuente grande y teclado abierto
+- [X] T029 Recorrer `quickstart.md` completo en dispositivo o emulador: claro y oscuro, "reducir movimiento", fuente grande y teclado abierto
 - [ ] T030 Ejecutar `npm run typecheck`, `npm run lint` y `npm test` en `tutorias_uts_mobile`, y `npm test` en `tutorias_uts_back` si se tocó algo allí; luego aplicar la "Definición de terminado" de `docs/Conventions.md` (skill `feature-done-check`)
 
 ## Dependencias y orden

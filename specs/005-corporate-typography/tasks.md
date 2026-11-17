@@ -63,7 +63,7 @@
 
 ## Phase 6: Polish y cierre
 
-- [ ] T021 Recorrer `quickstart.md` en dispositivo o emulador: textos, clave temporal, arranque en frío, fallo de carga, fuente grande del sistema y español (SC-001 a SC-005)
+- [X] T021 Recorrer `quickstart.md` en dispositivo o emulador: textos, clave temporal, arranque en frío, fallo de carga, fuente grande del sistema y español (SC-001 a SC-005)
 - [ ] T022 [P] Confirmar en `docs/Design.md` (sección Typography) que lo escrito coincide con lo implementado (respaldo activo y estilos) y ajustarlo solo si difiere
 - [ ] T023 Confirmar con la universidad el estado de la licencia y los archivos de Myriad Pro (D-051); no copiarlos desde un equipo sin confirmar
 - [ ] T024 Aplicar la "Definición de terminado" de `docs/Conventions.md` (skill `feature-done-check`) y commitear en Conventional Commits, un commit por historia

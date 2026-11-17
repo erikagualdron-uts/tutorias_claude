@@ -223,6 +223,18 @@
 - **Estado:** Aceptada
 - **Decisión:** Formato `type(scope): description`, con ramas `NNN-feature-name` generadas por Spec Kit.
 
+### D-069 · Cambios del docente afectan a las sesiones futuras
+- **Estado:** Aceptada
+- **Decisión:** Cuando el docente cambia la hora o cancela, el cambio aplica a la sesión elegida y a todas las sesiones futuras del módulo (las ya dictadas no cambian). Se valida disponibilidad de salón y cruces en todas las sesiones afectadas, se respeta la ventana de 2 horas respecto de la primera sesión afectada y se notifica una sola vez a los inscritos.
+- **Motivo:** Respuesta del equipo a la pregunta abierta de `Context.md` §10; refleja que un módulo se repite semanalmente.
+- **Descartado:** Afectar solo una sesión (obligaría a repetir la acción cada semana).
+
+### D-070 · El estudiante elige el alcance de su cancelación
+- **Estado:** Aceptada
+- **Decisión:** Al cancelar (hasta 1 hora antes de la sesión), el estudiante elige entre cancelar solo esa sesión o cancelar su inscripción al módulo completo. Cancelar una sesión libera el cupo solo para esa sesión y no lo bloquea de volver a asistir a las siguientes. Cancelar el módulo permite reinscribirse mientras haya cupo.
+- **Motivo:** Respuesta del equipo a la pregunta abierta de `Context.md` §10.
+- **Pendiente:** Definir en la spec de inscripción cómo se calcula el cupo cuando hay cancelaciones por sesión.
+
 ---
 
 ## Plantilla para nuevas decisiones

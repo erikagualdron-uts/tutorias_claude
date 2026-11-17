@@ -92,13 +92,13 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 ### Módulos, cupos y horarios
 - **Solo el CAE** crea módulos y define su docente, salón y horario.
 - Los módulos se organizan en un **listado por periodo académico** (semestre). El estudiante ve y se inscribe a los módulos del periodo activo.
-- Cada módulo **se repite semanalmente** en su día y hora durante todo el periodo. Cada semana es una **sesión** que puede cancelarse o reprogramarse de forma individual.
+- Cada módulo **se repite semanalmente** en su día y hora durante todo el periodo. Cada semana es una **sesión**. Los cambios de hora y las cancelaciones del docente afectan a la sesión elegida **y a todas las sesiones futuras** del módulo (ver D-069).
 - La inscripción es al módulo (todas sus sesiones del periodo).
 - El **cupo máximo** de un módulo se calcula automáticamente según la capacidad del salón asignado.
 - Al llegar al cupo, el sistema **bloquea** nuevas inscripciones.
 - Un estudiante **no puede inscribirse** a dos módulos que se crucen en horario.
 - No hay límite de módulos por estudiante, siempre que no se crucen.
-- El estudiante puede **cancelar** una tutoría hasta **1 hora antes** de su inicio. Pasado ese tiempo, la cancelación se bloquea.
+- El estudiante puede **cancelar** hasta **1 hora antes** del inicio de la sesión, y elige el alcance: **solo esa sesión** o **el módulo completo** (su inscripción). Pasado ese tiempo, la cancelación se bloquea (ver D-070).
 - Un estudiante puede **volver a inscribirse** a un módulo que canceló, mientras no se haya llenado el cupo máximo.
 - El CAE solo puede **cambiar el salón** de un módulo si la capacidad del nuevo salón es **mayor o igual** a la cantidad de estudiantes inscritos. De lo contrario, el sistema bloquea el cambio.
 - Un salón o un docente no puede tener dos módulos en el mismo horario.
@@ -155,8 +155,8 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 ## 10. Preguntas abiertas
 
-- [ ] Cuando el docente cambia la hora o cancela, ¿afecta solo esa sesión (esa semana) o también las semanas restantes? *(Supuesto actual: solo esa sesión.)*
-- [ ] Cuando el estudiante cancela, ¿cancela su inscripción al módulo completo o solo su asistencia a una sesión? *(Supuesto actual: la inscripción al módulo.)*
+- [x] Cuando el docente cambia la hora o cancela, ¿afecta solo esa sesión o también las semanas restantes? **Resuelto (D-069): afecta la sesión elegida y todas las futuras.**
+- [x] Cuando el estudiante cancela, ¿cancela su inscripción al módulo completo o solo su asistencia a una sesión? **Resuelto (D-070): elige entre solo la sesión o el módulo completo.**
 - [ ] Al reprogramar una sesión, ¿también se valida que no choque con otras tutorías de los estudiantes inscritos?
 - [ ] ¿Se excluyen festivos o semanas sin tutoría dentro del periodo?
 - [ ] ¿Un módulo puede tener más de un horario semanal (por ejemplo lunes y miércoles)? *(El modelo de datos ya lo permite.)*

@@ -47,8 +47,8 @@ Sin tareas: los archivos `assets/brand/logo-uts-no-bg-letras-blancas.png` y `ass
 
 ## Phase 5: Polish y cierre
 
-- [ ] T013 Recorrer `quickstart.md` en dispositivo o emulador: tema claro, tema oscuro, cambio de tema con la app abierta y teclado abierto (SC-001 a SC-003)
-- [ ] T014 Decidir con el usuario si el splash en claro también usa el símbolo lima (hoy usa `logo-uts-blanco.png` en ambos temas, ver spec 003); si cambia, actualizar `docs/Design.md` y registrar la decisión
+- [X] T013 Recorrer `quickstart.md` en dispositivo o emulador: tema claro, tema oscuro, cambio de tema con la app abierta y teclado abierto (SC-001 a SC-003)
+- [X] T014 (decidido: se mantiene `logo-uts-blanco`) Decidir con el usuario si el splash en claro también usa el símbolo lima (hoy usa `logo-uts-blanco.png` en ambos temas, ver spec 003); si cambia, actualizar `docs/Design.md` y registrar la decisión
 - [ ] T015 Commitear la spec 004 en el repo de docs y la prueba nueva en el repo móvil (Conventional Commits) y aplicar la "Definición de terminado" de `docs/Conventions.md` (skill `feature-done-check`)
 
 ## Dependencias y orden

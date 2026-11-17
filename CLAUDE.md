@@ -94,5 +94,5 @@ npm run typecheck            # verificación de tipos
 
 ## Pendientes por definir
 
-- Alcance de cambios del docente (¿una sesión o las semanas restantes?) y de la cancelación del estudiante (¿módulo o sesión?). Ver `docs/Context.md`, sección 10.
+- Reglas de reprogramación: ¿se valida que la nueva hora no choque con otras tutorías de los estudiantes inscritos?, ¿se excluyen festivos? Ver `docs/Context.md`, sección 10. (Resuelto: el docente cambia la sesión y las futuras, D-069; el estudiante elige sesión o módulo, D-070.)
 - Lugar de despliegue del backend y proveedor SMTP de la institución.
