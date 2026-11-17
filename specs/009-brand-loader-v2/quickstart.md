@@ -17,26 +17,26 @@ npm run typecheck
 npm test
 ```
 
-Deben cubrir, como mínimo: los desplazamientos de la entrada (0, −6, +6, −3, +3, 0) y de la salida (0, +6, −6, +3, 0) y sus duraciones, el giro de una vuelta por segundo y el pulso del anillo con "reducir movimiento", el tamaño del anillo (64 y 28 px) y su grosor, que el tamaño compacto usa fundido de 150 ms y nunca sacudida, que no hay entrada ni salida visibles en cargas de menos de 300 ms, que la etiqueta accesible y el aviso se conservan, y que la prueba contra `ActivityIndicator` sigue pasando.
+Deben cubrir, como mínimo: el crecimiento de 50 % a 100 % de cada ícono al entrar y su reducción al salir, el giro de una vuelta por segundo y el pulso del anillo con "reducir movimiento", el tamaño del anillo (64 y 28 px) y su grosor, que el conjunto aparece y se va con fundido de 150 ms y que no hay sacudida en ningún tamaño, que no hay entrada ni salida visibles en cargas de menos de 300 ms, que la etiqueta accesible y el aviso se conservan, y que la prueba contra `ActivityIndicator` sigue pasando.
 
 ## Prueba de concepto (antes de construir el resto)
 
-1. En el emulador, con un loader de prueba, comprobar que al quitarlo la animación de salida se reproduce y el contenido ocupa su sitio al instante.
-2. Quitarlo en medio de la entrada: la salida debe arrancar desde donde estaba, sin saltos.
+1. En el emulador, con un loader de prueba, comprobar que al quitarlo el fundido de salida se reproduce y el contenido ocupa su sitio al instante.
+2. Quitarlo en medio de la entrada: el fundido debe arrancar desde donde estaba, sin saltos.
 3. Si alguno falla, aplicar la alternativa de `research.md` R-2 (propiedad `visible` y componente montado durante la salida).
 
 ## Recorrido manual
 
 1. **Anillo**: con la red lenta, abrir Más → Configuración → Periodos. Tras unos 300 ms aparece el ícono rodeado de un anillo fino cuyo arco da una vuelta por segundo, sin saltos; el ícono cambia (libro → pluma → hoja) sin que el anillo se detenga.
-2. **Entrada**: al aparecer, el conjunto se mueve suavemente de lado a lado unos 6 px mientras se hace visible, y queda quieto en el centro.
-3. **Salida**: al llegar los datos, el conjunto se mueve de lado a lado y se desvanece mientras el contenido ya se está viendo; el contenido no espera.
+2. **Entrada**: al aparecer, el conjunto se desvanece en un instante; cada ícono crece desde la mitad de su tamaño, siempre centrado y sin moverse de lado a lado.
+3. **Salida**: al llegar los datos, el conjunto se desvanece mientras el contenido ya se está viendo; el contenido no espera. Cada ícono se reduce a la mitad antes de dar paso al siguiente.
 4. **Aviso de demora**: mantener la espera más de 1 segundo; el mensaje aparece debajo sin tocar el anillo y se va junto con el loader.
-5. **Carga rápida**: con la red normal, abrir la misma pantalla; no debe verse anillo ni sacudida.
-6. **Botones**: pulsar "Guardar periodo" con la red lenta. El ícono del botón se reemplaza de inmediato, con un fundido corto, por el ícono pequeño con su anillo girando; el botón no cambia de tamaño ni recorta el anillo; no hay sacudida ni aviso; al terminar, el loader se desvanece.
+5. **Carga rápida**: con la red normal, abrir la misma pantalla; no debe verse anillo ni animación.
+6. **Botones**: pulsar "Guardar periodo" con la red lenta. El ícono del botón se reemplaza de inmediato, con un fundido corto, por el ícono pequeño con su anillo girando; el botón no cambia de tamaño ni recorta el anillo; no hay aviso; al terminar, el loader se desvanece.
 7. **Modo oscuro**: el ícono y el anillo se ven casi blancos (nunca lima) y la pista, tenue.
-8. **Reducir movimiento**: activarlo en el emulador. No hay sacudida ni giro: el loader entra y sale con un fundido corto, el anillo queda fijo y su arco pulsa, y el ícono cambia de golpe cada 900 ms.
+8. **Reducir movimiento**: activarlo en el emulador. No hay giro ni cambio de tamaño: el loader entra y sale con un fundido corto, el anillo queda fijo y su arco pulsa, y el ícono cambia de golpe cada 900 ms.
 9. **Lector de pantalla**: con TalkBack o VoiceOver, la carga se anuncia como "Cargando…" una vez; el anillo no añade anuncios y el aviso de demora se anuncia una sola vez.
-10. **Texto grande**: con el tamaño de letra del sistema al máximo, el loader conserva su tamaño y la sacudida no recorta el contenido vecino.
+10. **Texto grande**: con el tamaño de letra del sistema al máximo, el loader conserva su tamaño y no recorta el contenido vecino.
 
 ## Comprobación de consistencia
 

@@ -5,6 +5,8 @@ description: "Task list for Loader de la marca, versión 2"
 
 # Tasks: Loader de la marca, versión 2
 
+> **Nota (D-082):** este documento es del diseño original de la spec 009 y se conserva como historial. La sacudida lateral que describe quedó **descartada**: cada ícono crece de 50 % a 100 % al entrar y se reduce al salir, el ícono mide 32 px (14 px compacto) y el conjunto solo se desvanece 150 ms. Manda D-082, `spec.md`, `contracts/brand-loader.md` y la sección Loader de `docs/Design.md`.
+
 **Input**: Design documents from `/specs/009-brand-loader-v2/`
 
 **Prerequisites**: plan.md, spec.md, research.md, contracts/brand-loader.md, quickstart.md
@@ -136,7 +138,7 @@ description: "Task list for Loader de la marca, versión 2"
 - [X] T020 [P] Actualizar en el repositorio `Claude` `docs/Decisions.md` (D-080 pasa a "Implementada"; D-078 conserva la nota de reemplazo parcial) y `docs/Design.md` (sección Loader) si la prueba de concepto (T002) cambió cómo se logra la salida, sin cambiar el comportamiento visible
 - [X] T021 Ejecutar `npm run lint`, `npm run typecheck` y `npm test` en `tutorias_uts_mobile`; corregir todo error y confirmar que la suite completa pasa, incluida la prueba contra `ActivityIndicator`
 - [X] T022 Verificar que no hay hexadecimales, nombres de fuente ni textos escritos en `src/components/BrandLoader.tsx`, `LoaderRing.tsx` ni `brandLoaderMotion.ts`, que el anillo usa solo colores del tema y que el botón en carga conserva su tamaño
-- [ ] T023 Recorrer `specs/009-brand-loader-v2/quickstart.md` en el emulador (anillo, sacudida de entrada y salida, aviso de demora, carga rápida, botones, modo oscuro, "reducir movimiento", lector de pantalla y texto grande) y medir SC-008 con al menos 5 personas
+- [X] T023 Recorrer `specs/009-brand-loader-v2/quickstart.md` en el emulador (anillo, cambio de tamaño de cada ícono, aviso de demora, carga rápida, botones, modo oscuro, "reducir movimiento", lector de pantalla y texto grande) y medir SC-008 con al menos 5 personas
 - [ ] T024 Ejecutar la skill `feature-done-check` y atender sus observaciones antes de abrir el Pull Request
 
 ---

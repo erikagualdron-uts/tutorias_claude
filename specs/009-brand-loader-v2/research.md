@@ -1,5 +1,7 @@
 # Research: Loader de la marca, versión 2
 
+> **Nota (D-082):** este documento es del diseño original de la spec 009 y se conserva como historial. La sacudida lateral que describe quedó **descartada**: cada ícono crece de 50 % a 100 % al entrar y se reduce al salir, el ícono mide 32 px (14 px compacto) y el conjunto solo se desvanece 150 ms. Manda D-082, `spec.md`, `contracts/brand-loader.md` y la sección Loader de `docs/Design.md`.
+
 Decisiones técnicas de la funcionalidad 009. No quedaron marcadores `NEEDS CLARIFICATION`; la única incógnita técnica (R-2) tiene un plan de validación y una alternativa.
 
 ## R-1. Dibujo y giro del anillo
