@@ -174,6 +174,7 @@ Animations make the app feel smooth, never slow. Use `react-native-reanimated`, 
 - **Screen transitions:** native stack slide; modals and sheets rise from the bottom.
 - **State changes:** badges, progress bars and capacity bars animate their change over 250ms. Numbers in metric cards count up once on first load.
 - **Skeletons:** shimmer loop of 1.2s in `Screen` and `Card` tones.
+- **Brand loader:** one brand icon at a time (book, feather, leaf), 900ms per icon with fades only (see Loader); instant swap with reduce motion.
 - **Haptics:** light impact on primary actions; success, warning and error notification haptics after enrolling, cancelling and failed actions.
 - **Reduce motion:** when the system setting is on, remove movement, shimmer and count-up, and keep only fades.
 - **Performance:** animations run on the UI thread; keep 60 fps. No animation is allowed to delay a user action.
@@ -225,7 +226,7 @@ After login, the app routes to the tab set of the user's role. If `mustChangePas
 - **Destructive**: #B3261E fill, white text and icon, pressed #6D100A. Always opens a confirmation dialog.
 - **Accent** (dark surfaces only): #C3D730 fill, #132F20 text and icon.
 - **Disabled**: #F2F4EF fill, #878787 text and icon. A disabled action always shows a helper line below explaining why.
-- **Loading**: the icon is replaced by a spinner; the button keeps its width.
+- **Loading**: the icon is replaced by the compact brand loader (see Loader); the button keeps its width.
 - Icon-only buttons: 48px touch area, 24px icon, #575756.
 
 ### Inputs
@@ -242,6 +243,7 @@ Every text field must read clearly as a field: it always has **both a fill and a
 - **Disabled:** 60% opacity, no glow.
 - **Same style for:** textareas (grow up to 6 lines, counter inside the bottom-right corner), dropdown triggers (with a chevron), the search field and the chat composer.
 - **Passwords** have a show/hide toggle. **Dropdowns** open as bottom sheets with a searchable list (values come from the administrable lists).
+- **Date fields** (calendar days such as the start and end of an academic period): same look as any input, with a leading calendar icon. They show the date as **dd/mm/YYYY** in both languages and the user **picks** it from the system date picker (Android dialog, iOS bottom sheet); the field is not typed by hand, so an invalid date cannot be entered. The chosen day is kept as `YYYY-MM-DD` for the API and never goes through a time zone conversion. When a rule depends on another field (an end date must be after the start date), the picker blocks the dates that break it and the rule is still explained below the field.
 - **Contrast note:** the border is intentionally soft (about 1.6:1 on white). The field is identified by its fill, label and icon together. If the institution requires a strict 3:1 boundary, use #8C968A as the border color.
 
 ### Chips and segmented controls
@@ -259,6 +261,17 @@ Dialogs: 20px radius, Level 3, max 320px wide, title + body + two buttons (cance
 
 ### Toasts
 Bottom, above the tab bar. #132F20 fill, white text, 8px radius, 4s. Success confirmations only; errors that need action use banners or inline messages.
+
+### Loader (BrandLoader)
+The app's own loading indicator replaces the system spinner everywhere (`ActivityIndicator` is not used). It is a single brand icon that changes on every iteration (an open book, then a feather, then a leaf, and back to the book), so loading feels institutional and unique. It reuses the icons of the Brand pattern (see D-049 for why `mdi` is allowed) and never draws circles or arcs.
+
+- **Sequence:** one icon at a time, always in the same order: open book → feather → leaf → open book… Each iteration lasts 900ms: fade in 250ms, hold 400ms, fade out 250ms, and the next icon starts right after. The loop restarts from the book whenever the loader mounts.
+- **Look:** the icon centered, in #34531F (white on filled buttons and on dark surfaces). No ring, track, label or background shape around it.
+- **Sizes:** 48px for a full screen or a content area, 20px compact (inside buttons and inline rows).
+- **Motion:** only fades, no movement or scaling. With reduce motion, the icon changes every 900ms with no fade (instant swap).
+- **Where:** full-screen and content-area loading, and the loading state of buttons. List and card layouts may still use skeleton shapes (see States).
+- **Accessibility:** one element with the role `progressbar`, the label `Loading…` from the translation files and the busy state; the icon is hidden from screen readers and the label does not change with the icon.
+- **Component:** one `BrandLoader` component with a `size` prop (`regular` or `compact`) and an optional `color`; no animation runs while it is not mounted.
 
 ### Avatars
 Circle, 40px in lists and 48px in conversation lists. Fallback: initials on #F2F4EF with #132F20 text.
@@ -398,7 +411,7 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 - **Settings**: grouped list rows (Data, Dropdown lists, Academic periods, Institutional emails, SMTP) with chevrons. SMTP form: host, port, user, password (masked, never shown after saving), from address, and a tonal "Send test email" button with inline success or error result. Save is a Primary button pinned at the bottom.
 
 ## States
-- **Loading**: skeleton shapes in #F2F4EF with a slow shimmer; never a blank screen. Buttons show a spinner and stay the same width while submitting.
+- **Loading**: the brand loader (see Loader) for screens and content areas, or skeleton shapes in #F2F4EF with a slow shimmer for list and card layouts; never a blank screen. Buttons show the compact brand loader and stay the same width while submitting.
 - **Empty**: 48px #575756 icon, one-line title, one-line explanation, and a Primary or Tonal button when there is a next step (e.g. `Browse modules`).
 - **Error**: inline message with a "Try again" tonal button. Network failure shows a banner `You are offline` (#F8E9D4).
 - **Rule feedback**: every blocked action explains the rule in plain language (capacity, conflict, cancellation window, domain). The text comes from the translation files.
@@ -407,7 +420,7 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 - Minimum touch target 48 x 48px. Text scales with the system font size up to 200% without clipping.
 - Contrast follows the table above; status is always conveyed by text or icon in addition to color.
 - All icons that carry meaning have accessibility labels; the chat, schedule blocks and cards announce their full content to screen readers.
-- Language follows the device (Spanish or English; Spanish by default). Dates, times and numbers follow the device locale and the `America/Bogota` time zone. Timestamps are stored in UTC.
+- Language follows the device (Spanish or English; Spanish by default). Times and numbers follow the device locale and the `America/Bogota` time zone. Calendar dates in forms and lists are shown as dd/mm/YYYY in both languages (see Date fields). Timestamps are stored in UTC.
 - No hard-coded strings in components; all text is in the translation files.
 
 ## Do's and Don'ts

@@ -277,6 +277,18 @@
 - **Motivo:** Es la estructura real del trabajo; documentarla evita que las specs y las guías apunten a carpetas que no existen.
 - **Descartado:** Un solo repositorio con carpetas `backend/` y `mobile/`.
 
+### D-078 · Loader propio de la marca: un ícono por iteración
+- **Estado:** Aceptada (pendiente de implementar con el ciclo SDD: `/speckit-specify`)
+- **Decisión:** Los indicadores de carga de la app son el componente `BrandLoader`: un solo ícono de la marca a la vez que cambia en cada iteración en el orden libro → pluma → hoja → libro (los mismos íconos de `BrandPattern`, ver D-049). Cada iteración dura 900 ms (aparece 250, se sostiene 400, se desvanece 250) y solo usa fundidos; con "reducir movimiento" el ícono cambia sin animación. Reemplaza al `ActivityIndicator` en pantallas, áreas de contenido y botones en carga (versión compacta de 20 px); las listas y tarjetas pueden seguir usando skeletons. No dibuja círculos ni arcos.
+- **Motivo:** Pedido del equipo tras probar en el emulador: el spinner del sistema se ve ajeno a la identidad institucional, y `Design.md` ya prohíbe la decoración geométrica. Un ícono que va rotando entre libro, pluma y hoja hace el loader único y propio de la UTS.
+- **Descartado:** Mantener el spinner del sistema; un spinner circular propio (sería una figura geométrica); mostrar los tres íconos a la vez (la propuesta del equipo es uno por iteración).
+
+### D-079 · Fechas de calendario: se eligen y se muestran como dd/mm/YYYY
+- **Estado:** Aceptada (pendiente de implementar con el ciclo SDD: `/speckit-specify`)
+- **Decisión:** Los campos de día de calendario (inicio y fin de un periodo) se eligen en un selector de fecha del sistema (`@react-native-community/datetimepicker`, compatible con Expo Go) detrás del componente `DateField`; no se escriben a mano. Se muestran como dd/mm/YYYY en español e inglés, también en los listados. El valor interno y el de la API siguen siendo `YYYY-MM-DD`, sin conversión de zona horaria. El selector bloquea fechas que rompen una regla (la fecha de fin debe ser posterior a la de inicio) y el servidor sigue validando.
+- **Motivo:** Pedido del equipo tras probar en el emulador: escribir `AAAA-MM-DD` es incómodo y propenso a errores. Sustituye al campo de texto de la tarea T023 y a la nota R-8 de la spec 006.
+- **Descartado:** Campo de texto con formato dd/mm/YYYY (admite fechas mal escritas); formato según el idioma del dispositivo (se pidió un formato fijo).
+
 ---
 
 ## Plantilla para nuevas decisiones

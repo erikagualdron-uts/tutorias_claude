@@ -36,6 +36,8 @@
 | Push | expo-notifications |
 | Sesión segura | expo-secure-store (tokens) |
 | Calendario semanal | react-native-big-calendar (o vista propia) |
+| Selector de fecha | `@react-native-community/datetimepicker` (compatible con Expo Go), detrás del componente `DateField` |
+| Indicador de carga | Componente propio `BrandLoader` con Reanimated: un ícono de la marca por iteración (libro, pluma, hoja) |
 
 ### Backend
 | Necesidad | Tecnología |

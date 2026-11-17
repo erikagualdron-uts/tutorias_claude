@@ -113,7 +113,7 @@ Formato único de error:
 - **La app no es la barrera de las reglas de negocio.** Puede mostrar ayudas (botón deshabilitado, aviso), pero el backend siempre valida y la app muestra el `code` de error traducido.
 - **Estilos:** todos los colores, espaciados y radios vienen de un archivo de tokens (`src/theme/`) generado a partir de `Design.md`. Prohibido escribir colores hexadecimales dentro de los componentes.
 - **Textos:** siempre `t('feature.section.key')`. Las claves se organizan por funcionalidad (`enrollments.card.enroll`) y existen en `es.json` y `en.json`. Un texto sin traducción en ambos idiomas es un error de revisión.
-- **Fechas:** se usa una sola librería de fechas en toda la app (se define en la primera spec). La app recibe UTC y muestra en `America/Bogota`.
+- **Fechas:** se usa una sola librería de fechas en toda la app (se define en la primera spec). La app recibe UTC y muestra en `America/Bogota`. Los días de calendario (inicio y fin de un periodo) se **eligen** con `@react-native-community/datetimepicker` mediante el componente `DateField`, se **muestran como dd/mm/YYYY** en español e inglés y viajan a la API como `YYYY-MM-DD`, sin pasar por una conversión de zona horaria (D-079). Prohibido pedir una fecha escribiéndola a mano.
 - **Accesibilidad:** objetivos táctiles de 48 px, `accessibilityLabel` en íconos con significado, y estado nunca solo por color.
 - **Íconos:** solo Iconify (`react-native-iconify`, set `solar`). Prohibido `@expo/vector-icons`, Lucide y otras librerías de íconos. Todos los íconos se declaran en un único registro (`src/icons/`) con el nombre escrito como texto literal, y se usan con el componente `Icon`.
 - **Botones:** todo botón lleva un ícono a la izquierda (20 px), salvo enlaces de texto y controles solo de ícono (con `accessibilityLabel`). Entre botones apilados hay **16 px** (`spacing.lg`).
@@ -123,7 +123,8 @@ Formato único de error:
 - **Campos de texto:** siempre con relleno y borde tenue, ícono a la izquierda y el estado de foco y error definidos en `Design.md`. Nunca un campo sin borde ni relleno.
 - **Decoración:** nada de figuras geométricas (círculos, arcos, manchas); se usa el componente `BrandPattern` (hojas, plumas y libros).
 - **Nombre de la institución:** "Institución Universitaria Tecnológica de Santander – UTS" (corto: "UTS"). No usar "Unidades Tecnológicas" en la app. El nombre vive en los archivos de traducción.
-- Cada pantalla maneja sus cuatro estados: cargando (skeleton), vacío, error y con datos.
+- Cada pantalla maneja sus cuatro estados: cargando (`BrandLoader` o skeleton), vacío, error y con datos.
+- **Loader:** el indicador de carga es el componente `BrandLoader` (un solo ícono de la marca por iteración, que va cambiando entre libro, pluma y hoja, con fundidos cortos que respetan "reducir movimiento"). Prohibido `ActivityIndicator` en componentes y pantallas; un botón en carga usa el `BrandLoader` compacto (D-078).
 - Tokens y datos de sesión en `expo-secure-store`; nunca en `AsyncStorage`.
 
 ## 6. Pruebas
