@@ -101,7 +101,11 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - El estudiante puede **cancelar** hasta **1 hora antes** del inicio de la sesión, y elige el alcance: **solo esa sesión** o **el módulo completo** (su inscripción). Pasado ese tiempo, la cancelación se bloquea (ver D-070).
 - Un estudiante puede **volver a inscribirse** a un módulo que canceló, mientras no se haya llenado el cupo máximo.
 - El CAE solo puede **cambiar el salón** de un módulo si la capacidad del nuevo salón es **mayor o igual** a la cantidad de estudiantes inscritos. De lo contrario, el sistema bloquea el cambio.
-- Un salón o un docente no puede tener dos módulos en el mismo horario.
+- Un salón o un docente no puede tener dos módulos en el mismo horario dentro del periodo; terminar a la hora en que otro empieza no es un cruce.
+- Un módulo puede tener **varios horarios semanales** (por ejemplo martes y jueves). El CAE solo cambia esos horarios mientras el módulo **no tenga inscritos**; con inscritos, la hora de una sesión o de las futuras la cambia el docente (D-084).
+- El CAE solo elimina (lógico) un módulo **sin inscritos**. Cambiar el docente o el salón se aplica a las sesiones futuras y las pasadas conservan lo que tenían (D-086).
+- Los módulos de un periodo **Cerrado** son de solo lectura, también frente a los festivos.
+- Si el docente o el salón de un módulo se desactiva o elimina después de asignarse, el módulo se marca como no disponible y el CAE lo reasigna; no se bloquea la desactivación (D-088).
 - El docente solo puede cambiar la hora **consultando disponibilidad** (salón y cruces de horario).
 - El docente puede **cambiar la hora o cancelar** una tutoría hasta **2 horas antes** de su inicio. Pasado ese tiempo, la acción se bloquea.
 - Cambiar hora, salón o docente, o cancelar un módulo, **siempre notifica** a los estudiantes inscritos.
@@ -112,6 +116,11 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - Un salón tiene nombre único dentro de su ubicación, capacidad entera positiva y estado Activo o Inactivo. No se desactiva ni elimina un salón con módulos en el periodo activo; con módulos solo en periodos Próximos se permite, avisando cuántos quedan afectados (D-074). Eliminar una ubicación sin salones activos elimina también sus salones inactivos (D-075).
 - Las **listas desplegables** las define el sistema (ej. "Tipos de PQRS"); el CAE administra sus elementos con etiqueta en español e inglés, orden y estado. Un elemento en uso solo se desactiva (D-073).
 - Reglas que **la funcionalidad de módulos debe cumplir** porque la configuración no puede aplicarlas sola: el cupo es la capacidad del salón, un salón inactivo o eliminado no se asigna, y los módulos de un periodo cerrado no se modifican.
+
+### Festivos
+- El CAE administra un **calendario de festivos**: agrega, edita y elimina (lógico) festivos con fecha y nombre, y puede **importar** los de un año desde un servicio público (Nager.Date) revisando antes la lista. No se registran, editan, eliminan ni importan festivos con fecha anterior a hoy (D-083).
+- Las sesiones no se generan en festivos. Al registrar un festivo, las sesiones futuras de esa fecha se cancelan con el motivo "festivo" y se avisa a los inscritos; al eliminarlo, se restauran o se generan de nuevo.
+- La importación nunca es obligatoria: si el servicio externo falla, el CAE registra los festivos a mano.
 
 ### Comunicación
 - La **mensajería es en tiempo real** (chat).
@@ -165,5 +174,5 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - [x] Cuando el docente cambia la hora o cancela, ¿afecta solo esa sesión o también las semanas restantes? **Resuelto (D-069): afecta la sesión elegida y todas las futuras.**
 - [x] Cuando el estudiante cancela, ¿cancela su inscripción al módulo completo o solo su asistencia a una sesión? **Resuelto (D-070): elige entre solo la sesión o el módulo completo.**
 - [ ] Al reprogramar una sesión, ¿también se valida que no choque con otras tutorías de los estudiantes inscritos?
-- [ ] ¿Se excluyen festivos o semanas sin tutoría dentro del periodo?
-- [ ] ¿Un módulo puede tener más de un horario semanal (por ejemplo lunes y miércoles)? *(El modelo de datos ya lo permite.)*
+- [x] ¿Se excluyen festivos o semanas sin tutoría dentro del periodo? **Resuelto (D-083): calendario de festivos del CAE con importación opcional.**
+- [x] ¿Un módulo puede tener más de un horario semanal (por ejemplo lunes y miércoles)? **Resuelto (D-084): sí; el CAE solo los cambia sin inscritos.**

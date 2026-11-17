@@ -308,6 +308,42 @@
 - **Motivo:** Pedido del equipo tras probar D-080: los íconos de 48 px chocaban con el anillo y el mensaje, y la sacudida no gustó (primero la del conjunto, luego la de cada ícono).
 - **Descartado:** Sacudida del conjunto (D-080); sacudida de cada ícono mientras cambia de tamaño; íconos de 40 px (siguen rozando el anillo).
 
+### D-083 · Calendario de festivos del CAE con importación opcional desde Nager.Date
+- **Estado:** Aceptada (spec 010)
+- **Decisión:** El CAE administra un calendario de festivos global (fecha única, nombre y origen manual o importado). La generación de sesiones omite esas fechas; al registrar un festivo las sesiones futuras de la fecha quedan canceladas con motivo "festivo" y al eliminarlo se restauran o se generan. El CAE puede importar los festivos de un año desde `https://date.nager.at/api/v3/PublicHolidays/{año}/CO`: el servidor consulta el servicio (límite de 10 s, URL y país en configuración), valida la respuesta, muestra una vista previa y, al confirmar, vuelve a consultar y guarda solo las fechas confirmadas. Solo sale hacia el servicio el año y el país. Si falla, el calendario manual sigue funcionando y no se guarda nada parcial. No se registran, editan, eliminan ni importan festivos con fecha anterior a hoy (Bogotá), y los festivos no modifican sesiones de módulos de periodos Cerrados, que son de solo lectura.
+- **Motivo:** Pedido del equipo: evitar sesiones en días sin clase sin que el CAE tenga que digitar cada festivo. Guardar los festivos localmente hace que generar sesiones no dependa de un servicio de terceros. Cierra la pregunta abierta de festivos.
+- **Descartado:** No excluir nada y cancelar a mano (el CAE cancelaría decenas de sesiones por periodo); semanas sin tutoría por periodo (amplía la spec 006); consultar el servicio desde la app o en cada generación (dependencia en línea y sin validación en servidor); lista fija en el repositorio (los festivos cambian cada año).
+
+### D-084 · Varios horarios por módulo; el CAE solo los cambia sin inscritos
+- **Estado:** Aceptada (spec 010)
+- **Decisión:** Un módulo puede tener varios horarios semanales. El CAE solo cambia los horarios de un módulo sin inscritos activos (se regeneran las sesiones futuras) y solo elimina módulos sin inscritos. Con inscritos, la hora de una sesión o de las futuras la cambia el docente (spec 012), que valida disponibilidad y avisa. Cambiar nombre, descripción, docente o salón se permite siempre que el periodo no esté Cerrado.
+- **Motivo:** El CAE no tiene la validación de cruces con los horarios de los estudiantes inscritos (pregunta de reprogramación aún abierta); limitar el cambio a módulos sin inscritos evita dejar a alguien con un cruce o sin aviso. `Architecture.md` ya preveía varios horarios.
+- **Descartado:** Que el CAE cambie horarios con inscritos y notifique (sin validar cruces de estudiantes); un solo horario por módulo (obliga a crear dos módulos para martes y jueves).
+
+### D-085 · Cruces de docente y salón impedidos por restricciones de exclusión
+- **Estado:** Aceptada (spec 010)
+- **Decisión:** `module_schedules` guarda copias de `period_id`, `teacher_id` y `room_id` y tiene tres restricciones de exclusión (`btree_gist`) sobre el día y el rango de minutos semiabierto `[inicio, fin)`: por docente, por salón y por módulo, solo entre filas no borradas. El servicio valida antes para devolver el módulo con el que choca. El horario se guarda como minutos desde la medianoche de Bogotá (`startMinute`, `endMinute`), la API lo expone como `HH:mm`, y no puede cruzar la medianoche. Toda escritura de módulos bloquea con `FOR SHARE` la fila del periodo y se rechaza si está `CLOSED`.
+- **Motivo:** La regla de no cruce debe ser imposible de violar aunque dos peticiones lleguen a la vez, igual que en D-072. Los minutos permiten una exclusión sin expresiones y el `CHECK` impide horarios que crucen el día.
+- **Descartado:** Solo validar en el servicio (carreras); restricción sobre sesiones (no cubre horarios sin sesiones y exige miles de filas); `TIME` en vez de minutos (conversiones propensas a errores con Prisma).
+
+### D-086 · La sesión guarda el docente y el salón con que se dicta
+- **Estado:** Aceptada (spec 010)
+- **Decisión:** Cada `ModuleSession` guarda `teacherId` y `roomId`. Cambiar el docente o el salón de un módulo solo actualiza las sesiones con inicio futuro; las pasadas conservan los suyos. El cupo se lee siempre de la capacidad del salón actual del módulo.
+- **Motivo:** Historial fiel de quién dictó cada sesión y dónde, y la reprogramación del docente (spec 012) lee el salón y el docente de la sesión.
+- **Descartado:** Sesiones que heredan docente y salón del módulo (reasignar reescribiría el pasado).
+
+### D-087 · Eventos de módulo en una tabla de eventos para las notificaciones
+- **Estado:** Aceptada (spec 010)
+- **Decisión:** Los cambios de docente, de salón y de festivo escriben un registro en `outbox_events` (tipo, módulo, datos mínimos sin información personal) en la misma transacción que el cambio. La funcionalidad de notificaciones (spec 013) los lee, avisa a los inscritos y los marca como procesados. La spec 010 no envía notificaciones. **Condición:** la inscripción (spec 011) no se publica sin las notificaciones (spec 013) o sin un consumidor del outbox, para que ningún inscrito quede sin aviso (Principio II de la constitución); hasta la 011 no hay inscritos.
+- **Motivo:** La regla "todo cambio notifica a los inscritos" no se puede cumplir antes de que exista el canal, pero el cambio y su registro deben ser atómicos para que nada se pierda.
+- **Descartado:** Eventos en memoria (se pierden al reiniciar); encolar ya en BullMQ (el canal y las plantillas son de la spec 013); no registrar nada hasta la spec 013 (los cambios hechos antes no avisarían a nadie).
+
+### D-088 · Docente o salón que deja de estar disponible: se marca, no se bloquea
+- **Estado:** Supuesto (spec 010; pendiente de confirmar con el equipo)
+- **Decisión:** Si el docente o el salón de un módulo se desactiva, se elimina o pierde el rol después de asignarse, el módulo no cambia: el listado y el detalle lo marcan como "docente no disponible" o "salón no disponible" (`teacherUnavailable`, `roomUnavailable`) y sus sesiones futuras se conservan hasta que el CAE lo reasigne. No se bloquea la desactivación del docente.
+- **Motivo:** Las reglas de salones de la spec 006 ya cubren los casos que dejarían clases sin salón en el periodo activo; para el docente, bloquear su baja amplía la spec 001 y puede impedir desactivar cuentas que deben cerrarse de inmediato. Marcarlo da al CAE lo que necesita para reasignar.
+- **Descartado:** Impedir desactivar a un docente con módulos en el periodo activo; reasignar o cancelar sus sesiones automáticamente (decidir por el CAE).
+
 ---
 
 ## Plantilla para nuevas decisiones

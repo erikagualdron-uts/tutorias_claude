@@ -80,7 +80,9 @@
     │   ├── students/
     │   ├── rooms/         # salones y ubicaciones
     │   ├── periods/       # periodos académicos (semestres)
-    │   ├── modules/       # tutorías
+    │   ├── modules/       # tutorías: módulos, horarios semanales y sesiones
+    │   ├── holidays/      # calendario de festivos e importación desde Nager.Date
+    │   ├── outbox/        # eventos de módulo para las notificaciones
     │   ├── enrollments/   # inscripciones
     │   ├── chat/
     │   ├── notifications/
@@ -108,9 +110,11 @@
 | `Location` | id, name (único entre no borrados), deletedAt |
 | `Room` | id, locationId, name (único por ubicación), capacity (entero > 0), status (ACTIVE / INACTIVE), deletedAt |
 | `AcademicPeriod` | id, name (ej. 2026-2, único entre no borrados), startsOn y endsOn (fechas de calendario), status (UPCOMING / ACTIVE / CLOSED), closedAt, closedBy (MANUAL / AUTOMATIC), deletedAt |
-| `Module` | id, periodId, nombre, descripción, teacherId, roomId, status, cupo (derivado de `Room.capacidad`) |
-| `ModuleSchedule` | id, moduleId, dayOfWeek, startTime, endTime (horario semanal; un módulo puede tener varios) |
-| `ModuleSession` | id, moduleId, originalStartsAt, startsAt, endsAt, status (SCHEDULED / RESCHEDULED / CANCELLED) |
+| `Module` | id, periodId, name, description, teacherId, roomId, deletedAt. Sin estado propio; el cupo se deriva de `Room.capacity` |
+| `ModuleSchedule` | id, moduleId, periodId, teacherId, roomId (copias para las restricciones de cruce), dayOfWeek (1 a 7), startMinute, endMinute (minutos locales de Bogotá), deletedAt. Un módulo puede tener varios |
+| `ModuleSession` | id, moduleId, scheduleId, teacherId, roomId (los de esa sesión), originalStartsAt, startsAt, endsAt, status (SCHEDULED / RESCHEDULED / CANCELLED), cancelReason (HOLIDAY), holidayId, deletedAt |
+| `Holiday` | id, date (fecha de calendario, única entre no borrados), name, source (MANUAL / IMPORTED), deletedAt |
+| `OutboxEvent` | id, type, moduleId, payload, createdAt, processedAt (eventos que las notificaciones envían después) |
 | `Enrollment` | id, studentId, moduleId, status (ACTIVE / CANCELLED), createdAt |
 | `Conversation` | id, type (DIRECT / MODULE), moduleId?, createdAt |
 | `ConversationMember` | conversationId, userId, lastReadAt |
@@ -134,7 +138,11 @@ Notas:
 - Al crear el módulo, el backend **genera una `ModuleSession` por cada semana** del periodo (de `startsOn` a `endsOn`), convirtiendo la hora local de `America/Bogota` a UTC.
 - La `Enrollment` es al **módulo**, no a cada sesión: el estudiante queda inscrito en todas las sesiones del periodo.
 - Cancelar o reprogramar una sesión modifica solo esa `ModuleSession` (guarda `originalStartsAt` para trazabilidad) y notifica a los inscritos.
-- Si el CAE cambia salón o docente de un módulo, se aplica a las sesiones futuras.
+- Si el CAE cambia salón o docente de un módulo, se aplica solo a las sesiones futuras: cada sesión guarda el docente y el salón con que se dicta, y las pasadas no cambian (D-086).
+- Los cruces de docente, de salón y entre horarios del mismo módulo los impiden restricciones de exclusión sobre `ModuleSchedule` dentro del mismo periodo; un horario que termina cuando otro empieza no se solapa (D-085).
+- Toda escritura de módulos, horarios o sesiones bloquea con `FOR SHARE` la fila del periodo y se rechaza si está `CLOSED`.
+- **Festivos**: el CAE los administra en `Holiday` (global, no por periodo) y puede importarlos de Nager.Date; el servidor consulta el servicio con límite de 10 s y los guarda localmente, así generar sesiones nunca depende de él (D-083). La generación omite los festivos; al registrar uno, las sesiones futuras de esa fecha pasan a `CANCELLED` con motivo `HOLIDAY`, y al eliminarlo se restauran o se generan. No se tocan módulos de periodos `CLOSED` ni se admiten festivos con fecha anterior a hoy.
+- Los cambios de docente, salón y festivo escriben un `OutboxEvent` en la misma transacción; la funcionalidad de notificaciones lo envía a los inscritos (D-087).
 - Solo un periodo puede estar `ACTIVE` a la vez; el estudiante ve los módulos del periodo activo. La base de datos lo garantiza con un índice único parcial, y los periodos no se solapan por una restricción de exclusión sobre el rango de fechas (D-072).
 - Todo periodo nace `UPCOMING`; el CAE lo activa a mano y, si ya hay uno activo, el servidor exige confirmar su cierre. El periodo activo se cierra a mano o solo al terminar su `endsOn` en `America/Bogota` (tarea programada cada 15 minutos más una comprobación en cada lectura). Un periodo `CLOSED` no se reabre (D-071).
 - Al cerrar un periodo, sus módulos pasan a solo lectura.
@@ -212,7 +220,7 @@ Para Android, se usa el emulador de Android Studio sin ningún inconveniente.
 - [ ] Alcance de los cambios del docente: ¿una sola sesión o las semanas restantes? (supuesto actual: una sola sesión)
 - [ ] Alcance de la cancelación del estudiante: ¿módulo completo o una sesión? (supuesto actual: inscripción al módulo)
 - [ ] ¿Se valida el cruce con los horarios de los estudiantes al reprogramar una sesión?
-- [ ] ¿Festivos o semanas sin tutoría dentro del periodo?
+- [x] ¿Festivos o semanas sin tutoría dentro del periodo? **Resuelto (D-083): calendario de festivos del CAE con importación opcional.**
 - [ ] ¿Dónde se desplegará el backend?
 - [ ] ¿Se cuenta con Mac, iPhone físico o cuenta Apple Developer para la demo?
 - [ ] ¿Qué proveedor de SMTP usa la institución?
