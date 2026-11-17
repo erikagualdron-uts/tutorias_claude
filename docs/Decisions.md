@@ -235,6 +235,42 @@
 - **Motivo:** Respuesta del equipo a la pregunta abierta de `Context.md` §10.
 - **Pendiente:** Definir en la spec de inscripción cómo se calcula el cupo cuando hay cancelaciones por sesión.
 
+### D-071 · Estados del periodo: activación manual, cierre manual o automático
+- **Estado:** Aceptada
+- **Decisión:** Todo periodo nace Próximo. El CAE lo activa a mano (con confirmación si hay otro activo, que se cierra en la misma operación). El activo se cierra a mano o solo cuando termina su fecha de fin en `America/Bogota`. Un periodo cerrado no se reabre y no se puede activar uno cuya fecha de fin ya pasó.
+- **Motivo:** Respuesta del equipo en la clarificación de la spec 006: el CAE controla cuándo empieza un semestre, pero nadie debe recordar cerrarlo.
+- **Descartado:** Estado derivado solo de las fechas (quita el control al CAE); cierre solo manual (periodos vencidos seguirían activos).
+
+### D-072 · Un solo periodo activo y sin solapamientos, garantizados en la base de datos
+- **Estado:** Aceptada
+- **Decisión:** Un índice único parcial impide dos periodos activos y una restricción de exclusión sobre el rango de fechas impide solapamientos (un fin igual a un inicio cuenta como solapamiento), ambos sobre registros no borrados. El servicio valida antes para dar un error claro.
+- **Motivo:** El criterio de éxito exige que sea imposible, incluso con peticiones simultáneas.
+- **Descartado:** Validar solo en el servicio (una carrera entre dos peticiones puede romper la regla).
+
+### D-073 · Listas desplegables predefinidas por el sistema
+- **Estado:** Aceptada
+- **Decisión:** Las listas (ej. `PQRS_TYPE`) las crean las migraciones porque cada una se conecta a un selector concreto. El CAE solo administra sus elementos: crear, editar, reordenar, desactivar y eliminar (lógico). Un elemento en uso solo se desactiva. Los selectores reciben solo los elementos activos, en orden, con ambas etiquetas, y la app elige según el idioma del dispositivo.
+- **Motivo:** Una lista sin selector no tendría efecto visible; las nuevas se agregan con la funcionalidad que las use.
+- **Descartado:** Que el CAE cree o renombre listas.
+
+### D-074 · Desactivar un salón con módulos solo en periodos próximos
+- **Estado:** Aceptada
+- **Decisión:** Solo los módulos del periodo activo bloquean desactivar o eliminar un salón. Si tiene módulos en periodos Próximos, se permite y la app avisa cuántos quedan con un salón inactivo para que el CAE los reasigne.
+- **Motivo:** Respeta la regla original del CAE sin atraparlo; los módulos futuros se corrigen cambiando su salón.
+- **Descartado:** Bloquear por cualquier periodo no cerrado; dejar los módulos sin salón.
+
+### D-075 · Eliminar una ubicación elimina sus salones inactivos
+- **Estado:** Aceptada
+- **Decisión:** Una ubicación sin salones activos se puede eliminar; sus salones inactivos se eliminan (lógico) en la misma acción, tras confirmar y mostrando cuántos son. Si alguno de ellos tiene módulos en el periodo activo, la acción se bloquea.
+- **Motivo:** Evita salones huérfanos y conserva el historial con borrado lógico.
+- **Descartado:** Exigir eliminar los salones uno por uno; dejarlos sin ubicación.
+
+### D-076 · Solo se eliminan periodos Próximos sin módulos
+- **Estado:** Aceptada
+- **Decisión:** Los periodos Activos y Cerrados no se eliminan; un periodo Próximo se elimina (lógico) solo si no tiene módulos. En un periodo Próximo o Activo solo se editan el nombre y las fechas.
+- **Motivo:** Un periodo cerrado es historial; los periodos vacíos creados por error se pueden quitar mientras estén Próximos.
+- **Descartado:** Permitir eliminar periodos cerrados sin módulos.
+
 ---
 
 ## Plantilla para nuevas decisiones

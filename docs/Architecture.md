@@ -83,7 +83,8 @@
     │   ├── notifications/
     │   ├── pqrs/
     │   ├── dashboard/
-    │   ├── settings/      # configuración, listas y SMTP
+    │   ├── settings/      # configuración, listas (dropdown-lists/) y SMTP
+    │   ├── config-usage/  # ¿está en uso un salón, periodo o elemento de lista? (módulos y PQRS lo completan)
     │   └── mail/
     └── prisma/
 ```
@@ -101,8 +102,9 @@
 | `User` | id, email, passwordHash, role, status (ACTIVE / INACTIVE), deletedAt, mustChangePassword, locale |
 | `TeacherProfile` | userId, nombres, datos de contacto |
 | `StudentProfile` | userId, nombres, programa |
-| `Room` | id, nombre, ubicación, capacidad, deletedAt |
-| `AcademicPeriod` | id, nombre (ej. 2026-2), startsOn, endsOn, status (ACTIVE / CLOSED) |
+| `Location` | id, name (único entre no borrados), deletedAt |
+| `Room` | id, locationId, name (único por ubicación), capacity (entero > 0), status (ACTIVE / INACTIVE), deletedAt |
+| `AcademicPeriod` | id, name (ej. 2026-2, único entre no borrados), startsOn y endsOn (fechas de calendario), status (UPCOMING / ACTIVE / CLOSED), closedAt, closedBy (MANUAL / AUTOMATIC), deletedAt |
 | `Module` | id, periodId, nombre, descripción, teacherId, roomId, status, cupo (derivado de `Room.capacidad`) |
 | `ModuleSchedule` | id, moduleId, dayOfWeek, startTime, endTime (horario semanal; un módulo puede tener varios) |
 | `ModuleSession` | id, moduleId, originalStartsAt, startsAt, endsAt, status (SCHEDULED / RESCHEDULED / CANCELLED) |
@@ -114,7 +116,9 @@
 | `PushToken` | id, userId, token, platform |
 | `Pqrs` | id, authorId, tipo, asunto, descripción, status, createdAt |
 | `PqrsMessage` | id, pqrsId, authorId, body |
-| `Setting` / `DropdownList` / `DropdownItem` | configuración general y listas desplegables |
+| `Setting` | configuración general |
+| `DropdownList` | key único (ej. `PQRS_TYPE`), nameEs, nameEn; las crea el sistema, no la API |
+| `DropdownItem` | listId, labelEs, labelEn, sortOrder, status (ACTIVE / INACTIVE), deletedAt |
 | `SmtpConfig` | host, port, user, passwordEncrypted, from |
 
 Notas:
@@ -128,8 +132,10 @@ Notas:
 - La `Enrollment` es al **módulo**, no a cada sesión: el estudiante queda inscrito en todas las sesiones del periodo.
 - Cancelar o reprogramar una sesión modifica solo esa `ModuleSession` (guarda `originalStartsAt` para trazabilidad) y notifica a los inscritos.
 - Si el CAE cambia salón o docente de un módulo, se aplica a las sesiones futuras.
-- Solo un periodo puede estar `ACTIVE` a la vez; el estudiante ve los módulos del periodo activo.
+- Solo un periodo puede estar `ACTIVE` a la vez; el estudiante ve los módulos del periodo activo. La base de datos lo garantiza con un índice único parcial, y los periodos no se solapan por una restricción de exclusión sobre el rango de fechas (D-072).
+- Todo periodo nace `UPCOMING`; el CAE lo activa a mano y, si ya hay uno activo, el servidor exige confirmar su cierre. El periodo activo se cierra a mano o solo al terminar su `endsOn` en `America/Bogota` (tarea programada cada 15 minutos más una comprobación en cada lectura). Un periodo `CLOSED` no se reabre (D-071).
 - Al cerrar un periodo, sus módulos pasan a solo lectura.
+- Solo se eliminan (lógico) periodos `UPCOMING` sin módulos (D-076).
 
 ## 6. Reglas críticas que se validan en el backend
 

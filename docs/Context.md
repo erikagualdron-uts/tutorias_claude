@@ -106,6 +106,13 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - El docente puede **cambiar la hora o cancelar** una tutoría hasta **2 horas antes** de su inicio. Pasado ese tiempo, la acción se bloquea.
 - Cambiar hora, salón o docente, o cancelar un módulo, **siempre notifica** a los estudiantes inscritos.
 
+### Configuración del CAE (periodos, salones y listas)
+- Un periodo nace **Próximo**; el CAE lo **activa** y, si ya hay uno activo, confirma que se cierra. El periodo activo se cierra a mano o solo al pasar su fecha de fin. Un periodo **Cerrado** es de solo lectura y no se reabre. Los periodos no se solapan y solo se eliminan los Próximos sin módulos (D-071, D-072, D-076).
+- En un periodo Próximo o Activo el CAE solo edita el **nombre y las fechas**; en el activo, la fecha de fin no puede ser anterior a hoy.
+- Un salón tiene nombre único dentro de su ubicación, capacidad entera positiva y estado Activo o Inactivo. No se desactiva ni elimina un salón con módulos en el periodo activo; con módulos solo en periodos Próximos se permite, avisando cuántos quedan afectados (D-074). Eliminar una ubicación sin salones activos elimina también sus salones inactivos (D-075).
+- Las **listas desplegables** las define el sistema (ej. "Tipos de PQRS"); el CAE administra sus elementos con etiqueta en español e inglés, orden y estado. Un elemento en uso solo se desactiva (D-073).
+- Reglas que **la funcionalidad de módulos debe cumplir** porque la configuración no puede aplicarlas sola: el cupo es la capacidad del salón, un salón inactivo o eliminado no se asigna, y los módulos de un periodo cerrado no se modifican.
+
 ### Comunicación
 - La **mensajería es en tiempo real** (chat).
 - Las notificaciones llegan por **push** y por **correo** (vía el SMTP que configura el CAE).
