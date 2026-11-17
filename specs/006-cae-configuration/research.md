@@ -50,6 +50,8 @@ Decisiones técnicas de la funcionalidad 006. No quedaron marcadores `NEEDS CLAR
 
 ## R-8. Selector de fecha en la app
 
+> **Sustituida por la spec 008 (D-079, D-081):** las fechas se eligen con `DateField` y el selector del sistema; ya no hay campo de texto `AAAA-MM-DD`.
+
 - **Decisión**: reutilizar los componentes de campo existentes (`FieldBox`, `TextField`) con un campo de fecha de texto `AAAA-MM-DD` validado con Zod, y un selector nativo solo si ya hay una librería de fechas elegida. A confirmar en la primera tarea de la app; si hace falta una dependencia nueva, se pregunta antes de añadirla (`Conventions.md` §5 pide una sola librería de fechas).
 - **Motivo**: `package.json` de la app no incluye selector de fecha; no se agrega una dependencia sin decidirlo.
 
