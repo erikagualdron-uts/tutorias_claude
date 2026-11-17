@@ -339,7 +339,7 @@
 - **Descartado:** Eventos en memoria (se pierden al reiniciar); encolar ya en BullMQ (el canal y las plantillas son de la spec 013); no registrar nada hasta la spec 013 (los cambios hechos antes no avisarían a nadie).
 
 ### D-088 · Docente o salón que deja de estar disponible: se marca, no se bloquea
-- **Estado:** Supuesto (spec 010; pendiente de confirmar con el equipo)
+- **Estado:** Aceptada e implementada (spec 010; confirmada por el equipo el 2026-11-17)
 - **Decisión:** Si el docente o el salón de un módulo se desactiva, se elimina o pierde el rol después de asignarse, el módulo no cambia: el listado y el detalle lo marcan como "docente no disponible" o "salón no disponible" (`teacherUnavailable`, `roomUnavailable`) y sus sesiones futuras se conservan hasta que el CAE lo reasigne. No se bloquea la desactivación del docente.
 - **Motivo:** Las reglas de salones de la spec 006 ya cubren los casos que dejarían clases sin salón en el periodo activo; para el docente, bloquear su baja amplía la spec 001 y puede impedir desactivar cuentas que deben cerrarse de inmediato. Marcarlo da al CAE lo que necesita para reasignar.
 - **Descartado:** Impedir desactivar a un docente con módulos en el periodo activo; reasignar o cancelar sus sesiones automáticamente (decidir por el CAE).
