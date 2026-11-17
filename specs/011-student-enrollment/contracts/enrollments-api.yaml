@@ -34,6 +34,10 @@ paths:
       - { $ref: '#/components/parameters/Id' }
     get:
       summary: Detalle de un módulo con sus sesiones futuras y su estado para el estudiante
+      description: >
+        Responde si el módulo se ofrece (periodo Activo) o si el estudiante tiene o tuvo una
+        inscripción en él, activa o cancelada. En un periodo Cerrado devuelve `readOnly: true`
+        y `sessions: []`.
       responses:
         '200':
           description: Detalle
@@ -42,7 +46,7 @@ paths:
               schema: { $ref: '#/components/schemas/StudentModuleDetail' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '404': { $ref: '#/components/responses/NotFound' }  # inexistente, eliminado, o no ofrecido y sin inscripción del estudiante
   /student/enrollments:
     get:
       summary: Mis tutorías (inscripciones del estudiante)

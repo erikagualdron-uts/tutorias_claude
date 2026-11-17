@@ -38,7 +38,7 @@ El estudiante abre la pestaña de tutorías y ve, en tarjetas, los módulos del 
 7. **Given** un módulo de un periodo Cerrado o Próximo, **When** el estudiante lo consulta, **Then** no se ofrece para inscripción.
 8. **Given** dos estudiantes que se inscriben al mismo tiempo al último cupo, **When** ambas peticiones llegan a la vez, **Then** solo una se acepta y la otra recibe el aviso de módulo lleno; nunca hay sobrecupo.
 9. **Given** un módulo de un periodo activo que ya comenzó, **When** el estudiante se inscribe, **Then** queda inscrito solo en las sesiones que aún no han ocurrido.
-10. **Given** un módulo cuyo docente o salón dejó de estar disponible, **When** el estudiante ve la oferta, **Then** el módulo no se ofrece para inscripción hasta que el CAE lo reasigne.
+10. **Given** un módulo cuyo docente o salón dejó de estar disponible, **When** el estudiante ve la oferta, **Then** el módulo aparece bloqueado con el motivo y sin acción de inscripción hasta que el CAE lo reasigne.
 
 ---
 
@@ -128,7 +128,7 @@ Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de 
 - **FR-010**: Cuando una acción esté bloqueada (módulo lleno, cruce de horario, cancelación fuera de plazo, periodo Cerrado, módulo no disponible), la aplicación MUST mostrar la regla que la bloquea en el idioma del dispositivo.
 - **FR-011**: El estudiante MUST ver sus módulos inscritos con docente, salón, horario y sus próximas sesiones (fecha y hora de Bogotá, estado y, si fue cancelada, el motivo: del estudiante, del docente o festivo).
 - **FR-012**: Las inscripciones y cancelaciones de un periodo Cerrado MUST ser de solo lectura: no se crean ni se cancelan, y se conservan como historial.
-- **FR-013**: Los módulos cuyo docente o salón no están disponibles (D-088) MUST NOT ofrecerse para nuevas inscripciones; los inscritos conservan su inscripción.
+- **FR-013**: Los módulos cuyo docente o salón no están disponibles (D-088) MUST aparecer bloqueados con el motivo y sin acción de inscripción hasta que el CAE los reasigne; los inscritos conservan su inscripción.
 - **FR-014**: La cantidad de inscritos de un módulo MUST ser la real en el listado y el detalle del CAE, y las reglas de la spec 010 MUST aplicarse con ella: el CAE no cambia el salón a uno con capacidad menor que los inscritos activos, ni edita los horarios ni elimina un módulo con inscritos activos.
 - **FR-015**: Una inscripción de una cuenta de estudiante desactivada o eliminada MUST conservarse en el historial y dejar de ocupar cupo.
 - **FR-016**: Cada inscripción y cancelación MUST registrar quién, qué módulo o sesión y cuándo, para trazabilidad, sin exponer datos personales de otros estudiantes.
@@ -160,7 +160,7 @@ Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de 
 ## Assumptions
 
 - Esta spec depende de las specs 001 (cuentas y roles), 006 (periodos y salones) y 010 (módulos, sesiones y festivos); el conteo de inscritos de la spec 010 hoy devuelve cero y esta spec lo reemplaza con datos reales.
-- Las notificaciones a los inscritos (cambio de hora, salón, docente, festivo o cancelación del docente) pertenecen a la spec 013, y el cambio de hora y la cancelación por parte del docente, a la spec 012. Esta spec no envía notificaciones, pero deja los eventos que ellas necesitan.
+- Las notificaciones a los inscritos (cambio de hora, salón, docente, festivo o cancelación del docente) pertenecen a la spec 013, y el cambio de hora y la cancelación por parte del docente, a la spec 012. Esta spec no envía notificaciones ni agrega eventos al outbox: las notificaciones de las specs 012 y 013 leen las inscripciones y las ausencias de la base de datos.
 - Las inscripciones se hacen solo a módulos del periodo Activo; las de periodos Próximos no se abren hasta que el CAE los active.
 - El cruce de horarios entre módulos del estudiante se evalúa con los horarios semanales del módulo, no sesión por sesión.
 - Una inscripción tardía (con el periodo ya comenzado) cubre solo las sesiones que aún no han ocurrido.

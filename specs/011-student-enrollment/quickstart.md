@@ -21,7 +21,7 @@ Deben pasar, entre otras: concurrencia con 20 estudiantes sobre un módulo de cu
 
 ## Recorrido manual (estudiante)
 
-1. **Oferta** (SC-001, menos de 1 minuto): iniciar sesión como estudiante → pestaña Tutorías → "Disponibles". Se ven tarjetas del periodo Activo con docente, salón, horario y `libres/capacidad`. Buscar por nombre. Los módulos de periodos Próximos o Cerrados no aparecen.
+1. **Oferta** (SC-001, menos de 1 minuto): iniciar sesión como estudiante → pestaña Tutorías → "Disponibles". Se ven tarjetas del periodo Activo con docente, salón, horario y `ocupados/capacidad`. Buscar por nombre. Los módulos de periodos Próximos o Cerrados no aparecen.
 2. **Inscribirse**: abrir un módulo e inscribirse. La tarjeta pasa a "Inscrito", los cupos bajan en uno y el módulo aparece en "Mis tutorías" con su próxima sesión.
 3. **Lleno**: con el salón de capacidad 2, inscribir a dos estudiantes; el tercero ve "Lleno", el botón deshabilitado y el motivo.
 4. **Cruce** (SC-003): inscribirse a otro módulo que se solape con el primero: se rechaza mostrando el módulo y el horario con el que choca. Uno que termina cuando empieza el otro se permite.
