@@ -426,9 +426,9 @@ components:
     Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
     Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
   responses:
-    Forbidden: { description: "Rol sin permiso (FORBIDDEN)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Forbidden: { description: "Rol sin permiso (FORBIDDEN_ROLE)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
     NotFound: { description: "No existe o fue eliminado (NOT_FOUND)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-    ValidationError: { description: "Datos inválidos (VALIDATION_ERROR)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    ValidationError: { description: "Datos inválidos (VALIDATION_FAILED)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
   schemas:
     Error:
       type: object

@@ -149,12 +149,12 @@ description: "Task list for Configuración del CAE"
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T046 [US4] Prueba e2e en `tutorias_uts_back/test/config-roles.e2e-spec.ts` que recorre todos los endpoints de `contracts/config-api.yaml` con docente y estudiante esperando `403` (y comprobando que la base no cambia), con CAE esperando éxito, y con ambos roles esperando `200` solo en `GET /academic-periods/active` y `GET /dropdown-lists/:key/items`; sin token, `401`
+- [X] T046 [US4] Prueba e2e en `tutorias_uts_back/test/config-roles.e2e-spec.ts` que recorre todos los endpoints de `contracts/config-api.yaml` con docente y estudiante esperando `403` (y comprobando que la base no cambia), con CAE esperando éxito, y con ambos roles esperando `200` solo en `GET /academic-periods/active` y `GET /dropdown-lists/:key/items`; sin token, `401`
 
 ### Implementation for User Story 4
 
-- [ ] T047 [US4] Revisar que cada controlador nuevo declare su guard de roles y corregir cualquier endpoint sin `@Roles` en `tutorias_uts_back/src/periods/periods.controller.ts`, `tutorias_uts_back/src/rooms/locations.controller.ts`, `tutorias_uts_back/src/rooms/rooms.controller.ts` y `tutorias_uts_back/src/settings/dropdown-lists/dropdown-lists.controller.ts`
-- [ ] T048 [P] [US4] Proteger las rutas de la app: confirmar en `tutorias_uts_mobile/src/features/auth/RouteGate.tsx` que las pantallas de configuración solo existen dentro del grupo `(admin)`, y agregar una prueba en `tutorias_uts_mobile/src/features/auth/__tests__/` que verifica la redirección de docente y estudiante
+- [X] T047 [US4] Revisar que cada controlador nuevo declare su guard de roles y corregir cualquier endpoint sin `@Roles` en `tutorias_uts_back/src/periods/periods.controller.ts`, `tutorias_uts_back/src/rooms/locations.controller.ts`, `tutorias_uts_back/src/rooms/rooms.controller.ts` y `tutorias_uts_back/src/settings/dropdown-lists/dropdown-lists.controller.ts`
+- [X] T048 [P] [US4] Proteger las rutas de la app: confirmar en `tutorias_uts_mobile/src/features/auth/RouteGate.tsx` que las pantallas de configuración solo existen dentro del grupo `(admin)`, y agregar una prueba en `tutorias_uts_mobile/src/features/auth/__tests__/` que verifica la redirección de docente y estudiante
 
 **Checkpoint**: acceso verificado en servidor y app.
 
