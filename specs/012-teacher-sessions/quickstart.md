@@ -42,4 +42,4 @@ Deben pasar, entre otras: ventana de 119, 120 y 121 minutos, cruces de salón, d
 
 ## Resultados
 
-_(Se completa al cerrar la funcionalidad.)_
+- **2026-11-18, recorrido manual (reportado por el equipo):** el flujo se recorrió en el emulador y se dio por bueno. No se registraron las mediciones de SC-001 ni de SC-008 (comprensión de los bloqueos); quedan sin medir.

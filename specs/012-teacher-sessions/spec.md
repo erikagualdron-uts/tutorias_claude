@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-17
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "de la 012 con el docente: ver sus módulos y sesiones, reprogramar una sesión (o ella y las futuras) y cancelarla hasta 2 horas antes, consultando disponibilidad de salón y sin cruces, dejando los eventos para las notificaciones (spec 014)"
 
