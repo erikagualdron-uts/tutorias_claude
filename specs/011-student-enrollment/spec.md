@@ -106,7 +106,7 @@ Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de 
 - ¿Qué pasa si el módulo está lleno pero otros estudiantes cancelaron una sesión suelta? El módulo sigue lleno para inscripciones nuevas mientras alguna sesión futura no tenga lugar; ese lugar solo lo puede retomar quien canceló esa sesión (al reactivarla) o un estudiante nuevo cuando todas las sesiones futuras tengan lugar, por ejemplo cuando solo queda una.
 - ¿Qué pasa si dos peticiones de inscripción del mismo estudiante llegan a la vez? Solo se crea una inscripción.
 - ¿Qué pasa si el CAE cambia el salón a uno de menor capacidad mientras un estudiante se inscribe? El cambio y la inscripción nunca dejan más inscritos que cupo.
-- ¿Qué pasa si el CAE reasigna el docente de un módulo del que el estudiante es inscrito? La inscripción no cambia; el aviso al estudiante lo da la funcionalidad de notificaciones (spec 013).
+- ¿Qué pasa si el CAE reasigna el docente de un módulo del que el estudiante es inscrito? La inscripción no cambia; el aviso al estudiante lo da la funcionalidad de notificaciones (spec 014).
 - ¿Qué pasa si el CAE cierra o activa un periodo con módulos en los que hay inscritos? Las inscripciones del periodo cerrado quedan en solo lectura y se conservan como historial.
 - ¿Qué pasa si un festivo cancela una sesión de un módulo en el que el estudiante está inscrito? La sesión aparece cancelada con el motivo y no consume ninguna acción del estudiante.
 - ¿Qué pasa si el estudiante pierde la conexión al inscribirse? Ve el error con la opción de reintentar y no queda un estado a medias; reintentar no duplica la inscripción.
@@ -134,7 +134,7 @@ Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de 
 - **FR-016**: Cada inscripción y cancelación MUST registrar quién, qué módulo o sesión y cuándo, para trazabilidad, sin exponer datos personales de otros estudiantes.
 - **FR-017**: Los borrados MUST ser lógicos; ninguna inscripción ni cancelación se elimina físicamente.
 - **FR-018**: Todos los textos MUST estar en español e inglés, y las pantallas MUST resolver los cuatro estados (cargando, vacío, error con reintento, contenido).
-- **FR-019**: La inscripción MUST NO publicarse en producción sin las notificaciones de la spec 013 o sin un consumidor del registro de eventos (D-087).
+- **FR-019**: La inscripción MUST NO publicarse en producción sin las notificaciones de la spec 014 o sin un consumidor del registro de eventos (D-087).
 
 ### Key Entities *(include if feature involves data)*
 
@@ -160,7 +160,7 @@ Con inscripciones reales, las reglas que la spec 010 dejó listas se aplican de 
 ## Assumptions
 
 - Esta spec depende de las specs 001 (cuentas y roles), 006 (periodos y salones) y 010 (módulos, sesiones y festivos); el conteo de inscritos de la spec 010 hoy devuelve cero y esta spec lo reemplaza con datos reales.
-- Las notificaciones a los inscritos (cambio de hora, salón, docente, festivo o cancelación del docente) pertenecen a la spec 013, y el cambio de hora y la cancelación por parte del docente, a la spec 012. Esta spec no envía notificaciones ni agrega eventos al outbox: las notificaciones de las specs 012 y 013 leen las inscripciones y las ausencias de la base de datos.
+- Las notificaciones a los inscritos (cambio de hora, salón, docente, festivo o cancelación del docente) pertenecen a la spec 014, y el cambio de hora y la cancelación por parte del docente, a la spec 012. Esta spec no envía notificaciones ni agrega eventos al outbox: las notificaciones de las specs 012 y 013 leen las inscripciones y las ausencias de la base de datos.
 - Las inscripciones se hacen solo a módulos del periodo Activo; las de periodos Próximos no se abren hasta que el CAE los active.
 - El cruce de horarios entre módulos del estudiante se evalúa con los horarios semanales del módulo, no sesión por sesión.
 - Una inscripción tardía (con el periodo ya comenzado) cubre solo las sesiones que aún no han ocurrido.

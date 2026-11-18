@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - Calendario semanal del docente API
+  version: 1.0.0
+  description: >
+    Contrato de la consulta de sesiones del docente por rango de fechas para su calendario.
+    Complementa el contrato de la spec 012 (specs/012-teacher-sessions/contracts/teacher-sessions-api.yaml):
+    `CalendarSession` es la misma forma que su `TeacherSession`, copiada aquí (sin `nullable`) para que el
+    contrato sea de un solo archivo y se pueda validar con `loadContract`; si la forma cambia en la 012,
+    se cambia también aquí. Solo lectura. Exige rol TEACHER (403 en otro
+    caso). El docente sale siempre del token: nunca se ven sesiones de otro docente. Errores en el
+    formato único de docs/Conventions.md §4. Las fechas-hora son ISO 8601 UTC; los días y las horas
+    son locales de America/Bogota.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /teacher/calendar:
+    get:
+      summary: Sesiones del docente en un rango de días, pasadas y futuras
+      description: >
+        Devuelve todas las sesiones del docente (programadas, reprogramadas y canceladas) cuyo inicio cae
+        entre `from` y `to` (días de calendario de Bogotá, inclusivos), ordenadas por inicio. El rango no
+        puede pasar de 7 días. Muestra el periodo Activo; si no hay, el Cerrado más reciente en solo
+        lectura; si tampoco hay, `meta.period` es null y `data` va vacío. Las sesiones pasadas llevan
+        `blockReason: PAST` y ninguna acción.
+      parameters:
+        - { name: from, in: query, required: true, schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' } }
+        - { name: to, in: query, required: true, schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' } }
+      responses:
+        '200':
+          description: Sesiones del rango
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CalendarResponse' }
+        '400':
+          description: >
+            VALIDATION_FAILED: falta `from` o `to`, no son días válidos, `to` es anterior a `from` o el
+            rango pasa de 7 días.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  responses:
+    Unauthorized:
+      description: Sin sesión o token vencido
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: El rol no es TEACHER
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string }
+        message: { type: string }
+        details: { type: object, nullable: true }
+    RoomRef:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        location: { type: string }
+        capacity: { type: integer }
+    CalendarSession:
+      type: object
+      description: Una sesión del docente (misma forma que `TeacherSession` de la spec 012; nunca es null)
+      required: [id, moduleId, moduleName, startsAt, endsAt, originalStartsAt, status, cancelReason, room, attendees, canReschedule, canCancel, canRestore, blockReason]
+      properties:
+        id: { type: string, format: uuid }
+        moduleId: { type: string, format: uuid }
+        moduleName: { type: string }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        originalStartsAt: { type: string, format: date-time }
+        status: { type: string, enum: [SCHEDULED, RESCHEDULED, CANCELLED] }
+        cancelReason: { type: string, nullable: true, enum: [HOLIDAY, TEACHER, null] }
+        room: { $ref: '#/components/schemas/RoomRef' }
+        attendees: { type: integer, minimum: 0, description: Estudiantes que asisten a esta sesión (solo cantidad) }
+        canReschedule: { type: boolean }
+        canCancel: { type: boolean }
+        canRestore: { type: boolean }
+        blockReason:
+          type: string
+          nullable: true
+          enum: [WINDOW_PASSED, PERIOD_CLOSED, PAST, CANCELLED_BY_OTHER, null]
+          description: Por qué no puede cambiarse, para mostrar la regla
+    CalendarResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/CalendarSession' }
+        meta:
+          type: object
+          required: [from, to, period, hours, changeLeadMinutes]
+          properties:
+            from: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+            to: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+            period:
+              type: object
+              nullable: true
+              required: [id, name, startsOn, endsOn, status]
+              properties:
+                id: { type: string, format: uuid }
+                name: { type: string }
+                startsOn: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+                endsOn: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+                status: { type: string, enum: [ACTIVE, CLOSED] }
+            hours:
+              type: object
+              required: [earliest, latest]
+              properties:
+                earliest: { type: string, pattern: '^\d{2}:\d{2}$', description: Hora más temprana permitida (MODULE_EARLIEST_TIME) }
+                latest: { type: string, pattern: '^\d{2}:\d{2}$', description: Hora más tardía permitida (MODULE_LATEST_TIME) }
+            changeLeadMinutes: { type: integer, description: Límite configurado para cambiar una sesión }

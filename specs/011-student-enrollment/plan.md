@@ -37,7 +37,7 @@ Enfoque técnico (detalle en [research.md](research.md)): la inscripción es una
 | Principio | Cumplimiento |
 |---|---|
 | I. Fuente de verdad en docs/ | Se respetan `Architecture.md` (`Enrollment`, inscripción al módulo, transacción con bloqueo de fila) y `Design.md` ("Module card (students)"). Se amplía el modelo (`SessionAbsence`, `effective_until`) y se precisa el cupo por sesión; `Architecture.md` §5 y §6, `Context.md` §6 y D-090 se actualizan en el mismo cambio (ver abajo). |
-| II. Reglas de negocio en backend | Cupo, cruces de horario del estudiante, ventana de 1 hora, periodo Cerrado y rol estudiante viven en servicios, transacciones y restricciones de la base de datos. La regla del cambio de salón ("mayor o igual a los inscritos") se **mantiene tal cual**: ahora cuenta inscripciones reales. La app solo refleja. Las notificaciones a inscritos son de la spec 013 (D-087). |
+| II. Reglas de negocio en backend | Cupo, cruces de horario del estudiante, ventana de 1 hora, periodo Cerrado y rol estudiante viven en servicios, transacciones y restricciones de la base de datos. La regla del cambio de salón ("mayor o igual a los inscritos") se **mantiene tal cual**: ahora cuenta inscripciones reales. La app solo refleja. Las notificaciones a inscritos son de la spec 014 (D-087). |
 | III. Integridad de datos | `deletedAt` en todo y consultas con `deletedAt: null`; ninguna inscripción ni ausencia se borra físicamente (reactivar una sesión marca `deleted_at`). Fechas en UTC con conversión a Bogotá en un solo punto. El límite de 1 hora en configuración (`STUDENT_CANCEL_LEAD_MINUTES`). |
 | IV. Seguridad y privacidad | `@Roles('STUDENT')` en cada endpoint; las consultas parten del `userId` del token, de modo que un estudiante no ve ni toca inscripciones ajenas; las respuestas no incluyen datos de otros estudiantes (solo cantidades). |
 | V. Pruebas primero | Pruebas de cupo por sesión (incluida concurrencia con 20 estudiantes), cruce de horarios, ventana de 1 hora (59, 60 y 61 minutos), reinscripción, reactivación, periodo Cerrado, cuenta desactivada, roles (`403` docente y CAE, `401` sin token) y contrato. |
@@ -46,7 +46,7 @@ Enfoque técnico (detalle en [research.md](research.md)): la inscripción es una
 | VIII. Desarrollo incremental | Una rama; historias entregables por prioridad: inscribirse (US1) y cancelar (US2) antes de "mis tutorías" (US3) y las reglas del CAE (US4). |
 | IX. Idioma | Documentación en español; código y commits en inglés. |
 
-**Resultado**: pasa sin violaciones. Condición de publicación (FR-019, D-087): esta rama no se publica en producción sin la spec 013 o sin un consumidor del outbox; se anota en el PR.
+**Resultado**: pasa sin violaciones. Condición de publicación (FR-019, D-087): esta rama no se publica en producción sin la spec 014 o sin un consumidor del outbox; se anota en el PR.
 
 **Re-evaluación tras el diseño (Fase 1)**: sin cambios; el modelo, el contrato y el orden de bloqueos respetan los mismos principios.
 

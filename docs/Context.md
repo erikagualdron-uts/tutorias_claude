@@ -53,7 +53,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
    - Recibir mensajes de los estudiantes de sus módulos.
    - Conversar con el CAE.
 2. **Cronograma**
-   - Calendario semanal con sus tutorías: hora, salón y cantidad de estudiantes.
+   - Calendario semanal con sus tutorías: hora, salón y cantidad de estudiantes, en vista Día (por defecto en el teléfono) o Semana (por defecto en tableta), navegable por el periodo académico, con las próximas sesiones debajo (spec 013).
    - Cambiar la hora de una tutoría (consultando disponibilidad) o cancelarla, solo esa sesión o ella y las futuras de su horario semanal, y reactivar lo que canceló. Se notifica a todos los estudiantes inscritos.
 3. **Dashboard**.
 4. **PQRS**: solo radicar (vista de usuario).

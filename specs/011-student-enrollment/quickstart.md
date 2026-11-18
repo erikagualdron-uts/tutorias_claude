@@ -39,11 +39,11 @@ Deben pasar, entre otras: concurrencia con 20 estudiantes sobre un módulo de cu
 - Las verificaciones automáticas pasan en los tres repositorios.
 - Los recorridos 1 a 12 se cumplen y se anotan aquí con fecha.
 - `docs/` y `Decisions.md` reflejan lo implementado (Definición de terminado de `docs/Conventions.md`).
-- Nota de publicación (D-087): la inscripción no se publica en producción sin la spec 013 o sin un consumidor del outbox; anotarlo en el PR.
+- Nota de publicación (D-087): la inscripción no se publica en producción sin la spec 014 o sin un consumidor del outbox; anotarlo en el PR.
 
 ## Resultados
 
 **2026-11-17**
 - Verificaciones automáticas: backend 60 unitarias y 283 e2e, app 375 pruebas, lint y typecheck limpios, `migrate diff` vacío.
 - Recorrido manual 1 a 12 hecho por el equipo en la app: sin hallazgos pendientes. Único incidente: error de ícono por caché de Metro, resuelto con `npx expo start -c`.
-- Condición de publicación (D-087): no publicar en producción sin la spec 013 o un consumidor del outbox.
+- Condición de publicación (D-087): no publicar en producción sin la spec 014 o un consumidor del outbox.

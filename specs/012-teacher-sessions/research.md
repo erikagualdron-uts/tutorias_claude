@@ -61,7 +61,7 @@ Decisiones técnicas de la funcionalidad 012. No quedaron marcadores `NEEDS CLAR
 ## R-10. App
 
 - **Decisión**: la pestaña `schedule` del docente pasa de archivo a carpeta (`index.tsx` y `_layout.tsx`), como las demás. Lista de sesiones próximas agrupadas por día (un `FilterChips` para el módulo), tarjeta de módulo con inscritos, y una hoja de acciones por sesión (Reprogramar, Cancelar, Reactivar) con la elección de alcance, el selector de fecha y hora (se reutilizan `DateField` y `PickerSheet`), la regla visible cuando una acción está bloqueada y la confirmación antes de cancelar. Los estudiantes ven la sesión con la nueva hora o "cancelada por el docente" en las pantallas de la spec 011; el CAE, en la lista de sesiones de la spec 010. Íconos solo Iconify en el registro único.
-- **Fuera de alcance**: el calendario semanal compartido de `Design.md` (otra funcionalidad) y las notificaciones (spec 013).
+- **Fuera de alcance**: el calendario semanal compartido de `Design.md` (otra funcionalidad) y las notificaciones (spec 014).
 
 ## R-11. Pruebas
 

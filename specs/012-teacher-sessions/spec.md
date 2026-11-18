@@ -6,7 +6,7 @@
 
 **Status**: Implemented
 
-**Input**: User description: "de la 012 con el docente: ver sus módulos y sesiones, reprogramar una sesión (o ella y las futuras) y cancelarla hasta 2 horas antes, consultando disponibilidad de salón y sin cruces, dejando los eventos para las notificaciones (spec 013)"
+**Input**: User description: "de la 012 con el docente: ver sus módulos y sesiones, reprogramar una sesión (o ella y las futuras) y cancelarla hasta 2 horas antes, consultando disponibilidad de salón y sin cruces, dejando los eventos para las notificaciones (spec 014)"
 
 ## Clarifications
 
@@ -88,9 +88,9 @@ El docente cancela una sesión que empieza en 2 horas o más. La sesión queda c
 
 ### User Story 4 - Eventos y límites configurables para las notificaciones (Priority: P2)
 
-Cada reprogramación y cancelación deja, en la misma operación que el cambio, un evento con los datos mínimos que las notificaciones de la spec 013 necesitan para avisar a los inscritos. El límite de 2 horas se lee de la configuración.
+Cada reprogramación y cancelación deja, en la misma operación que el cambio, un evento con los datos mínimos que las notificaciones de la spec 014 necesitan para avisar a los inscritos. El límite de 2 horas se lee de la configuración.
 
-**Why this priority**: La regla "todo cambio notifica a los inscritos" no se puede cumplir hasta que exista el canal (spec 013), pero ningún cambio hecho antes debe quedar sin registro.
+**Why this priority**: La regla "todo cambio notifica a los inscritos" no se puede cumplir hasta que exista el canal (spec 014), pero ningún cambio hecho antes debe quedar sin registro.
 
 **Independent Test**: Reprogramar y cancelar sesiones y comprobar que cada acción deja exactamente un evento con los datos esperados; cambiar el límite de 2 horas en la configuración y comprobar que las acciones lo respetan sin tocar el código.
 
@@ -134,7 +134,7 @@ Cada reprogramación y cancelación deja, en la misma operación que el cambio, 
 - **FR-012**: Cuando una acción esté bloqueada (fuera de plazo, cruce, festivo, periodo Cerrado), la aplicación MUST mostrar la regla que la bloquea en el idioma del dispositivo.
 - **FR-013**: Los borrados MUST ser lógicos y las horas originales MUST conservarse para trazabilidad; ninguna sesión se elimina físicamente.
 - **FR-014**: Todos los textos MUST estar en español e inglés, y las pantallas MUST resolver los cuatro estados (cargando, vacío, error con reintento, contenido).
-- **FR-015**: Esta funcionalidad MUST NO enviar notificaciones; solo deja los eventos. No se publica en producción sin las notificaciones de la spec 013 o sin un consumidor del registro de eventos (D-087).
+- **FR-015**: Esta funcionalidad MUST NO enviar notificaciones; solo deja los eventos. No se publica en producción sin las notificaciones de la spec 014 o sin un consumidor del registro de eventos (D-087).
 
 ### Key Entities *(include if feature involves data)*
 
@@ -160,7 +160,7 @@ Cada reprogramación y cancelación deja, en la misma operación que el cambio, 
 ## Assumptions
 
 - Esta spec depende de las specs 001 (cuentas y roles), 006 (periodos y salones), 010 (módulos, sesiones, festivos y registro de eventos) y 011 (inscripciones y ausencias).
-- Las notificaciones a los inscritos y los mensajes docente-estudiante pertenecen a la spec 013; esta spec solo deja los eventos. El calendario semanal de todos los roles (Design.md) es otra funcionalidad; aquí el docente ve una lista de sus módulos y próximas sesiones.
+- Las notificaciones a los inscritos y los mensajes docente-estudiante pertenecen a la spec 014; esta spec solo deja los eventos. El calendario semanal de todos los roles (Design.md) es otra funcionalidad; aquí el docente ve una lista de sus módulos y próximas sesiones.
 - El docente solo actúa en módulos del periodo Activo; los del Cerrado se ven en solo lectura.
 - El horario permitido (6:00 a. m. a 6:00 p. m., D-089), los festivos (D-083) y el cruce de salón y de docente (D-085) son los de la spec 010 y se aplican a la nueva hora.
 - Las horas se muestran en `America/Bogota` y se guardan en UTC, igual que en la spec 010.
