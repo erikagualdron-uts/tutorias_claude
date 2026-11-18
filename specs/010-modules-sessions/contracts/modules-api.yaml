@@ -495,7 +495,7 @@ components:
         endsAt: { type: string, format: date-time }
         originalStartsAt: { type: string, format: date-time }
         status: { type: string, enum: [SCHEDULED, RESCHEDULED, CANCELLED] }
-        cancelReason: { type: string, enum: [HOLIDAY, null], nullable: true }
+        cancelReason: { type: string, enum: [HOLIDAY, TEACHER, null], nullable: true }
         teacher: { $ref: '#/components/schemas/PersonRef' }
         room: { $ref: '#/components/schemas/RoomRef' }
     SessionPage:

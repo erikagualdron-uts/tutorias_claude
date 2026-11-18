@@ -54,7 +54,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
    - Conversar con el CAE.
 2. **Cronograma**
    - Calendario semanal con sus tutorías: hora, salón y cantidad de estudiantes.
-   - Cambiar la hora de una tutoría (consultando disponibilidad) o cancelarla. Se notifica a todos los estudiantes inscritos.
+   - Cambiar la hora de una tutoría (consultando disponibilidad) o cancelarla, solo esa sesión o ella y las futuras de su horario semanal, y reactivar lo que canceló. Se notifica a todos los estudiantes inscritos.
 3. **Dashboard**.
 4. **PQRS**: solo radicar (vista de usuario).
 
@@ -107,8 +107,8 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - El CAE solo elimina (lógico) un módulo **sin inscritos**. Cambiar el docente o el salón se aplica a las sesiones futuras y las pasadas conservan lo que tenían (D-086).
 - Los módulos de un periodo **Cerrado** son de solo lectura, también frente a los festivos.
 - Si el docente o el salón de un módulo se desactiva o elimina después de asignarse, el módulo se marca como no disponible y el CAE lo reasigna; no se bloquea la desactivación (D-088).
-- El docente solo puede cambiar la hora **consultando disponibilidad** (salón y cruces de horario).
-- El docente puede **cambiar la hora o cancelar** una tutoría hasta **2 horas antes** de su inicio. Pasado ese tiempo, la acción se bloquea.
+- El docente solo puede cambiar la hora **consultando disponibilidad** (salón, docente y cruces con los horarios de los estudiantes inscritos) y solo dentro de la misma semana de la sesión.
+- El docente puede **cambiar la hora o cancelar** una tutoría hasta **2 horas antes** de su inicio, y elige el alcance: **solo esa sesión** o **ella y las futuras de su mismo horario semanal** (D-069). Puede **reactivar** una sesión que él canceló mientras falten 2 horas o más. Pasado ese tiempo, la acción se bloquea.
 - Cambiar hora, salón o docente, o cancelar un módulo, **siempre notifica** a los estudiantes inscritos.
 
 ### Configuración del CAE (periodos, salones y listas)
@@ -174,6 +174,6 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 - [x] Cuando el docente cambia la hora o cancela, ¿afecta solo esa sesión o también las semanas restantes? **Resuelto (D-069): afecta la sesión elegida y todas las futuras.**
 - [x] Cuando el estudiante cancela, ¿cancela su inscripción al módulo completo o solo su asistencia a una sesión? **Resuelto (D-070): elige entre solo la sesión o el módulo completo.**
-- [ ] Al reprogramar una sesión, ¿también se valida que no choque con otras tutorías de los estudiantes inscritos?
+- [x] Al reprogramar una sesión, ¿también se valida que no choque con otras tutorías de los estudiantes inscritos? **Resuelto (D-093): sí, se rechaza y se dice cuántos estudiantes se cruzan.**
 - [x] ¿Se excluyen festivos o semanas sin tutoría dentro del periodo? **Resuelto (D-083): calendario de festivos del CAE con importación opcional.**
 - [x] ¿Un módulo puede tener más de un horario semanal (por ejemplo lunes y miércoles)? **Resuelto (D-084): sí; el CAE solo los cambia sin inscritos.**

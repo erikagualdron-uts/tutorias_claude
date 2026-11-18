@@ -112,9 +112,9 @@
 | `AcademicPeriod` | id, name (ej. 2026-2, único entre no borrados), startsOn y endsOn (fechas de calendario), status (UPCOMING / ACTIVE / CLOSED), closedAt, closedBy (MANUAL / AUTOMATIC), deletedAt |
 | `Module` | id, periodId, name, description, teacherId, roomId, deletedAt. Sin estado propio; el cupo se deriva de `Room.capacity` |
 | `ModuleSchedule` | id, moduleId, periodId, teacherId, roomId (copias para las restricciones de cruce), dayOfWeek (1 a 7), startMinute, endMinute (minutos locales de Bogotá), deletedAt. Un módulo puede tener varios |
-| `ModuleSession` | id, moduleId, scheduleId, teacherId, roomId (los de esa sesión), originalStartsAt, startsAt, endsAt, status (SCHEDULED / RESCHEDULED / CANCELLED), cancelReason (HOLIDAY), holidayId, deletedAt |
+| `ModuleSession` | id, moduleId, scheduleId, teacherId, roomId (los de esa sesión), originalStartsAt, startsAt, endsAt, status (SCHEDULED / RESCHEDULED / CANCELLED), cancelReason (HOLIDAY / TEACHER), holidayId, deletedAt. Reprogramar cambia `startsAt` y `endsAt` y nunca `originalStartsAt` |
 | `Holiday` | id, date (fecha de calendario, única entre no borrados), name, source (MANUAL / IMPORTED), deletedAt |
-| `OutboxEvent` | id, type, moduleId, payload, createdAt, processedAt (eventos que las notificaciones envían después) |
+| `OutboxEvent` | id, type (cambio de docente, de salón, festivos y, del docente, `SESSION_RESCHEDULED`, `SESSION_CANCELLED_TEACHER`, `SESSION_RESTORED_TEACHER`), moduleId, payload (ids, fechas y alcance, nunca datos de estudiantes), createdAt, processedAt (eventos que las notificaciones envían después) |
 | `Enrollment` | id, studentId, moduleId, status (ACTIVE / CANCELLED), cancelledAt, effectiveUntil (`cancelledAt` + `STUDENT_CANCEL_LEAD_MINUTES`: las sesiones que empiezan antes conservan al estudiante), createdAt, deletedAt. Una sola ACTIVE por estudiante y módulo (índice único parcial) |
 | `SessionAbsence` | id, enrollmentId, sessionId, createdAt, deletedAt (el estudiante sigue inscrito pero no asiste a esa sesión; `deletedAt` marca que la reactivó). Una sola viva por inscripción y sesión |
 | `Conversation` | id, type (DIRECT / MODULE), moduleId?, createdAt |
@@ -139,7 +139,7 @@ Notas:
 - Al crear el módulo, el backend **genera una `ModuleSession` por cada semana** del periodo (de `startsOn` a `endsOn`), convirtiendo la hora local de `America/Bogota` a UTC.
 - La `Enrollment` es al **módulo**, no a cada sesión: el estudiante queda inscrito en todas las sesiones del periodo. Si no puede asistir a una, la cancela con una `SessionAbsence` y sigue inscrito en las demás.
 - El **cupo se mide por sesión** (D-090): los asistentes de una sesión son los estudiantes activos con una inscripción ACTIVE (o cancelada cuyo `effectiveUntil` es posterior al inicio de la sesión) sin una ausencia viva en ella. Un módulo está lleno si alguna de sus sesiones futuras lo está.
-- Cancelar o reprogramar una sesión modifica solo esa `ModuleSession` (guarda `originalStartsAt` para trazabilidad) y notifica a los inscritos.
+- Cancelar o reprogramar una sesión modifica solo esa `ModuleSession` (guarda `originalStartsAt` para trazabilidad) y notifica a los inscritos. El docente elige si el cambio aplica solo a la sesión o a ella y a las futuras de su mismo horario semanal (D-069); reprogramar solo mueve dentro de la misma semana (D-094) y el docente puede reactivar lo que canceló (D-095).
 - Si el CAE cambia salón o docente de un módulo, se aplica solo a las sesiones futuras: cada sesión guarda el docente y el salón con que se dicta, y las pasadas no cambian (D-086).
 - Los cruces de docente, de salón y entre horarios del mismo módulo los impiden restricciones de exclusión sobre `ModuleSchedule` dentro del mismo periodo; un horario que termina cuando otro empieza no se solapa (D-085).
 - Toda escritura de módulos, horarios o sesiones bloquea con `FOR SHARE` la fila del periodo y se rechaza si está `CLOSED`.
@@ -156,10 +156,11 @@ Notas:
 |---|---|
 | Cupo máximo = capacidad del salón | Cupo **por sesión** (D-090). Al inscribir: transacción que bloquea, en este orden, el periodo (`FOR SHARE`), la fila del estudiante y el módulo (`FOR UPDATE`) (D-092); se cuentan los asistentes de cada sesión futura y se compara con `Room.capacidad`. Índices únicos parciales respaldan una inscripción activa por estudiante y módulo. |
 | Sin cruces de horario del estudiante | Antes de inscribir: compara los `ModuleSchedule` de sus módulos activos del mismo periodo (mismo día y horas que se solapen). |
-| Sin cruces de salón ni docente | Al crear o mover un módulo o sesión: validación de disponibilidad. |
+| Sin cruces de salón ni docente | Al crear o mover un módulo: validación de disponibilidad sobre los horarios semanales. Al reprogramar o reactivar una sesión: sobre las sesiones reales, con bloqueos del periodo, el módulo, los salones y los docentes en ese orden (D-096). |
+| Sin cruces con los estudiantes | Al reprogramar o reactivar una sesión se rechaza si algún inscrito asiste a otra sesión a esa hora; el error dice solo cuántos (D-093). |
 | Cambio de salón | Solo si `nuevoSalón.capacidad >= inscritosActivos`. |
 | Cancelación del estudiante | Una sesión se rechaza si falta menos de `STUDENT_CANCEL_LEAD_MINUTES` (1 hora) para `startsAt`. Cancelar el módulo aplica desde la primera sesión a más de esa ventana (`effectiveUntil`, D-091). |
-| Cambio o cancelación del docente | Se rechaza si falta menos de **2 horas** para `startsAt`. |
+| Cambio o cancelación del docente | Reprogramar, cancelar o reactivar se rechaza si falta menos de `TEACHER_CHANGE_LEAD_MINUTES` (2 horas) para `startsAt` de la primera sesión afectada. |
 | Dominios de correo | Estudiantes: `@uts.edu.co`. Docentes y administrativos: `@correo.uts.edu.co`. |
 | Reinscripción | Permitida si el módulo tiene cupo en todas sus sesiones futuras; crea otra inscripción y la cancelada queda en el historial. |
 
