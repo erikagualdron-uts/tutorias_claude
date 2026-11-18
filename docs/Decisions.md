@@ -226,7 +226,7 @@
 
 ### D-069 · Cambios del docente afectan a las sesiones futuras
 - **Estado:** Aceptada
-- **Decisión:** Cuando el docente cambia la hora o cancela, el cambio aplica a la sesión elegida y a todas las sesiones futuras del módulo (las ya dictadas no cambian). Se valida disponibilidad de salón y cruces en todas las sesiones afectadas, se respeta la ventana de 2 horas respecto de la primera sesión afectada y se notifica una sola vez a los inscritos.
+- **Decisión:** Cuando el docente cambia la hora o cancela, **elige** si el cambio aplica solo a la sesión elegida o a ella y a las futuras de su mismo horario semanal (las ya dictadas no cambian); ajustada el 2026-11-17 en la spec 012, que antes fijaba siempre "ella y todas las futuras del módulo". Se valida disponibilidad de salón y cruces en todas las sesiones afectadas, se respeta la ventana de 2 horas respecto de la primera sesión afectada y se notifica una sola vez a los inscritos.
 - **Motivo:** Respuesta del equipo a la pregunta abierta de `Context.md` §10; refleja que un módulo se repite semanalmente.
 - **Descartado:** Afectar solo una sesión (obligaría a repetir la acción cada semana).
 
@@ -333,7 +333,7 @@
 - **Descartado:** Sesiones que heredan docente y salón del módulo (reasignar reescribiría el pasado).
 
 ### D-087 · Eventos de módulo en una tabla de eventos para las notificaciones
-- **Estado:** Aceptada e implementada (spec 010). La spec 011 (inscripción) ya está implementada y no agrega eventos: las notificaciones leen las inscripciones y las ausencias. Sigue vigente la condición de no publicar la inscripción en producción sin la spec 013 o un consumidor del outbox.
+- **Estado:** Aceptada e implementada (spec 010). La spec 012 agrega los tipos `SESSION_RESCHEDULED`, `SESSION_CANCELLED_TEACHER` y `SESSION_RESTORED_TEACHER`. La spec 011 (inscripción) ya está implementada y no agrega eventos: las notificaciones leen las inscripciones y las ausencias. Sigue vigente la condición de no publicar la inscripción en producción sin la spec 013 o un consumidor del outbox.
 - **Decisión:** Los cambios de docente, de salón y de festivo escriben un registro en `outbox_events` (tipo, módulo, datos mínimos sin información personal) en la misma transacción que el cambio. La funcionalidad de notificaciones (spec 013) los lee, avisa a los inscritos y los marca como procesados. La spec 010 no envía notificaciones. **Condición:** la inscripción (spec 011) no se publica sin las notificaciones (spec 013) o sin un consumidor del outbox, para que ningún inscrito quede sin aviso (Principio II de la constitución); hasta la 011 no hay inscritos.
 - **Motivo:** La regla "todo cambio notifica a los inscritos" no se puede cumplir antes de que exista el canal, pero el cambio y su registro deben ser atómicos para que nada se pierda.
 - **Descartado:** Eventos en memoria (se pierden al reiniciar); encolar ya en BullMQ (el canal y las plantillas son de la spec 013); no registrar nada hasta la spec 013 (los cambios hechos antes no avisarían a nadie).
@@ -367,6 +367,30 @@
 - **Decisión:** La inscripción corre en una transacción que bloquea, siempre en este orden, el periodo (`FOR SHARE`), la fila del estudiante y el módulo (`FOR UPDATE`); cancelar el módulo o una sesión bloquea periodo y módulo, y editar la capacidad de un salón bloquea sus módulos ordenados por `id` antes de leer los inscritos. Índices únicos parciales (`enrollments_one_active`, `session_absences_one_live`) y un `CHECK` de fechas respaldan las reglas en la base de datos.
 - **Motivo:** Dos inscripciones del mismo estudiante se serializan en su fila (sin cruces simultáneos), dos al mismo módulo en la del módulo (sin sobrecupo), y un orden fijo evita interbloqueos.
 - **Descartado:** Solo bloquear el módulo (dos módulos que se cruzan podían inscribirse a la vez); nivel de aislamiento serializable (reintentos y errores difíciles de explicar).
+
+### D-093 · Reprogramar o reactivar se rechaza si un inscrito se cruza
+- **Estado:** Aceptada e implementada (spec 012; elegida por el equipo el 2026-11-17)
+- **Decisión:** Al reprogramar o reactivar una sesión, el sistema cuenta los asistentes de esa sesión (inscripción vigente, cuenta activa, sin ausencia en ella) que ya asisten a otra sesión de otro módulo a la nueva hora. Si hay alguno, rechaza con `SESSION_STUDENT_CONFLICT` y la cantidad, sin revelar quiénes son (Principio IV). Resuelve la pregunta abierta de `Context.md` §10.
+- **Motivo:** Evita dejar estudiantes con dos tutorías a la vez; el docente no necesita saber quiénes, solo cuántos.
+- **Descartado:** Solo avisar y dejar pasar (el estudiante resuelve solo); no validar (puede dejar dos tutorías a la vez).
+
+### D-094 · Reprogramar solo dentro de la misma semana
+- **Estado:** Aceptada e implementada (spec 012; elegida por el equipo el 2026-11-17)
+- **Decisión:** El docente mueve una sesión a otro día y hora de su misma semana (lunes a domingo, hora de Bogotá), en el horario permitido (D-089), sin festivos y dentro del periodo. Para ausentarse más tiempo, cancela. Con "esta y las futuras", cada sesión se desplaza lo mismo dentro de su propia semana y se rechaza toda la serie si alguna falla.
+- **Motivo:** Acota la validación y evita que una sesión cambie de semana sin que los estudiantes lo esperen.
+- **Descartado:** Cualquier día del periodo (más validaciones y sorpresas); solo la misma fecha (no cubre cambiar de día).
+
+### D-095 · El docente puede reactivar lo que canceló
+- **Estado:** Aceptada e implementada (spec 012; elegida por el equipo el 2026-11-17)
+- **Decisión:** Una sesión que el docente canceló (motivo `TEACHER`) se puede reactivar mientras falten 2 horas o más, con la misma elección de alcance. Se vuelve a validar salón, docente, festivos y estudiantes, y se registra otro evento (`SESSION_RESTORED_TEACHER`). Las canceladas por festivo no se reactivan desde aquí.
+- **Motivo:** Corregir un error sin obligar al CAE a crear una sesión nueva.
+- **Descartado:** Cancelación definitiva (no deja corregir un error).
+
+### D-096 · Disponibilidad por sesión y orden de bloqueo del docente
+- **Estado:** Aceptada e implementada (spec 012)
+- **Decisión:** La disponibilidad al reprogramar o reactivar se comprueba sobre las sesiones reales (no los horarios semanales), con la misma consulta que usa la restauración de festivos. La transacción bloquea, en este orden, el periodo (`FOR SHARE`), el módulo (`FOR UPDATE`), los salones y los docentes de las sesiones que se mueven, cada grupo por `id`; así dos cambios sobre el mismo salón o docente se serializan. Límite conocido: los cruces del CAE al cambiar salón o docente y los de la inscripción (spec 011) miran el horario semanal y no ven una sesión ya movida. La cancelación por festivo ahora incluye las sesiones reprogramadas y su restauración las devuelve reprogramadas.
+- **Motivo:** Exactitud con sesiones movidas sin una restricción de exclusión sobre sesiones, que fallaría con datos históricos (D-086).
+- **Descartado:** Restricción de exclusión en `module_sessions`; comprobar solo horarios semanales (no vería sesiones movidas).
 
 ---
 
