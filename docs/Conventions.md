@@ -37,7 +37,7 @@ Ejemplos: `feat(enrollments): block enrollment when module is full`, `fix(auth):
 ## 3. Estilo de código (backend y app)
 
 - **TypeScript en modo estricto** (`strict: true`). Prohibido `any` salvo justificación en un comentario.
-- **Lint + Prettier**: oxlint en `backend/` y ESLint (`eslint-config-expo`) en `mobile/` (D-065), ambos con Prettier. El código se formatea automáticamente al guardar y se verifica en CI.
+- **ESLint + Prettier** con la misma configuración en `backend/` y `mobile/`. El código se formatea automáticamente al guardar y se verifica en CI.
 - Nombres:
   - Variables y funciones: `camelCase`.
   - Clases, tipos, interfaces y componentes React: `PascalCase`.
@@ -113,9 +113,18 @@ Formato único de error:
 - **La app no es la barrera de las reglas de negocio.** Puede mostrar ayudas (botón deshabilitado, aviso), pero el backend siempre valida y la app muestra el `code` de error traducido.
 - **Estilos:** todos los colores, espaciados y radios vienen de un archivo de tokens (`src/theme/`) generado a partir de `Design.md`. Prohibido escribir colores hexadecimales dentro de los componentes.
 - **Textos:** siempre `t('feature.section.key')`. Las claves se organizan por funcionalidad (`enrollments.card.enroll`) y existen en `es.json` y `en.json`. Un texto sin traducción en ambos idiomas es un error de revisión.
-- **Fechas:** se usa una sola librería de fechas en toda la app (se define en la primera spec). La app recibe UTC y muestra en `America/Bogota`.
+- **Fechas:** no se usa librería de fechas: los días de calendario se manejan con el módulo único `src/date/day.ts` (D-081). La app recibe UTC y muestra en `America/Bogota`. Los días de calendario (inicio y fin de un periodo) se **eligen** con `@react-native-community/datetimepicker` mediante el componente `DateField`, se **muestran como dd/mm/YYYY** en español e inglés y viajan a la API como `YYYY-MM-DD`, sin pasar por una conversión de zona horaria (D-079). Prohibido pedir una fecha escribiéndola a mano.
 - **Accesibilidad:** objetivos táctiles de 48 px, `accessibilityLabel` en íconos con significado, y estado nunca solo por color.
-- Cada pantalla maneja sus cuatro estados: cargando (skeleton), vacío, error y con datos.
+- **Íconos:** solo Iconify (`react-native-iconify`, set `solar`). Prohibido `@expo/vector-icons`, Lucide y otras librerías de íconos. Todos los íconos se declaran en un único registro (`src/icons/`) con el nombre escrito como texto literal, y se usan con el componente `Icon`.
+- **Botones:** todo botón lleva un ícono a la izquierda (20 px), salvo enlaces de texto y controles solo de ícono (con `accessibilityLabel`). Entre botones apilados hay **16 px** (`spacing.lg`).
+- **Animaciones:** con `react-native-reanimated`, usando las duraciones y curvas definidas en el tema (150, 250 y 350 ms). Respetar el ajuste "reducir movimiento". Efectos de pulsación y háptica con `expo-haptics`.
+- **Marca:** el logo y los recursos institucionales viven en `mobile/assets/brand/` y se usan sin modificarlos. Los gradientes usan `expo-linear-gradient` con los colores del tema.
+- **Tipografía:** Myriad Pro (Regular, Semibold y Bold) y Source Code Pro para código, siempre a través de los tokens `fonts` del tema. Prohibido escribir nombres de fuente o `fontWeight` dentro de los componentes. Los archivos viven en `mobile/assets/fonts/`, se cargan con `useFonts` y el splash se mantiene hasta que carguen. Myriad Pro es de pago: no subir los archivos al repositorio sin confirmar que la licencia lo permite.
+- **Campos de texto:** siempre con relleno y borde tenue, ícono a la izquierda y el estado de foco y error definidos en `Design.md`. Nunca un campo sin borde ni relleno.
+- **Decoración:** nada de figuras geométricas (círculos, arcos, manchas); se usa el componente `BrandPattern` (hojas, plumas y libros). La única excepción es el anillo giratorio del `BrandLoader`, que es retroalimentación funcional y no decoración (D-080).
+- **Nombre de la institución:** "Institución Universitaria Tecnológica de Santander – UTS" (corto: "UTS"). No usar "Unidades Tecnológicas" en la app. El nombre vive en los archivos de traducción.
+- Cada pantalla maneja sus cuatro estados: cargando (`BrandLoader` o skeleton), vacío, error y con datos.
+- **Loader:** el indicador de carga es el componente `BrandLoader` (un solo ícono de la marca por iteración, que va cambiando entre libro, pluma y hoja, dentro de un anillo giratorio; cada ícono crece al entrar y se reduce al salir, sin sacudida; todo con movimientos que respetan "reducir movimiento"). Prohibido `ActivityIndicator` en componentes y pantallas; un botón en carga usa el `BrandLoader` compacto (D-078, D-080).
 - Tokens y datos de sesión en `expo-secure-store`; nunca en `AsyncStorage`.
 
 ## 6. Pruebas
@@ -127,7 +136,7 @@ Formato único de error:
 - **Componentes de la app con estados:** tarjeta de módulo (los siete estados), bloque de sesión, burbuja de chat.
 
 ### Herramientas
-- Backend: Vitest (D-065). Pruebas unitarias de servicios y pruebas de integración con una base de datos PostgreSQL de prueba. Las pruebas de concurrencia lanzan varias inscripciones simultáneas y verifican que nunca se supere el cupo.
+- Backend: Jest. Pruebas unitarias de servicios y pruebas de integración con una base de datos PostgreSQL de prueba. Las pruebas de concurrencia lanzan varias inscripciones simultáneas y verifican que nunca se supere el cupo.
 - App: Jest + React Native Testing Library.
 
 ### Definición de terminado

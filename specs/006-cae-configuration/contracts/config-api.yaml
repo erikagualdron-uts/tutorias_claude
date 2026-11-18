@@ -1,0 +1,551 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - Configuración del CAE API
+  version: 1.0.0
+  description: >
+    Contrato de periodos académicos, ubicaciones, salones y listas desplegables. Errores en el
+    formato único de docs/Conventions.md §4 (`code` estable que la app traduce). Salvo los dos
+    endpoints marcados como "cualquier rol", todo exige rol SUPERADMIN (403 en otro caso).
+    Los periodos usan fechas de calendario (YYYY-MM-DD, America/Bogota); el resto de fechas son
+    ISO 8601 UTC.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /academic-periods:
+    get:
+      summary: Lista periodos (excluye eliminados)
+      parameters:
+        - { name: status, in: query, schema: { $ref: '#/components/schemas/PeriodStatus' } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de periodos, más recientes primero
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PeriodPage' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Crea un periodo (nace Próximo)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PeriodInput' }
+      responses:
+        '201':
+          description: Periodo creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Period' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { description: "PERIOD_NAME_TAKEN o PERIOD_DATES_OVERLAP (details: periodo con el que choca)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '422': { description: "PERIOD_DATES_INVALID", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /academic-periods/active:
+    get:
+      summary: Periodo activo (cualquier rol autenticado)
+      description: Aplica el cierre por vencimiento antes de responder.
+      responses:
+        '200':
+          description: Periodo activo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Period' }
+        '404': { description: "PERIOD_NOT_ACTIVE: no hay periodo activo", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /academic-periods/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      summary: Detalle de un periodo
+      responses:
+        '200':
+          description: Periodo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Period' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Edita nombre o fechas (no en periodos cerrados)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PeriodInput' }
+      responses:
+        '200':
+          description: Periodo actualizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Period' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "PERIOD_CLOSED_READ_ONLY, PERIOD_NAME_TAKEN o PERIOD_DATES_OVERLAP", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '422': { description: "PERIOD_DATES_INVALID", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    delete:
+      summary: Elimina (lógico) un periodo Próximo sin módulos
+      responses:
+        '204': { description: Eliminado }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "PERIOD_NOT_UPCOMING o PERIOD_HAS_MODULES", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /academic-periods/{id}/activate:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      summary: Activa un periodo Próximo
+      description: >
+        Si ya hay un periodo activo y `confirmCloseActive` no es true, responde
+        PERIOD_ACTIVE_EXISTS con el activo en `details`. Con la confirmación, cierra el activo y
+        activa este en una sola transacción.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirmCloseActive: { type: boolean, default: false }
+      responses:
+        '200':
+          description: Periodo activado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Period' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "PERIOD_ACTIVE_EXISTS, PERIOD_NOT_UPCOMING o PERIOD_ALREADY_ENDED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /academic-periods/{id}/close:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      summary: Cierra manualmente el periodo activo
+      responses:
+        '200':
+          description: Periodo cerrado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Period' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "PERIOD_NOT_ACTIVE", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /locations:
+    get:
+      summary: Lista ubicaciones con conteo de salones
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de ubicaciones, por nombre
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LocationPage' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Crea una ubicación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LocationInput' }
+      responses:
+        '201':
+          description: Ubicación creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Location' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { description: "LOCATION_NAME_TAKEN", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /locations/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      summary: Detalle con `roomCounts` (para la confirmación de borrado)
+      responses:
+        '200':
+          description: Ubicación
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Location' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Renombra una ubicación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LocationInput' }
+      responses:
+        '200':
+          description: Ubicación actualizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Location' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "LOCATION_NAME_TAKEN", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    delete:
+      summary: Elimina (lógico) la ubicación y sus salones inactivos
+      responses:
+        '204': { description: Eliminada }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "LOCATION_HAS_ACTIVE_ROOMS o ROOM_IN_ACTIVE_PERIOD", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /rooms:
+    get:
+      summary: Lista salones con búsqueda y filtros
+      parameters:
+        - { name: search, in: query, description: Texto contenido en el nombre, schema: { type: string } }
+        - { name: locationId, in: query, schema: { type: string, format: uuid } }
+        - { name: status, in: query, schema: { $ref: '#/components/schemas/RoomStatus' } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de salones
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RoomPage' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Crea un salón (nace Activo)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RoomInput' }
+      responses:
+        '201':
+          description: Salón creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Room' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "ROOM_NAME_TAKEN", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '422': { description: "ROOM_CAPACITY_INVALID", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /rooms/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      summary: Detalle de un salón
+      responses:
+        '200':
+          description: Salón
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Room' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Edita nombre, ubicación o capacidad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RoomInput' }
+      responses:
+        '200':
+          description: Salón actualizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Room' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "ROOM_NAME_TAKEN o ROOM_CAPACITY_BELOW_ENROLLED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '422': { description: "ROOM_CAPACITY_INVALID", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    delete:
+      summary: Elimina (lógico) un salón
+      responses:
+        '204': { description: Eliminado }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "ROOM_IN_ACTIVE_PERIOD", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /rooms/{id}/impact:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      summary: Uso del salón antes de desactivarlo o eliminarlo
+      responses:
+        '200':
+          description: Cifras de uso
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RoomImpact' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /rooms/{id}/deactivate:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      summary: Desactiva un salón
+      responses:
+        '200':
+          description: Salón inactivo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Room' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "ROOM_IN_ACTIVE_PERIOD", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /rooms/{id}/reactivate:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      summary: Reactiva un salón
+      responses:
+        '200':
+          description: Salón activo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Room' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /dropdown-lists:
+    get:
+      summary: Listas predefinidas con cantidad de elementos
+      responses:
+        '200':
+          description: Listas
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/DropdownList' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /dropdown-lists/{key}:
+    parameters:
+      - { $ref: '#/components/parameters/ListKey' }
+    get:
+      summary: Todos los elementos no eliminados (activos e inactivos), en orden
+      responses:
+        '200':
+          description: Lista con elementos
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DropdownListDetail' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /dropdown-lists/{key}/items:
+    parameters:
+      - { $ref: '#/components/parameters/ListKey' }
+    get:
+      summary: Elementos activos para un selector (cualquier rol autenticado)
+      responses:
+        '200':
+          description: Elementos activos, en el orden definido, con ambas etiquetas
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/DropdownItem' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      summary: Agrega un elemento al final (solo CAE)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DropdownItemInput' }
+      responses:
+        '201':
+          description: Elemento creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DropdownItem' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { description: "DROPDOWN_LABEL_REQUIRED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /dropdown-lists/{key}/items/order:
+    parameters:
+      - { $ref: '#/components/parameters/ListKey' }
+    put:
+      summary: Reordena todos los elementos de la lista
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [itemIds]
+              properties:
+                itemIds: { type: array, items: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Lista con el nuevo orden
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DropdownListDetail' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { description: "DROPDOWN_ORDER_INVALID", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /dropdown-lists/{key}/items/{itemId}:
+    parameters:
+      - { $ref: '#/components/parameters/ListKey' }
+      - { name: itemId, in: path, required: true, schema: { type: string, format: uuid } }
+    patch:
+      summary: Edita etiquetas o estado (activar o desactivar)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DropdownItemUpdate' }
+      responses:
+        '200':
+          description: Elemento actualizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DropdownItem' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { description: "DROPDOWN_LABEL_REQUIRED", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    delete:
+      summary: Elimina (lógico) un elemento que no está en uso
+      responses:
+        '204': { description: Eliminado }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: "DROPDOWN_ITEM_IN_USE: solo se puede desactivar", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    ListKey: { name: key, in: path, required: true, schema: { type: string, example: PQRS_TYPE } }
+    Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+  responses:
+    Forbidden: { description: "Rol sin permiso (FORBIDDEN_ROLE)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    NotFound: { description: "No existe o fue eliminado (NOT_FOUND)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    ValidationError: { description: "Datos inválidos (VALIDATION_FAILED)", content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+    Meta:
+      type: object
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+    PeriodStatus: { type: string, enum: [UPCOMING, ACTIVE, CLOSED] }
+    RoomStatus: { type: string, enum: [ACTIVE, INACTIVE] }
+    ItemStatus: { type: string, enum: [ACTIVE, INACTIVE] }
+    PeriodInput:
+      type: object
+      properties:
+        name: { type: string, minLength: 1, maxLength: 50, example: 2026-2 }
+        startsOn: { type: string, format: date }
+        endsOn: { type: string, format: date }
+    Period:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        startsOn: { type: string, format: date }
+        endsOn: { type: string, format: date }
+        status: { $ref: '#/components/schemas/PeriodStatus' }
+        closedAt: { type: string, format: date-time, nullable: true }
+        closedBy: { type: string, enum: [MANUAL, AUTOMATIC], nullable: true }
+        hasModules: { type: boolean }
+    PeriodPage:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/Period' } }
+        meta: { $ref: '#/components/schemas/Meta' }
+    LocationInput:
+      type: object
+      properties:
+        name: { type: string, minLength: 1, maxLength: 80 }
+    Location:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        roomCounts:
+          type: object
+          properties:
+            active: { type: integer }
+            inactive: { type: integer }
+    LocationPage:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/Location' } }
+        meta: { $ref: '#/components/schemas/Meta' }
+    RoomInput:
+      type: object
+      properties:
+        locationId: { type: string, format: uuid }
+        name: { type: string, minLength: 1, maxLength: 40 }
+        capacity: { type: integer, minimum: 1 }
+    Room:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        locationId: { type: string, format: uuid }
+        locationName: { type: string }
+        name: { type: string }
+        capacity: { type: integer }
+        status: { $ref: '#/components/schemas/RoomStatus' }
+    RoomPage:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/Room' } }
+        meta: { $ref: '#/components/schemas/Meta' }
+    RoomImpact:
+      type: object
+      properties:
+        modulesInActivePeriod: { type: integer }
+        modulesInUpcomingPeriods: { type: integer }
+        maxEnrolled: { type: integer }
+    DropdownList:
+      type: object
+      properties:
+        key: { type: string }
+        nameEs: { type: string }
+        nameEn: { type: string }
+        itemCount: { type: integer }
+    DropdownItemInput:
+      type: object
+      required: [labelEs, labelEn]
+      properties:
+        labelEs: { type: string, minLength: 1, maxLength: 80 }
+        labelEn: { type: string, minLength: 1, maxLength: 80 }
+    DropdownItemUpdate:
+      type: object
+      properties:
+        labelEs: { type: string, minLength: 1, maxLength: 80 }
+        labelEn: { type: string, minLength: 1, maxLength: 80 }
+        status: { $ref: '#/components/schemas/ItemStatus' }
+    DropdownItem:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        labelEs: { type: string }
+        labelEn: { type: string }
+        sortOrder: { type: integer }
+        status: { $ref: '#/components/schemas/ItemStatus' }
+        inUse: { type: boolean }
+    DropdownListDetail:
+      type: object
+      properties:
+        key: { type: string }
+        nameEs: { type: string }
+        nameEn: { type: string }
+        items: { type: array, items: { $ref: '#/components/schemas/DropdownItem' } }
