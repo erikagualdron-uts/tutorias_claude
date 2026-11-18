@@ -12,7 +12,7 @@
 
 ### Session 2026-11-17
 
-- Q: Cuando el docente reprograma o cancela, ¿a qué sesiones aplica el cambio? → A: El docente elige al confirmar entre "solo esta sesión" y "esta y las futuras del módulo". Esto ajusta D-069, que fijaba siempre "ella y las futuras".
+- Q: Cuando el docente reprograma o cancela, ¿a qué sesiones aplica el cambio? → A: El docente elige al confirmar entre "solo esta sesión" y "esta y las futuras de su mismo horario semanal". Esto ajusta D-069, que fijaba siempre "ella y las futuras".
 - Q: Al reprogramar, ¿se valida que la nueva hora no cruce con otras tutorías de los estudiantes inscritos? → A: Sí, se rechaza si algún inscrito tendría otra tutoría a esa hora; el rechazo dice cuántos estudiantes chocan, sin revelar quiénes.
 - Q: Al reprogramar una sesión, ¿a qué fechas puede moverla el docente? → A: Solo dentro de la misma semana (lunes a domingo, hora de Bogotá) de la sesión: puede cambiar el día y la hora, pero no pasarla a otra semana.
 - Q: Si el docente cancela una sesión por error, ¿puede deshacer la cancelación? → A: Sí, mientras falten 2 horas o más para su inicio; la sesión vuelve a estar programada, se vuelve a validar su disponibilidad y se registra otro evento para avisar a los inscritos.
@@ -31,7 +31,7 @@ El docente abre la pestaña de su cronograma y ve los módulos que dicta en el p
 
 1. **Given** un docente con módulos en el periodo Activo, **When** abre su cronograma, **Then** ve sus módulos con nombre, salón, horario semanal e inscritos, y la lista de sus próximas sesiones ordenadas por fecha.
 2. **Given** un docente, **When** consulta los módulos o sesiones de otro docente, **Then** el sistema los trata como inexistentes (nunca los muestra ni los deja modificar).
-3. **Given** una sesión cancelada por festivo, por el CAE o por el propio docente, **When** el docente la ve, **Then** aparece cancelada con su motivo y sin acciones.
+3. **Given** una sesión cancelada por festivo o por el propio docente, **When** el docente la ve, **Then** aparece cancelada con su motivo y sin acciones.
 4. **Given** una sesión cuyo salón o docente cambió por una reasignación del CAE, **When** el docente la ve, **Then** muestra el docente y el salón con que se dicta esa sesión.
 5. **Given** un docente sin módulos en el periodo Activo, **When** abre su cronograma, **Then** ve un estado vacío que lo explica.
 6. **Given** un periodo Cerrado, **When** el docente consulta sus módulos, **Then** los ve en solo lectura, sin acciones de cambio.
@@ -58,7 +58,7 @@ El docente elige una sesión que empieza en 2 horas o más y propone una nueva h
 8. **Given** una hora a punto de aceptarse, **When** otro cambio (del CAE o del mismo docente) ocupa el salón al mismo tiempo, **Then** solo uno prospera y el otro recibe el aviso de cruce; nunca quedan dos módulos en el mismo salón y hora.
 9. **Given** una reprogramación aceptada, **When** se guarda, **Then** queda registrado un evento con lo que las notificaciones necesitan (módulo, sesiones afectadas, hora anterior y nueva) en la misma operación que el cambio.
 10. **Given** una nueva hora en que algún estudiante inscrito ya tiene otra tutoría, **When** el docente confirma, **Then** se rechaza indicando cuántos estudiantes se cruzan, sin revelar quiénes son.
-11. **Given** el docente al confirmar, **When** elige "solo esta sesión", **Then** solo esa sesión cambia; **When** elige "esta y las futuras", **Then** esa sesión y todas las futuras del módulo se mueven lo mismo, se validan todas antes de aceptar y se registra un solo evento.
+11. **Given** el docente al confirmar, **When** elige "solo esta sesión", **Then** solo esa sesión cambia; **When** elige "esta y las futuras", **Then** esa sesión y todas las futuras de su mismo horario semanal se mueven lo mismo, se validan todas antes de aceptar (si alguna falla se rechaza toda la serie indicando la primera) y se registra un solo evento.
 12. **Given** una sesión reprogramada, **When** el docente la vuelve a reprogramar, **Then** se aplican las mismas reglas desde su hora actual y la hora original se mantiene.
 
 ---
@@ -74,7 +74,7 @@ El docente cancela una sesión que empieza en 2 horas o más. La sesión queda c
 **Acceptance Scenarios**:
 
 1. **Given** una sesión que empieza en 2 horas o más, **When** el docente la cancela y confirma, **Then** queda cancelada con el motivo "docente", sin borrarse, y los estudiantes inscritos la ven cancelada.
-2. **Given** el docente al confirmar la cancelación, **When** elige "solo esta sesión", **Then** solo esa se cancela; **When** elige "esta y las futuras", **Then** se cancelan esa y todas las futuras del módulo (las ya canceladas por festivo se mantienen) y se registra un solo evento.
+2. **Given** el docente al confirmar la cancelación, **When** elige "solo esta sesión", **Then** solo esa se cancela; **When** elige "esta y las futuras", **Then** se cancelan esa y todas las futuras de su mismo horario semanal (las ya canceladas por festivo se mantienen) y se registra un solo evento.
 3. **Given** una sesión que empieza en menos de 2 horas, **When** el docente intenta cancelarla, **Then** la acción está bloqueada y se muestra la regla.
 4. **Given** una sesión cancelada por el docente, **When** el estudiante inscrito la mira, **Then** aparece como "cancelada por el docente" y no ofrece ninguna acción.
 5. **Given** una cancelación aceptada, **When** se guarda, **Then** queda registrado un evento para las notificaciones en la misma operación que el cambio.
@@ -82,7 +82,7 @@ El docente cancela una sesión que empieza en 2 horas o más. La sesión queda c
 7. **Given** un periodo Cerrado, **When** el docente intenta cancelar una sesión, **Then** el sistema lo rechaza por ser de solo lectura.
 8. **Given** una sesión que el docente canceló y que empieza en 2 horas o más, **When** la reactiva, **Then** vuelve a estar programada con su hora, los estudiantes la ven de nuevo y se registra un evento de reactivación.
 9. **Given** una sesión cancelada por el docente cuyo salón o docente ya está ocupado a esa hora, o a la que algún inscrito ya tiene otra tutoría, **When** intenta reactivarla, **Then** se rechaza indicando el cruce.
-10. **Given** una sesión cancelada por un festivo o por el CAE, **When** el docente intenta reactivarla, **Then** no ofrece la acción: solo se reactivan las cancelaciones hechas por el docente.
+10. **Given** una sesión cancelada por un festivo, **When** el docente intenta reactivarla, **Then** no ofrece la acción: solo se reactivan las cancelaciones hechas por el docente.
 
 ---
 
@@ -112,6 +112,7 @@ Cada reprogramación y cancelación deja, en la misma operación que el cambio, 
 - ¿Qué pasa si un festivo se registra después de reprogramar una sesión a esa fecha? Se aplica la regla de festivos de la spec 010 y la sesión se cancela con ese motivo.
 - ¿Qué pasa si la sesión elegida ya la cancelaron los estudiantes por completo? Se puede reprogramar o cancelar igual; la acción es del docente, no depende de la asistencia.
 - ¿Qué pasa si el docente elige "esta y las futuras" y alguna de ellas no se puede mover (salón ocupado, festivo, cruce de un estudiante)? Se rechaza todo el cambio indicando la primera sesión con problema; nunca queda a medias.
+- ¿Qué pasa si el docente elige "esta y las futuras" y una sesión de la serie ya había sido movida antes y el mismo desplazamiento la saca de su semana? Se valida cada sesión con sus propias reglas y se rechaza toda la serie indicando la primera sesión con problema.
 - ¿Qué pasa si el docente elige "esta y las futuras" y alguna sesión futura ya está cancelada (festivo)? Esa sesión no se mueve ni se reactiva; el cambio aplica a las demás.
 
 ## Requirements *(mandatory)*
@@ -120,11 +121,11 @@ Cada reprogramación y cancelación deja, en la misma operación que el cambio, 
 
 - **FR-001**: Solo el docente dueño de un módulo MUST poder ver sus sesiones y reprogramarlas o cancelarlas; el CAE y los estudiantes no operan estas acciones, y un docente MUST NOT poder ver ni modificar los módulos o sesiones de otro. Los permisos se aplican en el servidor.
 - **FR-002**: El docente MUST ver sus módulos del periodo Activo con salón, horario semanal e inscritos, y sus próximas sesiones con fecha y hora de Bogotá, salón, estado (programada, reprogramada o cancelada con su motivo) y número de asistentes.
-- **FR-003**: El docente MUST poder reprogramar una sesión que empieza en 2 horas o más, eligiendo si el cambio aplica solo a esa sesión o a ella y a las futuras del módulo (las ya dictadas no cambian). Cada sesión movida conserva su hora original y pasa a estado reprogramada; si se mueven varias, se valida todo antes de aceptar y el cambio es atómico.
+- **FR-003**: El docente MUST poder reprogramar una sesión que empieza en 2 horas o más, eligiendo si el cambio aplica solo a esa sesión o a ella y a las futuras de su mismo horario semanal (las ya dictadas no cambian). Cada sesión movida conserva su hora original y pasa a estado reprogramada; si se mueven varias, se valida todo antes de aceptar y el cambio es atómico.
 - **FR-004**: Antes de aceptar una nueva hora, el sistema MUST validar la disponibilidad del salón y del docente, indicando el módulo, el día y las horas con los que hay cruce, y MUST respetar el horario permitido de los módulos, los festivos, el periodo del módulo y que la nueva fecha y hora sean futuras y caigan dentro de la misma semana (lunes a domingo, hora de Bogotá) de la sesión.
 - **FR-005**: La reprogramación MUST rechazarse si algún estudiante inscrito (inscripción activa, sin ausencia en esa sesión) ya tiene otra tutoría a la nueva hora, indicando cuántos estudiantes se cruzan y sin revelar quiénes son.
-- **FR-006**: El docente MUST poder cancelar una sesión que empieza en 2 horas o más, eligiendo si aplica solo a esa sesión o a ella y a las futuras del módulo. Cada sesión cancelada queda cancelada con el motivo "docente", sin borrarse, y no ofrece acciones a nadie.
-- **FR-006b**: El docente MUST poder reactivar una sesión que él canceló mientras falten 2 horas o más para su inicio, con la misma elección de alcance. Reactivar MUST volver a validar el salón, el docente y los estudiantes inscritos (como reprogramar), deja la sesión programada y registra su propio evento. Las cancelaciones por festivo o del CAE no se reactivan desde aquí.
+- **FR-006**: El docente MUST poder cancelar una sesión que empieza en 2 horas o más, eligiendo si aplica solo a esa sesión o a ella y a las futuras de su mismo horario semanal. Cada sesión cancelada queda cancelada con el motivo "docente", sin borrarse, y no ofrece acciones a nadie.
+- **FR-006b**: El docente MUST poder reactivar una sesión que él canceló mientras falten 2 horas o más para su inicio, con la misma elección de alcance. Reactivar MUST volver a validar el salón, el docente y los estudiantes inscritos (como reprogramar), deja la sesión programada y registra su propio evento. Las cancelaciones por festivo no se reactivan desde aquí.
 - **FR-007**: Pasado el límite de 2 horas antes del inicio de la primera sesión afectada, reprogramar y cancelar MUST bloquearse mostrando la regla. El límite MUST ser configuración, no un valor fijo en el código.
 - **FR-008**: Una sesión pasada o de un periodo Cerrado MUST NOT poder reprogramarse, cancelarse ni reactivarse, y una ya cancelada MUST NOT poder cancelarse ni reprogramarse otra vez (solo reactivarse si la canceló el docente).
 - **FR-009**: Cada reprogramación, cancelación y reactivación aceptada MUST dejar un evento para las notificaciones en la misma operación que el cambio, con el módulo, las sesiones afectadas y los datos del cambio, sin información personal de los estudiantes. Una acción rechazada no deja ni cambio ni evento.

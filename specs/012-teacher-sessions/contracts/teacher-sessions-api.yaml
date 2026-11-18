@@ -32,7 +32,8 @@ paths:
     get:
       summary: Próximas sesiones del docente, ordenadas por inicio
       description: >
-        Por defecto desde ahora. `from` y `to` son días de calendario de Bogotá (inclusivos).
+        Solo sesiones futuras: por defecto desde ahora; un `from` anterior a hoy se ajusta a ahora.
+        `from` y `to` son días de calendario de Bogotá (inclusivos).
         Incluye las canceladas con su motivo para que el docente pueda reactivar las suyas.
       parameters:
         - { name: moduleId, in: query, schema: { type: string, format: uuid } }
