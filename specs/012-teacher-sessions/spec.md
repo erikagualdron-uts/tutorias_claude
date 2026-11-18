@@ -166,4 +166,5 @@ Cada reprogramación y cancelación deja, en la misma operación que el cambio, 
 - El límite de 2 horas vive en configuración, como el de 1 hora del estudiante (spec 011).
 - Reprogramar mueve la sesión a otro día y hora de su misma semana; la sesión conserva su salón y su docente. Con "esta y las futuras", cada sesión futura se desplaza el mismo cambio de día y de hora que la elegida (dentro de su propia semana) y todas se validan igual. Para ausentarse más de una semana, el docente cancela.
 - El alcance elegido por el docente reemplaza a D-069 (que fijaba siempre "ella y las futuras"); se ajusta en `Decisions.md` al cerrar la funcionalidad.
+- "Las futuras" son las sesiones futuras del **mismo horario semanal** de la sesión elegida (un módulo con martes y jueves, al mover un martes, no mueve los jueves). Para cancelar todo el módulo, el docente repite la acción en cada horario.
 - Resolver la pregunta abierta de `Context.md` §10 sobre cruces con los estudiantes forma parte de esta funcionalidad.
