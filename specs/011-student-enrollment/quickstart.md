@@ -43,4 +43,7 @@ Deben pasar, entre otras: concurrencia con 20 estudiantes sobre un módulo de cu
 
 ## Resultados
 
-_(Se completa al cerrar la funcionalidad.)_
+**2026-11-17**
+- Verificaciones automáticas: backend 60 unitarias y 283 e2e, app 375 pruebas, lint y typecheck limpios, `migrate diff` vacío.
+- Recorrido manual 1 a 12 hecho por el equipo en la app: sin hallazgos pendientes. Único incidente: error de ícono por caché de Metro, resuelto con `npx expo start -c`.
+- Condición de publicación (D-087): no publicar en producción sin la spec 013 o un consumidor del outbox.
