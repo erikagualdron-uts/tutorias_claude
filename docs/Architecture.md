@@ -115,7 +115,8 @@
 | `ModuleSession` | id, moduleId, scheduleId, teacherId, roomId (los de esa sesión), originalStartsAt, startsAt, endsAt, status (SCHEDULED / RESCHEDULED / CANCELLED), cancelReason (HOLIDAY), holidayId, deletedAt |
 | `Holiday` | id, date (fecha de calendario, única entre no borrados), name, source (MANUAL / IMPORTED), deletedAt |
 | `OutboxEvent` | id, type, moduleId, payload, createdAt, processedAt (eventos que las notificaciones envían después) |
-| `Enrollment` | id, studentId, moduleId, status (ACTIVE / CANCELLED), createdAt |
+| `Enrollment` | id, studentId, moduleId, status (ACTIVE / CANCELLED), cancelledAt, effectiveUntil (`cancelledAt` + `STUDENT_CANCEL_LEAD_MINUTES`: las sesiones que empiezan antes conservan al estudiante), createdAt, deletedAt. Una sola ACTIVE por estudiante y módulo (índice único parcial) |
+| `SessionAbsence` | id, enrollmentId, sessionId, createdAt, deletedAt (el estudiante sigue inscrito pero no asiste a esa sesión; `deletedAt` marca que la reactivó). Una sola viva por inscripción y sesión |
 | `Conversation` | id, type (DIRECT / MODULE), moduleId?, createdAt |
 | `ConversationMember` | conversationId, userId, lastReadAt |
 | `Message` | id, conversationId, senderId, body, createdAt |
@@ -136,7 +137,8 @@ Notas:
 
 - Un módulo pertenece a un `AcademicPeriod` y define su horario en `ModuleSchedule` (día de la semana y hora local).
 - Al crear el módulo, el backend **genera una `ModuleSession` por cada semana** del periodo (de `startsOn` a `endsOn`), convirtiendo la hora local de `America/Bogota` a UTC.
-- La `Enrollment` es al **módulo**, no a cada sesión: el estudiante queda inscrito en todas las sesiones del periodo.
+- La `Enrollment` es al **módulo**, no a cada sesión: el estudiante queda inscrito en todas las sesiones del periodo. Si no puede asistir a una, la cancela con una `SessionAbsence` y sigue inscrito en las demás.
+- El **cupo se mide por sesión** (D-090): los asistentes de una sesión son los estudiantes activos con una inscripción ACTIVE (o cancelada cuyo `effectiveUntil` es posterior al inicio de la sesión) sin una ausencia viva en ella. Un módulo está lleno si alguna de sus sesiones futuras lo está.
 - Cancelar o reprogramar una sesión modifica solo esa `ModuleSession` (guarda `originalStartsAt` para trazabilidad) y notifica a los inscritos.
 - Si el CAE cambia salón o docente de un módulo, se aplica solo a las sesiones futuras: cada sesión guarda el docente y el salón con que se dicta, y las pasadas no cambian (D-086).
 - Los cruces de docente, de salón y entre horarios del mismo módulo los impiden restricciones de exclusión sobre `ModuleSchedule` dentro del mismo periodo; un horario que termina cuando otro empieza no se solapa (D-085).
@@ -152,14 +154,14 @@ Notas:
 
 | Regla | Cómo se garantiza |
 |---|---|
-| Cupo máximo = capacidad del salón | Al inscribir: transacción con bloqueo de fila sobre el módulo, se cuenta la inscripción activa y se compara con `Room.capacidad`. |
+| Cupo máximo = capacidad del salón | Cupo **por sesión** (D-090). Al inscribir: transacción que bloquea, en este orden, el periodo (`FOR SHARE`), la fila del estudiante y el módulo (`FOR UPDATE`) (D-092); se cuentan los asistentes de cada sesión futura y se compara con `Room.capacidad`. Índices únicos parciales respaldan una inscripción activa por estudiante y módulo. |
 | Sin cruces de horario del estudiante | Antes de inscribir: compara los `ModuleSchedule` de sus módulos activos del mismo periodo (mismo día y horas que se solapen). |
 | Sin cruces de salón ni docente | Al crear o mover un módulo o sesión: validación de disponibilidad. |
 | Cambio de salón | Solo si `nuevoSalón.capacidad >= inscritosActivos`. |
-| Cancelación del estudiante | Se rechaza si falta menos de **1 hora** para `startsAt`. |
+| Cancelación del estudiante | Una sesión se rechaza si falta menos de `STUDENT_CANCEL_LEAD_MINUTES` (1 hora) para `startsAt`. Cancelar el módulo aplica desde la primera sesión a más de esa ventana (`effectiveUntil`, D-091). |
 | Cambio o cancelación del docente | Se rechaza si falta menos de **2 horas** para `startsAt`. |
 | Dominios de correo | Estudiantes: `@uts.edu.co`. Docentes y administrativos: `@correo.uts.edu.co`. |
-| Reinscripción | Permitida si el módulo tiene cupo. |
+| Reinscripción | Permitida si el módulo tiene cupo en todas sus sesiones futuras; crea otra inscripción y la cancelada queda en el historial. |
 
 Los límites de horas y los dominios se leen de **configuración**, no se escriben fijos en el código.
 

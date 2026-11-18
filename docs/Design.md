@@ -331,6 +331,9 @@ Enrolling and cancelling both use a confirmation sheet showing module, day, time
 
 Above the list: search field and a horizontally scrolling chip bar to filter (All, Available, Enrolled, by day) and a period selector chip (default: the active academic period, e.g. `2026-2`). Pull to refresh. Skeleton cards while loading.
 
+### Student module detail and cancellation
+Opened from a card or from "My tutoring". It shows the module card, the description and the list of future sessions. Each session shows its date and time (Bogota), a state as text plus icon (Scheduled, Rescheduled, Cancelled for a holiday, Cancelled by you) and its action: **Cancel session** (outlined) or **Restore** (tonal). A blocked action is disabled and shows the rule under the button: less than the lead time left, closed period, cancelled session or no room to restore. Once enrolled, an outlined **Cancel enrollment** button opens a bottom sheet that asks the scope (**Only this session** or **The whole module**), shows the rule of the hour, and asks one more confirmation (dialog) before cancelling the whole module. A closed period shows a banner and no actions. Enrolling is done from this detail, which already shows the module, schedule, room and sessions, so it needs no extra sheet. The capacity text is `occupied/capacity` (occupied = capacity minus the free spots of the fullest session).
+
 ### Weekly schedule (all roles)
 Header: week label (`Nov 3 – 9`), previous/next arrows and a "Today" tonal button. Below it, a day strip with seven day pills (weekday letter + number). Today has a 1px #34531F ring; the selected day is filled #34531F with white text. A dot under a day means it has sessions.
 

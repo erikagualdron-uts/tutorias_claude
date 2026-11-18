@@ -234,7 +234,7 @@
 - **Estado:** Aceptada
 - **Decisión:** Al cancelar (hasta 1 hora antes de la sesión), el estudiante elige entre cancelar solo esa sesión o cancelar su inscripción al módulo completo. Cancelar una sesión libera el cupo solo para esa sesión y no lo bloquea de volver a asistir a las siguientes. Cancelar el módulo permite reinscribirse mientras haya cupo.
 - **Motivo:** Respuesta del equipo a la pregunta abierta de `Context.md` §10.
-- **Pendiente:** Definir en la spec de inscripción cómo se calcula el cupo cuando hay cancelaciones por sesión.
+- **Pendiente:** Resuelto en D-090 (el cupo se mide por sesión).
 
 ### D-071 · Estados del periodo: activación manual, cierre manual o automático
 - **Estado:** Aceptada
@@ -333,7 +333,7 @@
 - **Descartado:** Sesiones que heredan docente y salón del módulo (reasignar reescribiría el pasado).
 
 ### D-087 · Eventos de módulo en una tabla de eventos para las notificaciones
-- **Estado:** Aceptada e implementada (spec 010)
+- **Estado:** Aceptada e implementada (spec 010). La spec 011 (inscripción) ya está implementada y no agrega eventos: las notificaciones leen las inscripciones y las ausencias. Sigue vigente la condición de no publicar la inscripción en producción sin la spec 013 o un consumidor del outbox.
 - **Decisión:** Los cambios de docente, de salón y de festivo escriben un registro en `outbox_events` (tipo, módulo, datos mínimos sin información personal) en la misma transacción que el cambio. La funcionalidad de notificaciones (spec 013) los lee, avisa a los inscritos y los marca como procesados. La spec 010 no envía notificaciones. **Condición:** la inscripción (spec 011) no se publica sin las notificaciones (spec 013) o sin un consumidor del outbox, para que ningún inscrito quede sin aviso (Principio II de la constitución); hasta la 011 no hay inscritos.
 - **Motivo:** La regla "todo cambio notifica a los inscritos" no se puede cumplir antes de que exista el canal, pero el cambio y su registro deben ser atómicos para que nada se pierda.
 - **Descartado:** Eventos en memoria (se pierden al reiniciar); encolar ya en BullMQ (el canal y las plantillas son de la spec 013); no registrar nada hasta la spec 013 (los cambios hechos antes no avisarían a nadie).
@@ -349,6 +349,24 @@
 - **Decisión:** Un horario semanal de módulo no puede empezar antes de las 06:00 ni terminar después de las 18:00 (hora de Bogotá; terminar a las 18:00 en punto sí se permite). El backend lo valida al crear el módulo y al reemplazar horarios y responde `422 MODULE_SCHEDULE_OUT_OF_HOURS` con `details.earliest` y `details.latest`. Los límites son configuración (`MODULE_EARLIEST_TIME` y `MODULE_LATEST_TIME`, por defecto `06:00` y `18:00`); la app solo ofrece horas dentro de esa ventana y repite la regla en el formulario.
 - **Motivo:** La institución dicta tutorías en horario diurno; sin límite se podían crear módulos de madrugada o de noche, y los límites de horas no se escriben fijos en el código (CLAUDE.md).
 - **Descartado:** Límite solo en la app (el servidor es quien aplica las reglas); límite fijo en el código; reutilizar `MODULE_SCHEDULE_INVALID` (no diría al CAE cuál es la ventana permitida).
+
+### D-090 · Cupo por sesión
+- **Estado:** Aceptada e implementada (spec 011; aclarada por el equipo el 2026-11-17)
+- **Decisión:** El cupo se mide por sesión: la capacidad es la del salón de la sesión y los asistentes son los estudiantes activos con una inscripción ACTIVE (o cancelada cuyo `effectiveUntil` es posterior al inicio de la sesión) sin una ausencia viva en ella. Una cancelación suelta libera el lugar de esa sesión; un módulo está lleno si alguna sesión futura lo está y solo se permite inscribirse si todas tienen al menos un lugar. La app muestra `ocupados/capacidad` con `ocupados = capacidad − cupos disponibles` (la sesión más llena). La regla del cambio de salón sigue contando inscritos activos (Principio II de la constitución).
+- **Motivo:** Cierra el pendiente de D-070: sin esta medida, una cancelación suelta liberaría un lugar que otro estudiante ocuparía para todas las sesiones y se pasaría de la capacidad en las demás.
+- **Descartado:** Cupo por módulo contando inscripciones (una cancelación suelta no liberaría nada); cambiar la regla del cambio de salón a "asistentes de la sesión más llena" (exigía enmendar la constitución).
+
+### D-091 · Cancelar el módulo aplica desde la primera sesión a más de 1 hora
+- **Estado:** Aceptada e implementada (spec 011; pedida por el equipo el 2026-11-17)
+- **Decisión:** El estudiante puede cancelar el módulo completo en cualquier momento. La inscripción pasa a CANCELLED con `cancelledAt` y `effectiveUntil = cancelledAt + STUDENT_CANCEL_LEAD_MINUTES` (1 hora por defecto, en configuración); las sesiones que empiezan antes de `effectiveUntil` conservan al estudiante como asistente y las demás quedan libres.
+- **Motivo:** Respeta la regla de 1 hora sin impedir que el estudiante cancele el módulo cuando la próxima sesión es inminente.
+- **Descartado:** Bloquear la cancelación del módulo si alguna sesión empieza en menos de 1 hora (deja al estudiante inscrito en sesiones lejanas que ya no quiere); liberar todo al instante (rompe la regla de 1 hora de la sesión inminente).
+
+### D-092 · Orden de bloqueo y respaldo de la inscripción
+- **Estado:** Aceptada e implementada (spec 011)
+- **Decisión:** La inscripción corre en una transacción que bloquea, siempre en este orden, el periodo (`FOR SHARE`), la fila del estudiante y el módulo (`FOR UPDATE`); cancelar el módulo o una sesión bloquea periodo y módulo, y editar la capacidad de un salón bloquea sus módulos ordenados por `id` antes de leer los inscritos. Índices únicos parciales (`enrollments_one_active`, `session_absences_one_live`) y un `CHECK` de fechas respaldan las reglas en la base de datos.
+- **Motivo:** Dos inscripciones del mismo estudiante se serializan en su fila (sin cruces simultáneos), dos al mismo módulo en la del módulo (sin sobrecupo), y un orden fijo evita interbloqueos.
+- **Descartado:** Solo bloquear el módulo (dos módulos que se cruzan podían inscribirse a la vez); nivel de aislamiento serializable (reintentos y errores difíciles de explicar).
 
 ---
 

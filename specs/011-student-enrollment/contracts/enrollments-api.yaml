@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - Inscripción de estudiantes API
+  version: 1.0.0
+  description: >
+    Contrato de la oferta de módulos del estudiante, la inscripción, la cancelación de una sesión o
+    del módulo completo y "mis tutorías". Errores en el formato único de docs/Conventions.md §4
+    (`code` estable que la app traduce). Todo exige rol STUDENT (403 en otro caso). El estudiante
+    sale siempre del token: un módulo o una inscripción ajena responde 404. Las fechas-hora son
+    ISO 8601 UTC; las horas de horario son locales de America/Bogota ("HH:mm"). Los cupos son por
+    sesión: `availableSeats` es el mínimo de lugares libres entre las sesiones futuras.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /student/modules:
+    get:
+      summary: Oferta de módulos del periodo Activo, con el estado del estudiante
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de módulos (vacía si no hay periodo activo)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentModulePage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /student/modules/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      summary: Detalle de un módulo con sus sesiones futuras y su estado para el estudiante
+      description: >
+        Responde si el módulo se ofrece (periodo Activo) o si el estudiante tiene o tuvo una
+        inscripción en él, activa o cancelada. En un periodo Cerrado devuelve `readOnly: true`
+        y `sessions: []`.
+      responses:
+        '200':
+          description: Detalle
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentModuleDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }  # inexistente, eliminado, o no ofrecido y sin inscripción del estudiante
+  /student/enrollments:
+    get:
+      summary: Mis tutorías (inscripciones del estudiante)
+      parameters:
+        - { name: status, in: query, schema: { type: string, enum: [ACTIVE, CANCELLED, ALL], default: ACTIVE } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de inscripciones con su módulo y su próxima sesión
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EnrollmentPage' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Inscribirse a un módulo (todas sus sesiones futuras)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [moduleId]
+              additionalProperties: false
+              properties:
+                moduleId: { type: string, format: uuid }
+      responses:
+        '201':
+          description: Inscripción creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Enrollment' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: >
+            ENROLLMENT_MODULE_FULL, ENROLLMENT_SCHEDULE_CONFLICT (`details.conflict`),
+            ENROLLMENT_ALREADY_ACTIVE, ENROLLMENT_MODULE_UNAVAILABLE, ENROLLMENT_PERIOD_NOT_OPEN o
+            PERIOD_CLOSED_READ_ONLY
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /student/enrollments/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    delete:
+      summary: Cancelar el módulo completo (aplica desde la primera sesión a más de la ventana)
+      responses:
+        '200':
+          description: Inscripción cancelada, con `effectiveUntil`
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Enrollment' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: ENROLLMENT_NOT_ACTIVE o PERIOD_CLOSED_READ_ONLY
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /student/enrollments/{id}/sessions/{sessionId}/cancel:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+      - { $ref: '#/components/parameters/SessionId' }
+    post:
+      summary: Cancelar una sola sesión (el estudiante sigue inscrito). Idempotente
+      responses:
+        '200':
+          description: Sesión cancelada para el estudiante
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentSession' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: >
+            ENROLLMENT_CANCEL_WINDOW_PASSED (`details.minutes`), ENROLLMENT_SESSION_NOT_CANCELLABLE,
+            ENROLLMENT_NOT_ACTIVE o PERIOD_CLOSED_READ_ONLY
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /student/enrollments/{id}/sessions/{sessionId}/restore:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+      - { $ref: '#/components/parameters/SessionId' }
+    post:
+      summary: Reactivar una sesión cancelada por el estudiante, si hay lugar. Idempotente
+      responses:
+        '200':
+          description: Sesión reactivada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentSession' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: >
+            ENROLLMENT_MODULE_FULL (la sesión se llenó), ENROLLMENT_CANCEL_WINDOW_PASSED,
+            ENROLLMENT_SESSION_NOT_CANCELLABLE, ENROLLMENT_NOT_ACTIVE o PERIOD_CLOSED_READ_ONLY
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    SessionId: { name: sessionId, in: path, required: true, schema: { type: string, format: uuid } }
+    Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+  responses:
+    ValidationFailed:
+      description: VALIDATION_FAILED
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: TOKEN_INVALID o SESSION_EXPIRED
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: FORBIDDEN_ROLE
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: NOT_FOUND (inexistente, eliminado o ajeno)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: object
+          additionalProperties: true
+    PageMeta:
+      type: object
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+    Schedule:
+      type: object
+      properties:
+        dayOfWeek: { type: integer, minimum: 1, maximum: 7, description: 1 = lunes, 7 = domingo }
+        startTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+        endTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+    Conflict:
+      type: object
+      nullable: true
+      properties:
+        moduleName: { type: string }
+        dayOfWeek: { type: integer, minimum: 1, maximum: 7 }
+        startTime: { type: string }
+        endTime: { type: string }
+    PersonRef:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        firstName: { type: string }
+        lastName: { type: string }
+    RoomRef:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        location: { type: string }
+        capacity: { type: integer }
+    EnrollmentRef:
+      type: object
+      nullable: true
+      description: Inscripción activa del estudiante a este módulo, o null
+      properties:
+        id: { type: string, format: uuid }
+        enrolledAt: { type: string, format: date-time }
+    StudentModule:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        teacher: { $ref: '#/components/schemas/PersonRef' }
+        room: { $ref: '#/components/schemas/RoomRef' }
+        schedules:
+          type: array
+          items: { $ref: '#/components/schemas/Schedule' }
+        capacity: { type: integer, description: Capacidad del salón }
+        availableSeats: { type: integer, minimum: 0, description: Mínimo de lugares libres entre las sesiones futuras }
+        state:
+          type: string
+          enum: [AVAILABLE, LAST_SPOTS, FULL, ENROLLED, BLOCKED]
+          description: >
+            ENROLLED si ya está inscrito; BLOCKED si el horario se cruza (`conflict`) o el módulo no
+            está disponible (`blockReason`); FULL si availableSeats es 0; LAST_SPOTS con el 80 % o más
+            ocupado
+        blockReason: { type: string, nullable: true, enum: [SCHEDULE_CONFLICT, UNAVAILABLE, null] }
+        conflict: { $ref: '#/components/schemas/Conflict' }
+        enrollment: { $ref: '#/components/schemas/EnrollmentRef' }
+    StudentModulePage:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/StudentModule' }
+        meta:
+          allOf:
+            - $ref: '#/components/schemas/PageMeta'
+            - type: object
+              properties:
+                periodId: { type: string, format: uuid, nullable: true, description: Periodo activo mostrado }
+    StudentSession:
+      type: object
+      nullable: true
+      description: Una sesión futura del módulo (null cuando no hay próxima sesión)
+      properties:
+        id: { type: string, format: uuid }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        status: { type: string, enum: [SCHEDULED, RESCHEDULED, CANCELLED] }
+        cancelReason: { type: string, enum: [HOLIDAY, null], nullable: true }
+        cancelledByStudent: { type: boolean, description: El estudiante canceló solo esta sesión }
+        freeSeats: { type: integer, minimum: 0 }
+        canCancel: { type: boolean }
+        canRestore: { type: boolean }
+        blockReason:
+          type: string
+          nullable: true
+          enum: [WINDOW_PASSED, PERIOD_CLOSED, SESSION_CANCELLED, NO_SEAT, null]
+          description: Por qué canCancel o canRestore es falso, para mostrar la regla
+    StudentModuleDetail:
+      allOf:
+        - $ref: '#/components/schemas/StudentModule'
+        - type: object
+          properties:
+            readOnly: { type: boolean, description: El periodo está Cerrado }
+            cancelLeadMinutes: { type: integer, description: Ventana configurada para cancelar }
+            sessions:
+              type: array
+              description: Sesiones futuras (las canceladas por festivo con su motivo)
+              items: { $ref: '#/components/schemas/StudentSession' }
+    Enrollment:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        moduleId: { type: string, format: uuid }
+        status: { type: string, enum: [ACTIVE, CANCELLED] }
+        enrolledAt: { type: string, format: date-time }
+        cancelledAt: { type: string, format: date-time, nullable: true }
+        effectiveUntil: { type: string, format: date-time, nullable: true, description: Las sesiones que empiezan antes se mantienen }
+    EnrollmentItem:
+      allOf:
+        - $ref: '#/components/schemas/Enrollment'
+        - type: object
+          properties:
+            module: { $ref: '#/components/schemas/StudentModule' }
+            readOnly: { type: boolean, description: El periodo está Cerrado }
+            nextSession: { $ref: '#/components/schemas/StudentSession' }
+            upcomingSessions: { type: integer }
+    EnrollmentPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/EnrollmentItem' }
+        meta: { $ref: '#/components/schemas/PageMeta' }

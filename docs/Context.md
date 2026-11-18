@@ -93,12 +93,12 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - **Solo el CAE** crea módulos y define su docente, salón y horario.
 - Los módulos se organizan en un **listado por periodo académico** (semestre). El estudiante ve y se inscribe a los módulos del periodo activo.
 - Cada módulo **se repite semanalmente** en su día y hora durante todo el periodo. Cada semana es una **sesión**. Los cambios de hora y las cancelaciones del docente afectan a la sesión elegida **y a todas las sesiones futuras** del módulo (ver D-069).
-- La inscripción es al módulo (todas sus sesiones del periodo).
-- El **cupo máximo** de un módulo se calcula automáticamente según la capacidad del salón asignado.
+- La inscripción es al módulo (todas sus sesiones del periodo) y solo a módulos del periodo **activo**.
+- El **cupo máximo** de un módulo se calcula automáticamente según la capacidad del salón asignado y se mide **por sesión**: si una cancelación suelta libera un lugar en una sesión, otro estudiante no puede inscribirse mientras alguna sesión futura esté llena (D-090).
 - Al llegar al cupo, el sistema **bloquea** nuevas inscripciones.
 - Un estudiante **no puede inscribirse** a dos módulos que se crucen en horario.
 - No hay límite de módulos por estudiante, siempre que no se crucen.
-- El estudiante puede **cancelar** hasta **1 hora antes** del inicio de la sesión, y elige el alcance: **solo esa sesión** o **el módulo completo** (su inscripción). Pasado ese tiempo, la cancelación se bloquea (ver D-070).
+- El estudiante puede **cancelar** hasta **1 hora antes** del inicio de la sesión, y elige el alcance: **solo esa sesión** o **el módulo completo** (su inscripción). Pasado ese tiempo, la cancelación se bloquea (ver D-070). El estudiante puede **reactivar** una sesión que canceló mientras falte más de 1 hora y haya lugar. Cancelar el módulo libera el lugar desde la primera sesión que empiece en más de 1 hora; una sesión que empieza antes conserva al estudiante (D-091).
 - Un estudiante puede **volver a inscribirse** a un módulo que canceló, mientras no se haya llenado el cupo máximo.
 - El CAE solo puede **cambiar el salón** de un módulo si la capacidad del nuevo salón es **mayor o igual** a la cantidad de estudiantes inscritos. De lo contrario, el sistema bloquea el cambio.
 - Un salón o un docente no puede tener dos módulos en el mismo horario dentro del periodo; terminar a la hora en que otro empieza no es un cruce.
