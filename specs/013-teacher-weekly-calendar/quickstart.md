@@ -39,4 +39,5 @@ Repetir en español e inglés, con modo oscuro, fuente grande y "reducir movimie
 
 ## Resultados
 
-_(Se completa al cerrar la funcionalidad.)_
+- **2026-11-18, recorrido manual (reportado por el equipo):** el flujo se recorrió en el emulador y el resultado se aprobó. No se registraron mediciones de SC-001, SC-002 ni SC-004, ni la revisión con docentes; quedan sin medir.
+- **Automático (2026-11-18):** backend 93 unitarias y 373 e2e; app 60 suites y 474 pruebas; lint y tipos limpios; paridad es/en de 504 claves.

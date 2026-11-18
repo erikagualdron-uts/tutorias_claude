@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-18
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "para el calendario con el número 013" — el cronograma del docente debe tener un calendario semanal por defecto, donde se vean sus módulos en los días de la semana, y debajo las tarjetas de las próximas tutorías.
 
