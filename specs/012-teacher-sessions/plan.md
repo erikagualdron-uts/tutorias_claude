@@ -6,7 +6,7 @@
 
 ## Summary
 
-El docente ve sus módulos y próximas sesiones, y reprograma, cancela o reactiva una sesión (o ella y las futuras de su mismo horario semanal) hasta 2 horas antes. Antes de aceptar una nueva hora se comprueba el salón, el docente y los estudiantes inscritos, y cada cambio deja un evento para las notificaciones de la spec 013.
+El docente ve sus módulos y próximas sesiones, y reprograma, cancela o reactiva una sesión (o ella y las futuras de su mismo horario semanal) hasta 2 horas antes. Antes de aceptar una nueva hora se comprueba el salón, el docente y los estudiantes inscritos, y cada cambio deja un evento para las notificaciones de la spec 014.
 
 Enfoque técnico (detalle en [research.md](research.md)): sin tablas nuevas. Las sesiones ya guardan hora original, estado, docente y salón; se agrega el motivo `TEACHER` y tres tipos de evento. La disponibilidad se comprueba **sobre sesiones reales** (como ya hace la restauración de festivos de la spec 010) y se serializa con bloqueos en orden fijo: periodo (`FOR SHARE`) → módulo (`FOR UPDATE`) → salones → docentes. Los cruces con estudiantes cuentan asistentes de la spec 011 sin exponer a nadie. `dryRun` permite consultar la disponibilidad antes de confirmar.
 
@@ -46,7 +46,7 @@ Enfoque técnico (detalle en [research.md](research.md)): sin tablas nuevas. Las
 | VIII. Desarrollo incremental | Una rama; historias entregables por prioridad: ver (US1), reprogramar (US2), cancelar y reactivar (US3) y eventos (US4, transversal a las anteriores). |
 | IX. Idioma | Documentación en español; código y commits en inglés. |
 
-**Resultado**: pasa sin violaciones. Condición de publicación (FR-015, D-087): esta rama no se publica en producción sin la spec 013 o sin un consumidor del outbox; se anota en el PR.
+**Resultado**: pasa sin violaciones. Condición de publicación (FR-015, D-087): esta rama no se publica en producción sin la spec 014 o sin un consumidor del outbox; se anota en el PR.
 
 **Re-evaluación tras el diseño (Fase 1)**: sin cambios. El límite conocido de R-4 (cruces del CAE y de la inscripción que miran el horario semanal) no viola ningún principio y se registra en D-096.
 

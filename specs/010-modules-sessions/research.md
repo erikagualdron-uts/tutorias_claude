@@ -78,9 +78,9 @@ Decisiones técnicas de la funcionalidad 010. No quedaron marcadores `NEEDS CLAR
 
 ## R-10. Eventos para notificaciones (FR-021)
 
-- **Decisión**: tabla `outbox_events` (`id`, `type`, `module_id`, `payload` JSON, `created_at`, `processed_at` nulo). `OutboxService.record(tx, ...)` escribe en la misma transacción del cambio. Tipos: `MODULE_TEACHER_CHANGED`, `MODULE_ROOM_CHANGED`, `SESSIONS_CANCELLED_HOLIDAY` y `SESSIONS_RESTORED_HOLIDAY`. La spec 013 los lee y envía; aquí no se envía nada.
+- **Decisión**: tabla `outbox_events` (`id`, `type`, `module_id`, `payload` JSON, `created_at`, `processed_at` nulo). `OutboxService.record(tx, ...)` escribe en la misma transacción del cambio. Tipos: `MODULE_TEACHER_CHANGED`, `MODULE_ROOM_CHANGED`, `SESSIONS_CANCELLED_HOLIDAY` y `SESSIONS_RESTORED_HOLIDAY`. La spec 014 los lee y envía; aquí no se envía nada.
 - **Motivo**: patrón de bandeja de salida: el cambio y su registro son atómicos y nada se pierde si las notificaciones aún no existen.
-- **Alternativas**: emitir eventos en memoria (se pierden al reiniciar); encolar en BullMQ ya (el canal y las plantillas son de la spec 013).
+- **Alternativas**: emitir eventos en memoria (se pierden al reiniciar); encolar en BullMQ ya (el canal y las plantillas son de la spec 014).
 
 ## R-11. Sesiones y estado del módulo
 

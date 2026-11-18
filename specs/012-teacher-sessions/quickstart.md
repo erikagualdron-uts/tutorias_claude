@@ -38,7 +38,7 @@ Deben pasar, entre otras: ventana de 119, 120 y 121 minutos, cruces de salón, d
 - Las verificaciones automáticas pasan en los tres repositorios.
 - Los recorridos 1 a 11 se cumplen y se anotan aquí con fecha.
 - `docs/` y `Decisions.md` reflejan lo implementado (Definición de terminado de `docs/Conventions.md`).
-- Nota de publicación (D-087): no se publica en producción sin la spec 013 o un consumidor del outbox; anotarlo en el PR.
+- Nota de publicación (D-087): no se publica en producción sin la spec 014 o un consumidor del outbox; anotarlo en el PR.
 
 ## Resultados
 

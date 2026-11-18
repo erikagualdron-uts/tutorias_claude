@@ -95,7 +95,7 @@ RESCHEDULED y las demás cancelaciones las introduce la spec 012. Las sesiones p
 | moduleId | uuid | FK a `modules` |
 | payload | JSON | Datos mínimos: docente o salón anterior y nuevo, o fecha del festivo y cantidad de sesiones; sin datos personales de los inscritos |
 | createdAt | fecha-hora | |
-| processedAt | fecha-hora, nulo | Lo fija la spec 013 al notificar |
+| processedAt | fecha-hora, nulo | Lo fija la spec 014 al notificar |
 
 Se escribe en la misma transacción que el cambio (R-10). No se borra (no tiene `deletedAt`: es un registro de eventos).
 

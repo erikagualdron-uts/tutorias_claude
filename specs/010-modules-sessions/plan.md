@@ -8,7 +8,7 @@
 
 El CAE crea y gestiona **módulos** (tutorías) de un periodo: nombre, descripción, docente, salón y uno o más **horarios semanales**. Al guardar, el backend genera una **sesión** por cada ocurrencia semanal dentro del periodo (en UTC, desde la hora de Bogotá), omitiendo los **festivos** y las sesiones ya pasadas. El cupo es siempre la capacidad del salón. El CAE puede cambiar salón (regla de capacidad) y docente (aplica a sesiones futuras), editar nombre y descripción, cambiar horarios solo sin inscritos y eliminar de forma lógica solo sin inscritos. Un periodo Cerrado es de solo lectura. Un calendario de **festivos** (manual, con importación opcional de Nager.Date) completa la funcionalidad.
 
-Enfoque técnico (detalle en [research.md](research.md)): igual que en la spec 006, la integridad se garantiza en PostgreSQL además del servicio. Los cruces de docente, de salón y entre horarios del mismo módulo se impiden con **restricciones de exclusión** (`btree_gist`) sobre `module_schedules`, que lleva copiados `period_id`, `teacher_id` y `room_id`; el servicio valida antes para devolver el módulo con el que se cruza. Las operaciones que tocan horarios y sesiones van en una transacción que bloquea (`FOR SHARE`) la fila del periodo, de modo que un cierre simultáneo no deje escribir en un periodo Cerrado. Cada sesión guarda el docente y el salón con que se dicta, así el historial no cambia al reasignar. El número de inscritos pasa por `ConfigUsageService`, que hoy devuelve cero hasta que exista la inscripción (spec 011). Los eventos que deben avisar a los inscritos se guardan en una tabla de eventos (`outbox_events`) que consumirá la spec 013. Los festivos importados se consultan **en el servidor** (nunca desde la app), con límite de 10 s, y se guardan localmente: generar sesiones nunca depende del servicio externo.
+Enfoque técnico (detalle en [research.md](research.md)): igual que en la spec 006, la integridad se garantiza en PostgreSQL además del servicio. Los cruces de docente, de salón y entre horarios del mismo módulo se impiden con **restricciones de exclusión** (`btree_gist`) sobre `module_schedules`, que lleva copiados `period_id`, `teacher_id` y `room_id`; el servicio valida antes para devolver el módulo con el que se cruza. Las operaciones que tocan horarios y sesiones van en una transacción que bloquea (`FOR SHARE`) la fila del periodo, de modo que un cierre simultáneo no deje escribir en un periodo Cerrado. Cada sesión guarda el docente y el salón con que se dicta, así el historial no cambia al reasignar. El número de inscritos pasa por `ConfigUsageService`, que hoy devuelve cero hasta que exista la inscripción (spec 011). Los eventos que deben avisar a los inscritos se guardan en una tabla de eventos (`outbox_events`) que consumirá la spec 014. Los festivos importados se consultan **en el servidor** (nunca desde la app), con límite de 10 s, y se guardan localmente: generar sesiones nunca depende del servicio externo.
 
 ## Technical Context
 
@@ -37,7 +37,7 @@ Enfoque técnico (detalle en [research.md](research.md)): igual que en la spec 0
 | Principio | Cumplimiento |
 |---|---|
 | I. Fuente de verdad en docs/ | Se respeta `Architecture.md` (`modules/`, `ModuleSchedule`, `ModuleSession`, generación semanal en UTC). Se amplía el modelo (festivos, docente y salón por sesión, eventos, minutos en vez de hora) y se registra en `Decisions.md` (D-083 a D-087). Ver "Actualizaciones de docs/". Se cierran las preguntas abiertas de festivos y de varios horarios. |
-| II. Reglas de negocio en backend | Cupo, cruces de docente y salón, cambio de salón, periodo cerrado y rol CAE viven en servicios y en restricciones de la base de datos. La app solo refleja. Las notificaciones a inscritos llegan con la spec 013 y la inscripción (spec 011) no se publica sin ellas (D-087); los festivos no tocan módulos de periodos Cerrados. |
+| II. Reglas de negocio en backend | Cupo, cruces de docente y salón, cambio de salón, periodo cerrado y rol CAE viven en servicios y en restricciones de la base de datos. La app solo refleja. Las notificaciones a inscritos llegan con la spec 014 y la inscripción (spec 011) no se publica sin ellas (D-087); los festivos no tocan módulos de periodos Cerrados. |
 | III. Integridad de datos | `deletedAt` en todo y consultas con `deletedAt: null`. Sesiones en UTC con la hora local convertida en un único punto. El servicio externo de festivos no es requisito para operar. Los límites de espera y la URL salen de configuración. |
 | IV. Seguridad y privacidad | `@Roles(SUPERADMIN)` en cada endpoint de módulos y festivos. Al servicio externo solo viaja el año y el país; sin datos de personas ni secretos. La respuesta externa se valida antes de guardar. |
 | V. Pruebas primero | Pruebas de cruce de docente y salón (incluida concurrencia), generación y conteo de sesiones, cambio de salón con capacidad, periodo cerrado, festivos (alta, baja, importación con fallo) y `403` por rol en cada endpoint. Ver `business-rule-tests`. |
@@ -91,7 +91,7 @@ tutorias_uts_back/
 │   │   ├── dto/
 │   │   └── *.spec.ts
 │   ├── outbox/
-│   │   └── outbox.service.ts            # registra eventos para notificaciones (spec 013)
+│   │   └── outbox.service.ts            # registra eventos para notificaciones (spec 014)
 │   ├── teachers/
 │   │   └── teachers.controller.ts       # + GET /teachers (listado de solo lectura para el selector)
 │   ├── config-usage/
@@ -151,6 +151,6 @@ Sin violaciones de la constitución. Complejidad deliberada y justificada:
 |---|---|---|
 | Tres restricciones de exclusión sobre `module_schedules` con columnas copiadas | SC-002 exige que ningún cruce de docente o salón sea posible ni con peticiones simultáneas | Solo validar en el servicio: una carrera entre dos peticiones puede violar la regla |
 | Bloqueo `FOR SHARE` de la fila del periodo | FR-015 y el caso límite del cierre mientras se edita: sin él, un cierre concurrente permitiría escribir en un periodo Cerrado | Comprobar el estado al inicio: queda una ventana entre la lectura y la escritura |
-| Tabla `outbox_events` | FR-021 exige dejar registrado el evento aunque aún no existan las notificaciones | Omitirlo hasta la spec 013: los cambios de docente, salón y festivo hechos antes no avisarían a nadie |
+| Tabla `outbox_events` | FR-021 exige dejar registrado el evento aunque aún no existan las notificaciones | Omitirlo hasta la spec 014: los cambios de docente, salón y festivo hechos antes no avisarían a nadie |
 | `ConfigUsageService` con inscritos en cero | Deja cableada y probada la regla de capacidad hasta que exista la inscripción | Esperar a la spec 011: se perdería la cobertura de FR-010, FR-013 y FR-014 |
 | Mover Salones y ubicaciones un nivel adentro en la app | La pestaña Módulos debe mostrar módulos (`Design.md`) | Dejar los salones en la pestaña y crear otra entrada para módulos: la barra de pestañas del CAE está fijada en `Design.md` |

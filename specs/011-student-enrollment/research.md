@@ -89,8 +89,8 @@ Decisiones técnicas de la funcionalidad 011. No quedaron marcadores `NEEDS CLAR
 
 ## R-10. Notificaciones y condición de publicación
 
-- **Decisión**: esta spec **no escribe eventos nuevos en `outbox_events`**: la inscripción y las ausencias son filas con fecha, y la spec 013 puede leerlas para avisar a los inscritos de cambios de docente, salón, hora o festivo (los eventos de la spec 010 ya existen). Lo que se registra para trazabilidad (FR-016) son las propias filas: quién (`student_id`), qué (`module_id`, `session_id`) y cuándo (`created_at`, `cancelled_at`, `deleted_at`).
-- **Condición de D-087**: la rama se puede fusionar, pero la inscripción **no se publica en producción** sin la spec 013 o sin un consumidor del outbox; se deja escrito en la descripción del PR y en `tasks.md` (tarea de cierre).
+- **Decisión**: esta spec **no escribe eventos nuevos en `outbox_events`**: la inscripción y las ausencias son filas con fecha, y la spec 014 puede leerlas para avisar a los inscritos de cambios de docente, salón, hora o festivo (los eventos de la spec 010 ya existen). Lo que se registra para trazabilidad (FR-016) son las propias filas: quién (`student_id`), qué (`module_id`, `session_id`) y cuándo (`created_at`, `cancelled_at`, `deleted_at`).
+- **Condición de D-087**: la rama se puede fusionar, pero la inscripción **no se publica en producción** sin la spec 014 o sin un consumidor del outbox; se deja escrito en la descripción del PR y en `tasks.md` (tarea de cierre).
 - **Alternativas**: eventos `ENROLLED` y `CANCELLED` en el outbox (nadie los consume y el aviso al docente no es una regla del negocio).
 
 ## R-11. Estrategia de pruebas
