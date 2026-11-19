@@ -1,0 +1,245 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - Notificaciones API
+  version: 1.0.0
+  description: >
+    Contrato de la bandeja de avisos, el registro de dispositivos push y la configuración del
+    correo. Errores en el formato único de docs/Conventions.md §4 (`code` estable que la app
+    traduce). Bandeja y dispositivos exigen sesión (cualquier rol) y siempre actúan sobre el
+    usuario del token: un aviso ajeno responde 404. La configuración del correo exige rol
+    SUPERADMIN (403 en otro caso). Las fechas-hora son ISO 8601 UTC. El texto de cada aviso ya
+    viene redactado en el idioma del usuario.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /notifications:
+    get:
+      summary: Mis avisos, del más reciente al más antiguo
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de avisos (vacía si no hay)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationPage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /notifications/unread-count:
+    get:
+      summary: Cantidad de avisos sin leer
+      responses:
+        '200':
+          description: Contador
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [unread]
+                properties:
+                  unread: { type: integer, minimum: 0 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /notifications/{id}/read:
+    post:
+      summary: Marcar un aviso como leído (idempotente; conserva la primera fecha de lectura)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: El aviso, ya leído
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Notification' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /notifications/read-all:
+    post:
+      summary: Marcar todos mis avisos como leídos
+      responses:
+        '200':
+          description: Cantidad de avisos que pasaron a leídos
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [updated]
+                properties:
+                  updated: { type: integer, minimum: 0 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /notifications/devices:
+    put:
+      summary: Registrar el dispositivo para push (idempotente por token)
+      description: >
+        Si el token ya existía para otro usuario o estaba descartado, pasa al usuario actual y a
+        la sesión actual. Un dispositivo pertenece a un solo usuario.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterDevice' }
+      responses:
+        '204': { description: Registrado }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /notifications/devices/{token}:
+    delete:
+      summary: Descartar el dispositivo (cierre de sesión); solo si es del usuario actual
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string, maxLength: 200 } }
+      responses:
+        '204': { description: Descartado (también si ya no existía) }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /settings/smtp:
+    get:
+      summary: Estado y datos no sensibles de la configuración del correo (SUPERADMIN)
+      responses:
+        '200':
+          description: Configuración vigente; nunca incluye la clave
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SmtpSettings' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    put:
+      summary: Crear o actualizar la configuración del correo (SUPERADMIN)
+      description: >
+        Todos los campos son obligatorios al crear. Al editar, una `password` ausente o vacía
+        conserva la anterior. La clave se guarda cifrada y no se devuelve.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SaveSmtp' }
+      responses:
+        '200':
+          description: Configuración guardada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SmtpSettings' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422':
+          description: Falta la clave al crear (`SMTP_PASSWORD_REQUIRED`)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /settings/smtp/test:
+    post:
+      summary: Enviar un correo de prueba al correo del CAE que lo pide (SUPERADMIN)
+      description: >
+        Usa la configuración guardada (o las variables de entorno si no hay). Responde 200 con el
+        resultado incluso si el envío falla; la causa es un código estable, nunca el texto del
+        servidor de correo.
+      responses:
+        '200':
+          description: Resultado de la prueba
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SmtpTestResult' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409':
+          description: No hay configuración utilizable (`SMTP_NOT_CONFIGURED`)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+  responses:
+    BadRequest:
+      description: Datos inválidos (`VALIDATION_ERROR`)
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unauthorized:
+      description: Sin sesión
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Forbidden:
+      description: Sin permiso para este rol
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    NotFound:
+      description: No existe o no es del usuario
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+    Notification:
+      type: object
+      required: [id, type, moduleId, title, body, readAt, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        type:
+          type: string
+          enum:
+            - MODULE_TEACHER_CHANGED
+            - MODULE_ROOM_CHANGED
+            - SESSIONS_CANCELLED_HOLIDAY
+            - SESSIONS_RESTORED_HOLIDAY
+            - SESSION_RESCHEDULED
+            - SESSION_CANCELLED_TEACHER
+            - SESSION_RESTORED_TEACHER
+        moduleId: { type: string, format: uuid }
+        title: { type: string }
+        body: { type: string }
+        readAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+    NotificationPage:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Notification' }
+        meta:
+          type: object
+          required: [page, limit, total]
+          properties:
+            page: { type: integer }
+            limit: { type: integer }
+            total: { type: integer }
+    RegisterDevice:
+      type: object
+      required: [token, platform]
+      properties:
+        token: { type: string, maxLength: 200, pattern: '^Expo(nent)?PushToken\[.+\]$' }
+        platform: { type: string, enum: [ANDROID, IOS] }
+    SmtpSettings:
+      type: object
+      required: [status, usingEnvironment, host, port, user, from, hasPassword]
+      properties:
+        status: { type: string, enum: [NOT_CONFIGURED, CONFIGURED, NEEDS_RECONFIGURATION] }
+        usingEnvironment: { type: boolean }
+        host: { type: string, nullable: true }
+        port: { type: integer, nullable: true }
+        user: { type: string, nullable: true }
+        from: { type: string, nullable: true }
+        hasPassword: { type: boolean, description: Nunca se devuelve la clave, solo si existe. }
+    SaveSmtp:
+      type: object
+      required: [host, port, user, from]
+      properties:
+        host: { type: string, minLength: 1, maxLength: 255 }
+        port: { type: integer, minimum: 1, maximum: 65535 }
+        user: { type: string, minLength: 1, maxLength: 255 }
+        password: { type: string, maxLength: 255, description: Obligatoria al crear; vacía o ausente al editar conserva la anterior. }
+        from: { type: string, format: email, maxLength: 255 }
+    SmtpTestResult:
+      type: object
+      required: [ok]
+      properties:
+        ok: { type: boolean }
+        cause:
+          type: string
+          nullable: true
+          enum: [AUTH_FAILED, CONNECTION_FAILED, TIMEOUT, SENDER_REJECTED, UNKNOWN]
