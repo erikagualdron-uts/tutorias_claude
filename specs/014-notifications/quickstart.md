@@ -13,6 +13,8 @@ cd tutorias_uts_mobile && npx expo start
 
 Variables opcionales del backend (valor por defecto entre paréntesis): `OUTBOX_POLL_SECONDS` (5), `NOTIFICATION_DELIVERY_ATTEMPTS` (8), `NOTIFICATION_BACKOFF_SECONDS` (15), `NOTIFICATION_SWEEP_SECONDS` (60). Para el correo local se puede usar un servidor SMTP de pruebas (por ejemplo MailHog en el puerto 1025) y guardarlo desde la pantalla del CAE.
 
+Para el push real, el proyecto de Expo necesita un `projectId` de EAS en `app.json` (`expo.extra.eas.projectId`, se crea con `npx eas init`); sin él la app no obtiene el token y el aviso sigue llegando por la bandeja y el correo. Para el correo, `SMTP_HOST` ya no tiene valor por defecto: sin la fila que guarda el CAE ni esa variable, el correo queda pendiente (con MailPit, `SMTP_HOST=localhost` y `SMTP_PORT=1025`).
+
 Datos de partida: periodo activo, un módulo con un docente y un salón, y dos estudiantes (uno inscrito, otro no).
 
 ## Pruebas automáticas

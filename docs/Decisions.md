@@ -203,6 +203,12 @@
 - **Implementación (spec 005):** Hoy corre con Source Sans 3 (400, 600, 700) y Source Code Pro (400). Los nombres de fuente y los archivos que carga la app viven solo en `src/theme/fonts.ts`; para pasar a Myriad Pro se agregan los archivos con licencia en `assets/fonts/` y se cambian los valores de `fontAssets` en ese archivo. El splash se mantiene hasta que cargan las fuentes, con un máximo de 5 s (`FONT_LOAD_TIMEOUT_MS`); si falla o se agota, la app sigue con la fuente del sistema.
 - **Descartado:** Cargar Myriad Pro desde Adobe Fonts (no está pensado para incrustarse en apps móviles) y copiarla desde un equipo sin confirmar la licencia.
 
+### D-101 · El loader de pantalla completa va centrado
+- **Estado:** Aceptada
+- **Decisión:** Una pantalla que aún no tiene datos y no muestra nada más devuelve `LoadingScreen` (fondo de pantalla, `BrandLoader` regular centrado en ambos ejes) y no un `BrandLoader` suelto. Un `BrandLoader` dentro de una pantalla ya armada (bajo un título o en una lista) sigue centrado en horizontal dentro de su área.
+- **Motivo:** El loader suelto quedaba pegado arriba de pantallas como Correo (SMTP); `LoadingScreen` ya centraba y no exige un componente ni una propiedad nuevos.
+- **Descartado:** Una propiedad `fill` en `BrandLoader` (duplica a `LoadingScreen`); centrar siempre con `flex: 1` (dentro de un `ScrollView` no tiene alto que repartir).
+
 ---
 
 ## Proceso
@@ -333,7 +339,7 @@
 - **Descartado:** Sesiones que heredan docente y salón del módulo (reasignar reescribiría el pasado).
 
 ### D-087 · Eventos de módulo en una tabla de eventos para las notificaciones
-- **Estado:** Aceptada e implementada (spec 010). La spec 012 agrega los tipos `SESSION_RESCHEDULED`, `SESSION_CANCELLED_TEACHER` y `SESSION_RESTORED_TEACHER`. La spec 011 (inscripción) ya está implementada y no agrega eventos: las notificaciones leen las inscripciones y las ausencias. Sigue vigente la condición de no publicar la inscripción en producción sin la spec 014 o un consumidor del outbox.
+- **Estado:** Aceptada e implementada (spec 010). La spec 012 agrega los tipos `SESSION_RESCHEDULED`, `SESSION_CANCELLED_TEACHER` y `SESSION_RESTORED_TEACHER`. La spec 011 (inscripción) ya está implementada y no agrega eventos: las notificaciones leen las inscripciones y las ausencias. **Condición cumplida con la spec 014** (2026-11-18): el consumidor del outbox crea los avisos y los entrega (D-098 a D-100); la inscripción puede publicarse cuando esa spec esté en producción.
 - **Decisión:** Los cambios de docente, de salón y de festivo escriben un registro en `outbox_events` (tipo, módulo, datos mínimos sin información personal) en la misma transacción que el cambio. La funcionalidad de notificaciones (spec 014) los lee, avisa a los inscritos y los marca como procesados. La spec 010 no envía notificaciones. **Condición:** la inscripción (spec 011) no se publica sin las notificaciones (spec 014) o sin un consumidor del outbox, para que ningún inscrito quede sin aviso (Principio II de la constitución); hasta la 011 no hay inscritos.
 - **Motivo:** La regla "todo cambio notifica a los inscritos" no se puede cumplir antes de que exista el canal, pero el cambio y su registro deben ser atómicos para que nada se pierda.
 - **Descartado:** Eventos en memoria (se pierden al reiniciar); encolar ya en BullMQ (el canal y las plantillas son de la spec 014); no registrar nada hasta la spec 014 (los cambios hechos antes no avisarían a nadie).
@@ -397,6 +403,24 @@
 - **Decisión:** El calendario consulta un endpoint de solo lectura propio, `GET /teacher/calendar?from&to` (máximo 7 días, días de Bogotá), que devuelve las sesiones del rango pasadas y futuras con la forma de `/teacher/sessions` y, en `meta`, el periodo y las horas permitidas de la configuración. Muestra el periodo Activo o, sin él, el Cerrado más reciente en solo lectura. Las tarjetas de próximas sesiones siguen usando `/teacher/sessions` y no cambian al navegar semanas. El calendario es un componente genérico en `src/components/calendar/` que recibe elementos ya preparados, para que el estudiante y el CAE lo adopten después. Vista inicial: Día bajo 600 dp y Semana desde 600 dp. Las horas visibles salen del servidor y no están escritas en el calendario; las constantes de los formularios de módulo (`EARLIEST_TIME`, `LATEST_TIME`) siguen fijas en la app y quedan como deuda conocida.
 - **Motivo:** `/teacher/sessions` solo devuelve sesiones futuras y su paginación sirve a las tarjetas; cambiarlo rompía el contrato de la spec 012. Una consulta por semana es pequeña y rápida, y entrega de una vez lo que el calendario necesita.
 - **Descartado:** Agregar `includePast` a `/teacher/sessions` (mezcla dos usos); traer el periodo completo de una vez; una librería de calendario externa (no encaja con el diseño ni con la regla de fechas D-081); guardar la vista elegida en el dispositivo (no se pidió).
+
+### D-098 · Entrega de avisos: una transacción por evento y un barrido de pendientes
+- **Estado:** Aceptada e implementada (spec 014)
+- **Decisión:** Un sondeo de BullMQ cada 5 s procesa los eventos de `outbox_events` en orden de creación, **uno por transacción** (`FOR UPDATE SKIP LOCKED`): crea los avisos, una fila de entrega por aviso y canal (`PUSH`, `EMAIL`) y marca el evento como procesado. Un índice único `(event_id, user_id)` impide el aviso duplicado. Después de confirmar se encola un trabajo por entrega con el id de la entrega como `jobId`; un barrido cada 60 s vuelve a encolar lo que sigue `PENDING` (cola caída tras la transacción, o correo esperando configuración). Reintentos: 8 intentos con espera exponencial desde 15 s (unos 31 min); agotados, la entrega pasa a `FAILED` y se registra el tipo de evento, el canal y una causa estable, sin datos personales. Todo configurable por variables de entorno. Un evento sin destino válido (módulo o sesiones eliminados, sin inscritos) se cierra sin avisos y se registra el motivo; uno con error inesperado queda pendiente y se reintenta, nunca se marca procesado sin avisar.
+- **Motivo:** Cumple "todo cambio notifica a los inscritos" sin perder ni duplicar avisos aunque el servicio se reinicie, y deja el estado en la base de datos como fuente de verdad: la cola es solo el medio. Cada aviso y canal es un trabajo propio, así un fallo no afecta a los demás.
+- **Descartado:** `LISTEN/NOTIFY` (más piezas y no reanuda pendientes al arrancar); encolar desde la transacción del cambio (descartado en D-087); un trabajo por evento (un destinatario lento frena al resto); reintentos infinitos (acumulan basura); rendirse tras N fallos del evento (perder un aviso viola el 100 % de inscritos avisados).
+
+### D-099 · El contador de avisos se consulta, no llega por WebSocket
+- **Estado:** Aceptada e implementada (spec 014)
+- **Decisión:** La app consulta `GET /notifications/unread-count` cada minuto con la app abierta, al volver a primer plano, al recibir un push y tras marcar leído; la campana de la barra superior muestra el resultado. Los avisos se guardan todos y no se ocultan por antigüedad hasta que otra funcionalidad fije una retención. Los avisos de esta spec van solo a los estudiantes inscritos; los avisos a docentes usarán plantillas aparte (aclarado el 2026-11-18).
+- **Motivo:** El WebSocket llega con el chat (otra spec); consultar es simple, barato y suficiente para el contador (el aviso nuevo ya llega por push). El contrato no cambia cuando exista el canal en vivo.
+- **Descartado:** WebSocket solo para el contador (adelanta la infraestructura del chat); consulta agresiva (gasta batería); ocultar avisos viejos (no se pidió y complica la bandeja).
+
+### D-100 · Push con cliente propio de Expo, recibos diferidos y descarte al cerrar sesión
+- **Estado:** Aceptada e implementada (spec 014)
+- **Decisión:** El push se envía con un cliente propio de dos llamadas (`send` y `getReceipts`) de Expo Push, sin la dependencia `expo-server-sdk`, detrás de una interfaz que las pruebas sustituyen. Un trabajo diferido (15 min) consulta los recibos y descarta los dispositivos que Expo reporta como inválidos; los inválidos del ticket se descartan al instante. Un dispositivo (`push_tokens`) tiene un token único y pertenece a un solo usuario y a la sesión con que se registró; al terminar una sesión (cierre de sesión, robo de token, cambio de clave) el servidor descarta sus dispositivos, aunque la app no lo pida. La configuración del correo la lee un servicio común (fila guardada por el CAE, luego variables `SMTP_*`, luego nada) en cada envío, y su pantalla de gestión no devuelve nunca la clave.
+- **Motivo:** Dos llamadas no justifican una dependencia; el descarte en el servidor cumple "al cerrar sesión deja de recibir" aunque la app falle; leer la configuración en cada envío hace que un cambio rija sin reiniciar.
+- **Descartado:** `expo-server-sdk`; FCM y APNs directos (más credenciales y código, ya se eligió Expo Push en D-024); verificar los recibos en el mismo trabajo (bloquea el worker); depender de que la app pida el descarte al salir.
 
 ---
 

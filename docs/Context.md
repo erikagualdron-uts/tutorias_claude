@@ -36,7 +36,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
    - Listas desplegables administrables.
    - Periodos académicos (semestres): crear, definir fechas de inicio y fin, y cuál está activo.
    - Correos institucionales de docentes.
-   - SMTP: configuración del servicio de envío de correos.
+   - SMTP: configurar el servidor de correo (servidor, puerto, usuario, clave y remitente), enviar un correo de prueba y ver su estado; la clave se guarda cifrada y nunca se muestra (spec 014).
 2. **Módulos**
    - **Salones**: gestión de salones y ubicaciones.
    - **Gestión de módulos**: cambiar salón de un módulo y cambiar docente de un módulo.
@@ -52,6 +52,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
    - Enviar mensajes a los estudiantes de sus módulos.
    - Recibir mensajes de los estudiantes de sus módulos.
    - Conversar con el CAE.
+   - Bandeja de notificaciones con contador en la barra superior; los avisos de cambios de módulos van a los estudiantes y los demás tipos llegarán con sus funcionalidades (spec 014).
 2. **Cronograma**
    - Calendario semanal con sus tutorías: hora, salón y cantidad de estudiantes, en vista Día (por defecto en el teléfono) o Semana (por defecto en tableta), navegable por el periodo académico, con las próximas sesiones debajo (spec 013).
    - Cambiar la hora de una tutoría (consultando disponibilidad) o cancelarla, solo esa sesión o ella y las futuras de su horario semanal, y reactivar lo que canceló. Se notifica a todos los estudiantes inscritos.
@@ -63,7 +64,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 1. **Elegir tutorías** en formato de tarjetas.
 2. **Cancelar** las tutorías en las que esté inscrito.
 3. **Cronograma** semanal de solo lectura.
-4. **Notificaciones**: anuncios de las tutorías, mensajes directos con docentes y avisos de cancelaciones.
+4. **Notificaciones**: anuncios de las tutorías, mensajes directos con docentes y avisos de cambios. Los avisos de cambios (hora, cancelación, reactivación, docente, salón y festivos) llegan a la **bandeja de la app** (campana con contador en la barra superior), por **push** y por **correo**, en el idioma del dispositivo (spec 014).
 5. **PQRS**: solo radicar (vista de usuario).
 
 ## 5. Fuera de alcance (por ahora)
@@ -109,7 +110,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - Si el docente o el salón de un módulo se desactiva o elimina después de asignarse, el módulo se marca como no disponible y el CAE lo reasigna; no se bloquea la desactivación (D-088).
 - El docente solo puede cambiar la hora **consultando disponibilidad** (salón, docente y cruces con los horarios de los estudiantes inscritos) y solo dentro de la misma semana de la sesión.
 - El docente puede **cambiar la hora o cancelar** una tutoría hasta **2 horas antes** de su inicio, y elige el alcance: **solo esa sesión** o **ella y las futuras de su mismo horario semanal** (D-069). Puede **reactivar** una sesión que él canceló mientras falten 2 horas o más. Pasado ese tiempo, la acción se bloquea.
-- Cambiar hora, salón o docente, o cancelar un módulo, **siempre notifica** a los estudiantes inscritos.
+- Cambiar hora, salón o docente, o cancelar un módulo, **siempre notifica** a los estudiantes inscritos: un solo aviso por cambio, que no se envía a quien ya no está inscrito, ni a quien marcó ausencia en las sesiones afectadas.
 
 ### Configuración del CAE (periodos, salones y listas)
 - Un periodo nace **Próximo**; el CAE lo **activa** y, si ya hay uno activo, confirma que se cierra. El periodo activo se cierra a mano o solo al pasar su fecha de fin. Un periodo **Cerrado** es de solo lectura y no se reabre. Los periodos no se solapan y solo se eliminan los Próximos sin módulos (D-071, D-072, D-076).
@@ -125,7 +126,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 ### Comunicación
 - La **mensajería es en tiempo real** (chat).
-- Las notificaciones llegan por **push** y por **correo** (vía el SMTP que configura el CAE).
+- Las notificaciones llegan a la **bandeja de la app**, por **push** y por **correo** (vía el SMTP que configura el CAE). La bandeja funciona aunque se rechace el permiso de push o el correo no esté configurado, y conserva todos los avisos.
 - Quién puede escribir a quién:
   - CAE ↔ docentes.
   - Docente ↔ estudiantes de sus módulos.

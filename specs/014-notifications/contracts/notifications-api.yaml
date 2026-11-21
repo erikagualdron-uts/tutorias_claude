@@ -242,4 +242,4 @@ components:
         cause:
           type: string
           nullable: true
-          enum: [AUTH_FAILED, CONNECTION_FAILED, TIMEOUT, SENDER_REJECTED, UNKNOWN]
+          enum: [AUTH_FAILED, CONNECTION_FAILED, TIMEOUT, SENDER_REJECTED, UNKNOWN, null]

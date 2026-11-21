@@ -122,14 +122,15 @@
 | `Conversation` | id, type (DIRECT / MODULE), moduleId?, createdAt |
 | `ConversationMember` | conversationId, userId, lastReadAt |
 | `Message` | id, conversationId, senderId, body, createdAt |
-| `Notification` | id, userId, type, title, body, readAt, createdAt |
-| `PushToken` | id, userId, token, platform |
+| `Notification` | id, userId, eventId (único con userId: un aviso por cambio y persona), type, moduleId, locale, title, body (ya redactados en el idioma del destinatario), readAt, createdAt. Sin borrado: nada lo elimina y se conservan todos (spec 014) |
+| `NotificationDelivery` | id (también es el id del trabajo de la cola), notificationId, channel (PUSH / EMAIL), status (PENDING / SENT / FAILED / SKIPPED), attempts, lastError (solo un código de causa), sentAt. Único por aviso y canal |
+| `PushToken` | id, userId, sessionId, token (único: un dispositivo pertenece a un solo usuario), platform (ANDROID / IOS), deletedAt (cierre de sesión o dispositivo inválido) |
 | `Pqrs` | id, authorId, tipo, asunto, descripción, status, createdAt |
 | `PqrsMessage` | id, pqrsId, authorId, body |
 | `Setting` | configuración general |
 | `DropdownList` | key único (ej. `PQRS_TYPE`), nameEs, nameEn; las crea el sistema, no la API |
 | `DropdownItem` | listId, labelEs, labelEn, sortOrder, status (ACTIVE / INACTIVE), deletedAt |
-| `SmtpConfig` | host, port, user, passwordEncrypted, from |
+| `SmtpConfig` | host, port, user, passwordEncrypted, from. Una sola fila; la gestiona el CAE desde la app (spec 014) |
 
 Notas:
 - Los borrados lógicos usan `deletedAt`; siempre se filtra por él en las consultas.
@@ -146,7 +147,7 @@ Notas:
 - Los cruces de docente, de salón y entre horarios del mismo módulo los impiden restricciones de exclusión sobre `ModuleSchedule` dentro del mismo periodo; un horario que termina cuando otro empieza no se solapa (D-085).
 - Toda escritura de módulos, horarios o sesiones bloquea con `FOR SHARE` la fila del periodo y se rechaza si está `CLOSED`.
 - **Festivos**: el CAE los administra en `Holiday` (global, no por periodo) y puede importarlos de Nager.Date; el servidor consulta el servicio con límite de 10 s y los guarda localmente, así generar sesiones nunca depende de él (D-083). La generación omite los festivos; al registrar uno, las sesiones futuras de esa fecha pasan a `CANCELLED` con motivo `HOLIDAY`, y al eliminarlo se restauran o se generan. No se tocan módulos de periodos `CLOSED` ni se admiten festivos con fecha anterior a hoy.
-- Los cambios de docente, salón y festivo escriben un `OutboxEvent` en la misma transacción; la funcionalidad de notificaciones lo envía a los inscritos (D-087).
+- Los cambios de docente, salón y festivo escriben un `OutboxEvent` en la misma transacción; la funcionalidad de notificaciones (spec 014) lo consume y avisa a los inscritos (D-087, D-098).
 - Solo un periodo puede estar `ACTIVE` a la vez; el estudiante ve los módulos del periodo activo. La base de datos lo garantiza con un índice único parcial, y los periodos no se solapan por una restricción de exclusión sobre el rango de fechas (D-072).
 - Todo periodo nace `UPCOMING`; el CAE lo activa a mano y, si ya hay uno activo, el servidor exige confirmar su cierre. El periodo activo se cierra a mano o solo al terminar su `endsOn` en `America/Bogota` (tarea programada cada 15 minutos más una comprobación en cada lectura). Un periodo `CLOSED` no se reabre (D-071).
 - Al cerrar un periodo, sus módulos pasan a solo lectura.
@@ -187,15 +188,32 @@ Los límites de horas y los dominios se leen de **configuración**, no se escrib
 
 ## 9. Notificaciones
 
-Un solo servicio crea la notificación y la entrega por tres canales:
+Un consumidor del registro de eventos (`OutboxEvent`, D-087) crea el aviso de cada estudiante inscrito y lo entrega por tres canales (spec 014):
 
-1. **En la app:** se guarda en la tabla `Notification`.
-2. **Push:** vía Expo Push Service (que usa FCM y APNs).
-3. **Correo:** vía SMTP configurado por el CAE.
+1. **En la app:** una fila de `Notification`, ya redactada en el idioma del destinatario (`User.locale`) y con las fechas en `America/Bogota`. Es el canal que siempre funciona.
+2. **Push:** vía Expo Push Service (que usa FCM y APNs), a todos los dispositivos vivos del destinatario (D-100).
+3. **Correo:** vía SMTP. La configuración sale, en este orden, de la fila `SmtpConfig` que gestiona el CAE desde la app, de las variables `SMTP_*` o, si no hay ninguna, el envío queda pendiente sin perderse. Se lee en cada envío, así un cambio rige sin reiniciar.
 
-El envío de push y correo va por **cola (BullMQ)** para no frenar la API y poder reintentar.
+**Del evento al aviso (D-098):**
 
-Eventos que notifican: cancelación o cambio de hora, salón o docente de un módulo, anuncios del docente, mensajes nuevos, y cambios de estado de una PQRS.
+- Un trabajo repetible de BullMQ sondea el registro cada `OUTBOX_POLL_SECONDS` (5 s). Cada evento se procesa **en su propia transacción** (`FOR UPDATE SKIP LOCKED`, en orden de creación): crea los avisos, una fila `NotificationDelivery` por aviso y canal, y marca el evento como procesado. Si el servicio cae a mitad, se repite el evento entero; el índice único `(eventId, userId)` evita duplicados.
+- **Destinatarios**: solo estudiantes, resueltos al procesar con la misma regla del cupo por sesión (inscripción vigente, o cancelada cuya fecha efectiva aún no llega, sin ausencia en la sesión y con la cuenta activa). Un cambio de varias sesiones da **un solo aviso** que resume las fechas que le tocan a ese estudiante. El docente y el CAE no reciben avisos de esta funcionalidad; si se agregan, usarán plantillas aparte.
+- **Plantillas**: un solo lugar para los textos de aviso, push y correo (`notifications/templates/{es,en}.ts` y `mail/templates/`), con funciones puras que se prueban sin base de datos.
+
+**Entrega:**
+
+- Después de confirmar la transacción se encola un trabajo por entrega con `jobId = deliveryId`, de modo que repetirlo no duplica el envío. Reintentos con espera exponencial (`NOTIFICATION_DELIVERY_ATTEMPTS` = 8 desde `NOTIFICATION_BACKOFF_SECONDS` = 15 s, unos 31 min); agotados, la entrega pasa a `FAILED` y queda un registro con el tipo de evento, el canal y una causa estable, sin correos, tokens ni claves.
+- Un **barrido** cada `NOTIFICATION_SWEEP_SECONDS` (60 s) vuelve a encolar las entregas que siguen `PENDING`: cola caída tras la transacción, o correo esperando a que haya configuración. Así ninguna entrega se pierde.
+- El estado de cada canal (`PENDING`, `SENT`, `FAILED`, `SKIPPED`) permite diagnosticar qué pasó. `SKIPPED`: sin dispositivos, dispositivo inválido, o correo de un dominio que no es el de estudiantes.
+- Un fallo de un canal o de un destinatario no afecta a los demás: cada aviso y canal es su propio trabajo.
+
+**Dispositivos y cierre de sesión:** `PUT /notifications/devices` es idempotente por token y mueve un dispositivo al usuario que lo registra. Al terminar una sesión (`SessionService.revoke`) se descartan los dispositivos de esa sesión en el servidor, aunque la app no lo pida. Un dispositivo que Expo informa como inválido (en el ticket o en los recibos, que se consultan 15 min después) se descarta y no se reintenta.
+
+**Contador (D-099):** la app consulta `GET /notifications/unread-count` cada minuto con la app abierta, al volver a primer plano, al recibir un push y tras marcar leído. No hay WebSocket todavía; cuando exista el del chat, se reutiliza sin cambiar el contrato.
+
+**Configuración del correo (CAE):** `GET` y `PUT /settings/smtp` y `POST /settings/smtp/test`, solo rol `SUPERADMIN`. La clave se cifra con AES-256-GCM y nunca se devuelve (solo `hasPassword`); si la clave de cifrado del servidor cambia, el estado es `NEEDS_RECONFIGURATION` y el correo queda pendiente hasta que el CAE la escriba de nuevo. La prueba responde con una causa estable (`AUTH_FAILED`, `CONNECTION_FAILED`, `TIMEOUT`, `SENDER_REJECTED`, `UNKNOWN`), nunca con el texto del servidor.
+
+Eventos que notifican hoy: los siete tipos del registro (cambio de docente y de salón, festivo que cancela o restaura, sesión reprogramada, cancelada o reactivada por el docente). Los anuncios del docente, los mensajes nuevos y los cambios de estado de una PQRS reutilizarán la bandeja, los dispositivos y la cola con plantillas propias.
 
 ## 10. Internacionalización (es / en)
 
