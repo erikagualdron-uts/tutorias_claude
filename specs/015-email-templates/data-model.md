@@ -4,15 +4,18 @@
 
 ## Tipos internos
 
-### RenderedMail (modificado)
+### MailContent (nuevo)
 
-El correo ya renderizado que producen todas las plantillas.
+Lo que dice un correo. Las plantillas lo producen y `composeMail` lo convierte en el asunto, el HTML y el texto simple del mismo correo (`ComposedMail`), así los dos cuerpos nunca difieren (FR-004).
 
 | Campo | Tipo | Notas |
 |---|---|---|
 | `subject` | texto | Sin el código ni datos personales; termina en el nombre corto de la app. |
-| `text` | texto | Versión en texto simple, con el mismo contenido que el HTML (FR-004). |
-| `html` | texto | Nuevo. Marco con logo, tarjeta y pie; todo valor de usuario escapado (FR-010). |
+| `lang` | `es` \| `en` | Va en `<html lang>` para los lectores de pantalla. |
+| `badge` | texto | Nombra el estado sobre el título; el estado nunca va solo por color. En el texto simple va como `[Insignia]`. |
+| `title` | texto | El único `h1`. |
+| `tone` | `info` \| `warning` \| `error` \| `success` | Fija el color de la insignia y el filo de la caja de detalle (paleta de `Design.md`). |
+| `blocks` | lista | Cada bloque es `p` (párrafo), `detail` (texto destacado con saltos de línea), `code` (código de un solo uso) o `note` (metadato pequeño, como el vencimiento). Todo valor de usuario se escapa (FR-010). |
 
 ### MailJob (modificado)
 
@@ -42,7 +45,7 @@ Datos de marca leídos de la configuración en cada envío; ninguno está escrit
 
 ### Marco del aviso por tipo
 
-Para cada `OutboxEventType`, una definición por idioma con `heading`, `intro` y `tone` (`info`, `warning`, `error`, `success`). El `tone` fija el acento con la paleta de `Design.md`.
+Para cada `OutboxEventType`, una definición por idioma con `badge`, `intro` y `tone` (`info`, `warning`, `error`, `success`). El encabezado del correo es el título del aviso, que ya es propio de cada tipo; el `tone` fija el color de la insignia con la paleta de `Design.md`.
 
 | Tipo de evento | Tono | Acento |
 |---|---|---|

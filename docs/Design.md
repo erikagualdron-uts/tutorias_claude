@@ -369,6 +369,18 @@ Empty day: icon, `No sessions this day`.
 
 **Mail settings (CAE, More tab):** a status badge (text plus icon: Configured in #2BA640, Not configured in #575756, Needs to be configured again in #FB8C00), a #F8E9D4 banner when the app server's own settings are in use or the saved password cannot be read, and filled fields with a soft border and a leading icon: server, port (number keypad), user, password (hidden, never shown again; an empty one keeps the saved one, with that said in the placeholder) and sender. "Save" and "Send test email" are stacked 16px apart, each with a leading icon; the test button is disabled with the reason below it ("Save the settings to be able to test them") until there is something saved. The result of the test is a banner with a plain-words cause, never the text of the mail server.
 
+### Emails
+Every email the API sends (account codes, notices of changes in a module, the mail test) follows one layout (D-106). It is a card, not a screen, so it adapts the app components to what mail clients support.
+
+- **Frame:** a white card, 16px radius, on the #F2F4EF Screen background, 600px at most and full width on a phone. Header with the full-color logo (`logo-uts.png`, embedded, never modified, alt text with the institution name). Under it, a hero band in #34531F (gradient to #132F20 only as an enhancement; the solid color is always set), with a badge, the title in Screen Title style (26px/32px, Bold, white) and the 4px lime line of the heroes. The Brand pattern is not used in emails.
+- **Body:** 16px/24px in #132F20 (one size up from the app Body, because mail clients do not scale text). The text of a notice goes in a box with the #F2F4EF fill, 12px radius and a 4px left line in the color of its tone. A one-time code goes in a box styled like an input (#F2F4EF fill, 1px #C9D0C3 border, 12px radius) in a monospaced stack at 32px, 8px letter spacing. The expiry is Metadata (#575756, 14px) and always in Bogota time.
+- **Tones and badges:** the badge names the state in text (Cancelled, Time change, Reinstated, Teacher change, Room change, Verify your account…) and its color follows the tone: info #C3D730 with #132F20 text, warning #FB8C00 with #132F20 text, error #B3261E with white text, success #2BA640 with **#132F20** text (4.6:1; white on #2BA640 is 3.2:1 and fails AA, so the success badge in the app, which uses white text, should be reviewed). Cancellations are error, a changed time is warning, restores are success and a change of teacher or room is info.
+- **Footer:** a 1px #E5E5E5 line, the official name of the institution in Semibold, the contact as a #4E7A2F link (underlined by default) and the legal text in Metadata. All three come from configuration.
+- **Fonts:** Arial/Helvetica and Courier New. Web fonts do not load in mail clients, so Myriad Pro and Source Code Pro are not used here (D-103).
+- **Accessibility:** `lang` on the page, one `h1`, layout tables marked as presentation, a hidden preview text (the first paragraph), text of 12px at least and 16px in the body, status never only by color, every text/background pair at 4.5:1 or more (checked by a test), and the plain-text version with the same content. Light scheme only (`color-scheme: light`).
+- **Compatibility:** no `overflow`, no styles on `<body>`, no `background` shorthand, and every fill also carries a `bgcolor`. The HTML stays well under 100 KB so Gmail does not clip it. The Mailpit checker gives 94.1% supported on average for the 20 emails.
+- **Not in emails:** buttons or links that open the app (an email client may block them; the text says to open the app), emoji or other icons, and a dark theme.
+
 ### Messages
 The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 

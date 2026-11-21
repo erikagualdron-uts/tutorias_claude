@@ -37,7 +37,7 @@ description: "Task list for Plantillas de correo institucionales"
 
 **Purpose**: Recursos y configuración que todas las historias usan
 
-- [x] T001 Copiar sin modificar `tutorias_uts_mobile/assets/brand/logo-uts.png` a `tutorias_uts_back/assets/brand/logo-uts.png` y comprobar que pesa menos de 100 KB (D-101)
+- [x] T001 Copiar sin modificar `tutorias_uts_mobile/assets/brand/logo-uts.png` a `tutorias_uts_back/assets/brand/logo-uts.png` y comprobar que pesa menos de 100 KB (D-102)
 - [x] T002 [P] Declarar `MAIL_BRAND_NAME` (por defecto `Institución Universitaria Tecnológica de Santander – UTS`), `MAIL_CONTACT_EMAIL` (opcional, vacío por defecto) y `MAIL_FOOTER_TEXT` (opcional, vacío por defecto) en `tutorias_uts_back/src/config/env.ts` y `tutorias_uts_back/.env.example`, con una prueba de valores por defecto en `tutorias_uts_back/src/config/env.spec.ts`
 - [x] T003 [P] Comprobar en `tutorias_uts_back/test/utils/test-app.ts` cómo captura `SentMail` el transporte falso y ampliarlo para guardar también `html` y `attachments` de cada mensaje; añadir en el mismo archivo una captura de los registros (logger de Nest) que las pruebas puedan leer, para comprobar que ningún código aparece en ellos
 
@@ -152,12 +152,13 @@ description: "Task list for Plantillas de correo institucionales"
 
 **Purpose**: Documentación, decisiones y cierre
 
-- [ ] T035 [P] Actualizar `Claude/docs/Architecture.md` §9 (correo): un solo armador de mensaje, plantillas con HTML y texto, logo incrustado, marca por configuración y vigencia de códigos
-- [ ] T036 [P] Actualizar `Claude/docs/Design.md` con el correo como superficie de marca: acentos por tono con la paleta existente, sin degradados, lima solo como relleno, fuentes de respaldo (`Arial, Helvetica, sans-serif`: excepción explícita a "nunca escribir nombres de fuente", que rige para los componentes de la app, porque Myriad Pro no se puede incrustar en correo) y logo `logo-uts.png`
-- [ ] T037 Registrar en `Claude/docs/Decisions.md` D-101 (logo incrustado, copia en el backend), D-102 (un armador de mensaje y plantillas sin dependencias; fuentes de respaldo en el correo como excepción a la regla de tipografía de la app), D-103 (un correo por tipo de aviso sin migración; la tabla "Antes / Ahora" queda descartada por ahora) y D-104 (marca por configuración y `expiresAt` en el código)
-- [ ] T038 [P] Comprobar en `tutorias_uts_back` que ningún archivo fuera de `src/mail/templates/` contiene texto de correo escrito (búsqueda de `subject:` y `text:` en `src/`) y que `grep` de `Unidades Tecnológicas` no encuentra nada (FR-011, SC-004)
+- [x] T035 [P] Actualizar `Claude/docs/Architecture.md` §9 (correo): un solo armador de mensaje, plantillas con HTML y texto, logo incrustado, marca por configuración y vigencia de códigos
+- [x] T036 [P] Actualizar `Claude/docs/Design.md` con el correo como superficie de marca: acentos por tono con la paleta existente, sin degradados, lima solo como relleno, fuentes de respaldo (`Arial, Helvetica, sans-serif`: excepción explícita a "nunca escribir nombres de fuente", que rige para los componentes de la app, porque Myriad Pro no se puede incrustar en correo) y logo `logo-uts.png` (hecho como la sección "Emails" de `Design.md`)
+- [x] T037 Registrar en `Claude/docs/Decisions.md` D-102 (logo incrustado, copia en el backend), D-103 (un armador de mensaje y plantillas sin dependencias; fuentes de respaldo en el correo como excepción a la regla de tipografía de la app), D-104 (un correo por tipo de aviso sin migración; la tabla "Antes / Ahora" queda descartada por ahora), D-105 (marca por configuración y `expiresAt` en el código) y D-106 (lenguaje visual y accesibilidad del correo)
+- [x] T038 [P] Comprobar en `tutorias_uts_back` que ningún archivo fuera de `src/mail/templates/` contiene texto de correo escrito (búsqueda de `subject:` y `text:` en `src/`) y que `grep` de `Unidades Tecnológicas` no encuentra nada (FR-011, SC-004)
 - [ ] T039 Actualizar las notas de `Claude/specs/014-notifications/tasks.md` en T052, T057, T062, T072, T078 y T079 (hoy dicen "se difiere a la 015" o "se retoma en la 015") para que digan que se cerraron en la spec 015 con T032, T033 y T034
 - [ ] T040 Cambiar `Status` de `specs/015-email-templates/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_back` y `Claude` (el de `Claude` apunta a `001-auth-roles`)
+- [x] T041 Rediseñar las plantillas con `Design.md` y las mejoras de accesibilidad y compatibilidad que marcó Mailpit: `layout.ts` (tarjeta, franja verde con insignia, caja de detalle, código en caja, pie), `lang`, insignia, pre-encabezado y contraste AA probado en `layout.spec.ts`; sin `overflow`, estilos en `<body>` ni `background`. Registrado en D-106 (hecho después de T033, a pedido del usuario)
 
 ---
 

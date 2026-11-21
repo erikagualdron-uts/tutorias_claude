@@ -38,8 +38,16 @@ Guía para comprobar la feature de punta a punta. Detalle de tipos y configuraci
 
 ## Resultado del recorrido (2026-11-21)
 
-**Hecho (renderizado y entrega a Mailpit):** se enviaron a `localhost:1025` los 20 correos reales (7 avisos, verificación, restablecimiento y prueba SMTP, en español e inglés) con `MessageBuilder`. Llegaron los 20, cada uno con asunto propio y en su idioma, el logo `logo-uts.png` incrustado (`cid:uts-logo`, 96 455 bytes), HTML de unos 1,9 KB y texto simple equivalente con el pie institucional y los datos de contacto de la configuración. La revisión de compatibilidad de Mailpit da 88,8 % de soporte, 10,0 % parcial y 1,2 % sin soporte (el estilo del `<body>`, que no afecta porque el fondo lo pone la tabla exterior). Los escenarios 1 a 8 y 11 a 12 quedan cubiertos por las pruebas automáticas (`mail-templates`, `mail-locale`, `smtp-settings` y `notifications-delivery-email`).
+**Hecho (renderizado y entrega a Mailpit):** se enviaron a `localhost:1025` los 20 correos reales (7 avisos, verificación, restablecimiento y prueba SMTP, en español e inglés) con `MessageBuilder`, primero con el marco inicial y luego con el rediseño de D-106. Llegaron los 20, cada uno con asunto propio y en su idioma, el logo `logo-uts.png` incrustado (`cid:uts-logo`, 96 455 bytes), insignia de estado, texto simple equivalente con el pie institucional y los datos de contacto de la configuración.
+
+| Verificador de compatibilidad de Mailpit (promedio de los 20) | Marco inicial | Rediseño |
+|---|---|---|
+| Soportado | 88,8 % | 94,1 % |
+| Parcial | 10,0 % | 4,9 % |
+| Sin soporte | 1,2 % | 1,0 % |
+
+Lo que sigue marcado es propio de cualquier correo: la etiqueta `<body>`, el pre-encabezado oculto (`display:none`), `max-width` en Outlook, el degradado de la franja (con color sólido de respaldo) y `border-radius`. Los escenarios 1 a 8 y 11 a 12 quedan cubiertos por las pruebas automáticas (`mail-templates`, `mail-locale`, `smtp-settings` y `notifications-delivery-email`); el contraste AA y la accesibilidad del marco los comprueba `layout.spec.ts`.
 
 **Pendiente (manual):** recorrer 3 a 6 con la app y el API en marcha, abrir los correos en Mailpit para el juicio visual de SC-002 y, cuando la UTS entregue su SMTP, mirarlos en Gmail y Outlook.
 
-**Observación fuera de esta spec:** los cuerpos de los avisos de la 014 terminan la fecha con "p. m." y luego un punto ("2:00 p. m.. Solo afecta..."). Viene del texto de `notifications/templates`, no de las plantillas de correo.
+**Corregido en el camino:** los cuerpos de los avisos de la 014 terminaban la fecha con "p. m." y luego un punto ("2:00 p. m.. Solo afecta..."). `renderNotification` ahora deja un solo punto; el cambio alcanza también a la bandeja y al push, que usan el mismo texto, y tiene su prueba en `templates.spec.ts`.

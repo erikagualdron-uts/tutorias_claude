@@ -19,7 +19,7 @@ Sin `NEEDS CLARIFICATION` pendientes. Las decisiones de abajo salen de la revisi
 - **Decision**: adjuntar `logo-uts.png` con `cid`, leído una vez al arrancar. Copia sin modificar de `mobile/assets/brand/logo-uts.png` en `tutorias_uts_back/assets/brand/`. Respuesta a la clarificación del 2026-11-21.
 - **Rationale**: la API aún no tiene despliegue ni dirección pública, y los clientes bloquean imágenes remotas. De los logos disponibles, `logo-uts.png` pesa 96 KB; los demás superan 380 KB y no convienen en un correo. Se usa sobre fondo blanco, donde el logo a color se ve bien.
 - **Alternatives considered**: URL pública configurable (sin servidor público hoy, se vería roto); imagen en base64 dentro del HTML (infla el cuerpo y Gmail recorta por encima de ~100 KB); sin imagen (descartado por la clarificación).
-- **Riesgo**: dos copias del logo (app y API). Si la UTS entrega el logo oficial nuevo (ver las decisiones de marca de `docs/Decisions.md`), hay que actualizar ambos; queda anotado en D-101.
+- **Riesgo**: dos copias del logo (app y API). Si la UTS entrega el logo oficial nuevo (ver las decisiones de marca de `docs/Decisions.md`), hay que actualizar ambos; queda anotado en D-102.
 
 ## R4. Un correo por tipo de aviso sin migración
 
@@ -50,6 +50,13 @@ Sin `NEEDS CLARIFICATION` pendientes. Las decisiones de abajo salen de la revisi
 
 ## R8. Compatibilidad entre clientes
 
-- **Decision**: ancho 600 px, estilos en línea, fuentes `Arial, Helvetica, sans-serif`, sin degradados ni CSS externo, texto alternativo en el logo, versión `text` completa. Se comprueba a mano en Mailpit (Gmail web y Outlook quedan como verificación manual cuando la UTS entregue su SMTP).
+- **Decision**: ancho 600 px, estilos en línea, fuentes `Arial, Helvetica, sans-serif`, degradado solo como mejora con color sólido de respaldo, sin CSS externo, texto alternativo en el logo, versión `text` completa. El detalle del diseño y de la accesibilidad está en R9. Se comprueba a mano en Mailpit (Gmail web y Outlook quedan como verificación manual cuando la UTS entregue su SMTP).
 - **Rationale**: lo que renderiza igual en los clientes de uso común; la fuente corporativa Myriad Pro no se puede incrustar en correo.
 - **Alternatives considered**: tipografía web (no la cargan los clientes principales); modo oscuro dedicado (bajo valor para esta entrega, y los clientes ya invierten colores).
+
+## R9. Rediseño visual y accesibilidad (2026-11-21)
+
+- **Decision**: tarjeta blanca de 16 px de radio con logo arriba, franja verde con insignia de texto, título en blanco y línea lima de 4 px; detalle del aviso en caja #F2F4EF con filo del color del tono; código en caja con borde tenue; pie con nombre oficial y contacto. Solo tema claro. Sigue `Design.md` y se registra en D-106.
+- **Rationale**: el primer diseño era un marco plano. El verificador de Mailpit señaló `overflow`, estilos en `<body>`, el atajo `background` y `max-width`; se eliminaron los tres primeros y todo relleno lleva también `bgcolor`. El promedio sobre los 20 correos pasó de 88,8 % a 94,1 % de soporte y lo parcial de 10,0 % a 4,9 %. Lo que queda marcado es propio de cualquier correo (la etiqueta `<body>`, el pre-encabezado oculto, `max-width` en Outlook, el degradado con color de respaldo y `border-radius`).
+- **Accesibilidad**: `lang`, un solo `h1`, tablas `presentation`, pre-encabezado, 12 px como mínimo y 16 px en el cuerpo, estado siempre con texto y contraste AA de todos los pares, comprobado por una prueba (`layout.spec.ts`). La insignia de éxito usa texto #132F20 sobre #2BA640 (4,6:1) porque el blanco da 3,2:1; la insignia de éxito de la app usa texto blanco y queda por revisar.
+- **Alternatives considered**: el patrón de hojas, plumas y libros (el correo no tiene Iconify ni una imagen del patrón; no se agrega un archivo solo para eso); el logo con letras blancas sobre la franja (380 a 530 KB); un modo oscuro propio (los clientes ya invierten colores y se arriesga el contraste); botones o enlaces para abrir la app (la clarificación del 2026-11-21 los descartó).

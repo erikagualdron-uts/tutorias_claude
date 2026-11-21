@@ -33,7 +33,7 @@ Enfoque técnico (detalle en [research.md](research.md)):
 
 **Performance Goals**: sin metas nuevas; el armado del correo es síntesis de texto en memoria y no cambia los tiempos de entrega de la 014 (SC-001 y SC-006 de esa spec).
 
-**Constraints**: solo la paleta de `Design.md` (lima nunca como texto sobre blanco; sin degradados porque muchos clientes no los muestran, se usa el Primary sólido); fuentes de respaldo seguras para correo (`Arial, Helvetica, sans-serif`; excepción explícita a la regla de no escribir nombres de fuente, que rige para los componentes de la app, porque Myriad Pro no se incrusta en correo; se registra en D-102); HTML por debajo de ~100 KB para que Gmail no lo recorte; logo `logo-uts.png` (≈ 94 KB) sin modificar; el código nunca en asunto ni en registros; textos solo en las plantillas de correo (es/en); fechas en `America/Bogota`; entrega, reintentos y estados de la 014 intactos.
+**Constraints**: solo la paleta de `Design.md` (lima nunca como texto sobre blanco; el degradado de la franja es solo una mejora y el color sólido Primary siempre está puesto); fuentes de respaldo seguras para correo (`Arial, Helvetica, sans-serif`; excepción explícita a la regla de no escribir nombres de fuente, que rige para los componentes de la app, porque Myriad Pro no se incrusta en correo; se registra en D-103); HTML por debajo de ~100 KB para que Gmail no lo recorte; logo `logo-uts.png` (≈ 94 KB) sin modificar; el código nunca en asunto ni en registros; textos solo en las plantillas de correo (es/en); fechas en `America/Bogota`; entrega, reintentos y estados de la 014 intactos.
 
 **Scale/Scope**: una institución; decenas de correos por día. 4 familias, 10 plantillas lógicas (verificación, restablecimiento, prueba y 7 avisos) × 2 idiomas = 20 versiones.
 
@@ -43,7 +43,7 @@ Enfoque técnico (detalle en [research.md](research.md)):
 
 | Principio | Cumplimiento |
 |---|---|
-| I. Fuente de verdad en docs/ | Se respeta `Design.md` (paleta, nombre oficial, logo sin modificar) y `Architecture.md` §9. Se actualizan `Architecture.md` (correo), `Design.md` (correo como superficie) y `Decisions.md` (D-101 a D-104) en el mismo cambio. |
+| I. Fuente de verdad en docs/ | Se respeta `Design.md` (paleta, nombre oficial, logo sin modificar) y `Architecture.md` §9. Se actualizan `Architecture.md` (correo), `Design.md` (correo como superficie) y `Decisions.md` (D-102 a D-105) en el mismo cambio. |
 | II. Reglas de negocio en backend | No cambia ninguna regla; el aviso a los inscritos y los destinatarios los sigue resolviendo el servidor. Reglas de dominio de correo intactas. |
 | III. Integridad de datos | Fechas en UTC y texto en `America/Bogota` en las plantillas. Dominios y datos de marca en configuración, no en el código (FR-006 y FR-007). Sin borrado ni tablas nuevas. |
 | IV. Seguridad y privacidad | El código no va en asunto ni en registros (sin `logger` que reciba el trabajo); contenido de usuario escapado (FR-010); la clave SMTP sigue cifrada; ningún secreto en el repo. |
@@ -76,7 +76,7 @@ No hay `contracts/`: la feature no agrega ni cambia endpoints. La única interfa
 
 ```text
 tutorias_uts_back/
-├── assets/brand/logo-uts.png                 # copia sin modificar de mobile/assets/brand/ (D-101)
+├── assets/brand/logo-uts.png                 # copia sin modificar de mobile/assets/brand/ (D-102)
 ├── src/mail/
 │   ├── message.ts                            # buildMessage(): from, to, subject, text, html, cid del logo
 │   ├── mail.service.ts                       # MailJob + expiresAt
@@ -87,7 +87,7 @@ tutorias_uts_back/
 │       ├── index.ts                          # renderMail por familia/tipo e idioma (RenderedMail con html)
 │       ├── verification.{es,en}.ts           # código destacado + vigencia
 │       ├── reset.{es,en}.ts
-│       ├── notice.{es,en}.ts                 # un marco por tipo de aviso: encabezado, acento, introducción
+│       ├── notice.{es,en}.ts                 # un marco por tipo de aviso: insignia, tono, introducción
 │       ├── smtp-test.{es,en}.ts
 │       └── templates.spec.ts                 # los 20 correos: sin marcadores, escapado, texto equivalente
 ├── src/auth/code.service.ts                  # IssuedCode + expiresAt
@@ -103,7 +103,7 @@ tutorias_uts_back/
 Claude/docs/
 ├── Architecture.md                           # §9 correo: un armador, plantillas con HTML y logo incrustado
 ├── Design.md                                 # correo como superficie de marca
-└── Decisions.md                              # D-101 a D-104
+└── Decisions.md                              # D-102 a D-105
 ```
 
 **Structure Decision**: todo vive en el módulo `mail` existente; las tres rutas de envío dejan de armar su propio `sendMail` y llaman a `buildMessage`. `notifications/templates` sigue siendo la única fuente del texto del aviso; el correo solo lo enmarca.

@@ -123,6 +123,8 @@ El equipo cuenta con pruebas automáticas que comprueban la entrega por correo d
 - **FR-011**: Ningún texto de plantilla MUST estar escrito dentro de la lógica de envío; las plantillas viven en un único lugar y todos los envíos las usan, de modo que cambiar un correo no obligue a tocar varios servicios.
 - **FR-012**: La entrega, los reintentos, el estado por canal y las reglas de la spec 014 MUST mantenerse sin cambios; esta spec solo cambia lo que el correo dice y cómo se ve.
 - **FR-013**: El sistema MUST contar con pruebas automáticas de la entrega por correo de cada tipo (envío único, reintento tras fallo, dominio no permitido, servidor sin configurar) y de que todas las plantillas se renderizan completas en ambos idiomas.
+- **FR-015**: Los correos MUST ser accesibles: idioma declarado en la página, un solo título, estado siempre con texto además del color (insignia), pre-encabezado con el primer párrafo, texto de 12 px como mínimo y de 16 px en el cuerpo, y todos los pares texto/fondo con contraste mínimo de 4.5:1.
+- **FR-016**: Los correos MUST evitar lo que los clientes de correo no soportan (`overflow`, estilos en `<body>`, el atajo `background`) y todo relleno MUST llevar también `bgcolor`.
 - **FR-014**: Se MUST completar el recorrido del quickstart de la spec 014 con los correos nuevos y la revisión de terminado de ambas specs.
 
 ### Key Entities *(include if feature involves data)*
@@ -141,6 +143,7 @@ El equipo cuenta con pruebas automáticas que comprueban la entrega por correo d
 - **SC-004**: Cambiar el texto de un correo requiere editar un solo lugar, sin tocar los servicios que lo envían.
 - **SC-005**: Las pruebas de entrega por correo cubren los cuatro escenarios de la historia 4 y pasan en cada ejecución.
 - **SC-006**: Ningún código de verificación ni de restablecimiento aparece en asuntos ni en registros.
+- **SC-007**: El verificador de compatibilidad de Mailpit da, en promedio sobre los 20 correos, al menos 90 % de soporte (primer diseño: 88,8 %; rediseño: 94,1 %), y todos los pares de color cumplen contraste AA.
 
 ## Assumptions
 
