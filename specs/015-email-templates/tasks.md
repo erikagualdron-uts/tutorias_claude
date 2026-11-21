@@ -159,6 +159,7 @@ description: "Task list for Plantillas de correo institucionales"
 - [ ] T039 Actualizar las notas de `Claude/specs/014-notifications/tasks.md` en T052, T057, T062, T072, T078 y T079 (hoy dicen "se difiere a la 015" o "se retoma en la 015") para que digan que se cerraron en la spec 015 con T032, T033 y T034
 - [ ] T040 Cambiar `Status` de `specs/015-email-templates/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_back` y `Claude` (el de `Claude` apunta a `001-auth-roles`)
 - [x] T041 Rediseñar las plantillas con `Design.md` y las mejoras de accesibilidad y compatibilidad que marcó Mailpit: `layout.ts` (tarjeta, franja verde con insignia, caja de detalle, código en caja, pie), `lang`, insignia, pre-encabezado y contraste AA probado en `layout.spec.ts`; sin `overflow`, estilos en `<body>` ni `background`. Registrado en D-106 (hecho después de T033, a pedido del usuario)
+- [x] T042 Cambiar la fuente del correo a una pila con Myriad Pro primero (`FONTS` en `tutorias_uts_back/src/mail/templates/layout.ts`), probarla en `layout.spec.ts` y documentarla en `Design.md`, D-107 y research R10 (hecho a pedido del usuario; reemplaza el `Arial, Helvetica` de T007 y T036)
 
 ---
 

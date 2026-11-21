@@ -430,7 +430,7 @@
 
 ### D-103 · Un armador de mensaje y plantillas sin dependencias
 - **Estado:** Aceptada
-- **Decisión:** Todo correo sale por `MessageBuilder` (módulo `mail`), que arma el HTML, el texto simple y el logo a partir de un `MailContent` que producen las plantillas. El marco es una función de tablas con estilos en línea y un `escapeHtml` propio. En el correo se escribe la pila `Arial, Helvetica, sans-serif` y `Courier New` para el código, como excepción a la regla de no escribir nombres de fuente, que rige para los componentes de la app.
+- **Decisión:** Todo correo sale por `MessageBuilder` (módulo `mail`), que arma el HTML, el texto simple y el logo a partir de un `MailContent` que producen las plantillas. El marco es una función de tablas con estilos en línea y un `escapeHtml` propio. El correo escribe sus propias pilas de fuentes (D-107), como excepción a la regla de no escribir nombres de fuente, que rige para los componentes de la app.
 - **Motivo:** Había tres caminos de envío (códigos, avisos y prueba SMTP), cada uno con su propio `sendMail`. Myriad Pro y Source Code Pro no se pueden incrustar en un correo.
 - **Descartado:** MJML, Handlebars o EJS (una dependencia y un paso de compilación para unas diez plantillas); HTML escrito a mano en cada plantilla.
 
@@ -452,6 +452,12 @@
 - **Motivo:** Seguir `Design.md` (tarjeta, radios, héroe verde, línea lima, campo con borde, nombre oficial) y mejorar lo que Mailpit marcó: el promedio de los 20 correos pasó de 88,8 % a 94,1 % de soporte y lo parcial de 10,0 % a 4,9 %. Lo que queda marcado es propio de cualquier correo (la etiqueta `<body>`, el pre-encabezado oculto, `max-width` en Outlook, el degradado con color de respaldo y `border-radius`).
 - **Insignia de éxito:** el correo usa texto #132F20 sobre #2BA640 (4,6:1) porque el blanco da 3,2:1 y no cumple AA. La insignia de éxito de la app (`Design.md`, "Badges") usa texto blanco con la misma razón de contraste: queda **por revisar** en la app.
 - **Descartado:** Un degradado como único fondo (muchos clientes no lo muestran); un modo oscuro propio (la mayoría de los clientes ya invierte colores y se arriesga el contraste); el logo con letras blancas (380 a 530 KB).
+
+### D-107 · Fuente del correo: pila con Myriad Pro primero
+- **Estado:** Aceptada
+- **Decisión:** El texto del correo usa la pila `'Myriad Pro', 'Source Sans 3', Arial, Helvetica, sans-serif` y el código `'Source Code Pro', 'Courier New', Courier, monospace`. Viven como las constantes `FONTS` de `mail/templates/layout.ts`, el único lugar donde se cambia la fuente de todos los correos.
+- **Motivo:** Un correo solo muestra las fuentes que ya están instaladas en el dispositivo de quien lo lee; no se pueden incrustar archivos de fuente. Pedir primero la tipografía corporativa (Myriad Pro, `Design.md`) la usa donde exista, y la pila cae a Source Sans 3 (el respaldo de `Design.md`) y a Arial, que está en casi todos los dispositivos. Nombrar una fuente instalada en CSS no la distribuye, así que no choca con la licencia pendiente (D-051). En la práctica, la mayoría de los lectores verá Arial.
+- **Descartado:** Fuentes web (`@font-face`, `@import` o Google Fonts): Gmail y Outlook las ignoran, la petición externa avisa a un tercero de que el correo se abrió y Myriad Pro es comercial; incrustar el archivo de fuente (los clientes de correo no lo soportan); una variable de entorno para la fuente (cambiar una constante basta).
 
 ---
 

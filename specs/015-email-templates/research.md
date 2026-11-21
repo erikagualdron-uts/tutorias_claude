@@ -50,7 +50,7 @@ Sin `NEEDS CLARIFICATION` pendientes. Las decisiones de abajo salen de la revisi
 
 ## R8. Compatibilidad entre clientes
 
-- **Decision**: ancho 600 px, estilos en línea, fuentes `Arial, Helvetica, sans-serif`, degradado solo como mejora con color sólido de respaldo, sin CSS externo, texto alternativo en el logo, versión `text` completa. El detalle del diseño y de la accesibilidad está en R9. Se comprueba a mano en Mailpit (Gmail web y Outlook quedan como verificación manual cuando la UTS entregue su SMTP).
+- **Decision**: ancho 600 px, estilos en línea, fuentes con Myriad Pro primero y respaldo en Source Sans 3 y Arial (R10), degradado solo como mejora con color sólido de respaldo, sin CSS externo, texto alternativo en el logo, versión `text` completa. El detalle del diseño y de la accesibilidad está en R9. Se comprueba a mano en Mailpit (Gmail web y Outlook quedan como verificación manual cuando la UTS entregue su SMTP).
 - **Rationale**: lo que renderiza igual en los clientes de uso común; la fuente corporativa Myriad Pro no se puede incrustar en correo.
 - **Alternatives considered**: tipografía web (no la cargan los clientes principales); modo oscuro dedicado (bajo valor para esta entrega, y los clientes ya invierten colores).
 
@@ -60,3 +60,10 @@ Sin `NEEDS CLARIFICATION` pendientes. Las decisiones de abajo salen de la revisi
 - **Rationale**: el primer diseño era un marco plano. El verificador de Mailpit señaló `overflow`, estilos en `<body>`, el atajo `background` y `max-width`; se eliminaron los tres primeros y todo relleno lleva también `bgcolor`. El promedio sobre los 20 correos pasó de 88,8 % a 94,1 % de soporte y lo parcial de 10,0 % a 4,9 %. Lo que queda marcado es propio de cualquier correo (la etiqueta `<body>`, el pre-encabezado oculto, `max-width` en Outlook, el degradado con color de respaldo y `border-radius`).
 - **Accesibilidad**: `lang`, un solo `h1`, tablas `presentation`, pre-encabezado, 12 px como mínimo y 16 px en el cuerpo, estado siempre con texto y contraste AA de todos los pares, comprobado por una prueba (`layout.spec.ts`). La insignia de éxito usa texto #132F20 sobre #2BA640 (4,6:1) porque el blanco da 3,2:1; la insignia de éxito de la app usa texto blanco y queda por revisar.
 - **Alternatives considered**: el patrón de hojas, plumas y libros (el correo no tiene Iconify ni una imagen del patrón; no se agrega un archivo solo para eso); el logo con letras blancas sobre la franja (380 a 530 KB); un modo oscuro propio (los clientes ya invierten colores y se arriesga el contraste); botones o enlaces para abrir la app (la clarificación del 2026-11-21 los descartó).
+
+## R10. Fuente del correo (2026-11-21)
+
+- **Decision**: la pila de texto `'Myriad Pro', 'Source Sans 3', Arial, Helvetica, sans-serif` y la de código `'Source Code Pro', 'Courier New', Courier, monospace`, en las constantes `FONTS` de `layout.ts`. Se registra en D-107.
+- **Rationale**: un correo solo muestra fuentes ya instaladas en el dispositivo del lector, así que lo único posible es pedir primero la corporativa y dejar respaldos. Nombrarla en CSS no la distribuye, así que no depende de la licencia (D-051). Mailpit no marca `font-family` (todos los clientes soportan la propiedad) y no puede mostrar qué fuente se pinta: la mayoría de los lectores verá Arial.
+- **Alternatives considered**: fuentes web con `@font-face`, `@import` o Google Fonts (Gmail y Outlook las ignoran, la petición avisa a un tercero de que se abrió el correo y Myriad Pro es comercial); incrustar el archivo de fuente (no lo soportan los clientes); una variable de entorno (cambiar una constante basta).
+- **Prueba**: `layout.spec.ts` comprueba que solo hay esas dos pilas en el HTML, que empiezan por la fuente corporativa, que terminan en una familia genérica y que el código usa la pila monoespaciada.
