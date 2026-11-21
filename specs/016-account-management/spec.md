@@ -22,6 +22,12 @@
 | Ninguna pantalla ni acción del CAE para desactivar, reactivar, eliminar o editar una cuenta, ni para ver a los estudiantes registrados | |
 | Regenerar la clave temporal de un docente que la perdió | |
 
+## Clarifications
+
+### Session 2026-11-21
+
+- Q: ¿Qué pasa con las inscripciones vigentes de un estudiante cuando el CAE desactiva o elimina su cuenta? → A: Se cancelan sus inscripciones vigentes, se libera el cupo y no se restauran al reactivar la cuenta.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Ver y buscar a los docentes y estudiantes (Priority: P1)
@@ -58,6 +64,7 @@ El CAE desactiva la cuenta de un docente o de un estudiante, por ejemplo cuando 
 4. **Given** una cuenta desactivada, **When** el CAE la reactiva, **Then** puede iniciar sesión de nuevo y conserva su historial, módulos e inscripciones.
 5. **Given** una cuenta desactivada, **When** se envía un aviso de módulo, **Then** no se le entrega por ningún canal mientras esté desactivada.
 6. **Given** el CAE sobre su propia cuenta, **When** busca la opción de desactivarse, **Then** no existe: el CAE no puede desactivarse ni eliminarse.
+7. **Given** un estudiante con dos inscripciones vigentes, **When** el CAE lo desactiva y confirma, **Then** sus inscripciones se cancelan, el cupo de esos módulos queda libre para otros y, al reactivar la cuenta, las inscripciones no se restauran (el estudiante se inscribe de nuevo si hay cupo).
 
 ---
 
@@ -75,6 +82,7 @@ El CAE elimina la cuenta de un docente o de un estudiante que ya no debe existir
 2. **Given** un docente eliminado, **When** el CAE abre un módulo suyo, **Then** el módulo lo marca como "docente no disponible" y conserva el nombre del docente en las sesiones pasadas.
 3. **Given** un estudiante eliminado, **When** alguien intenta registrarse con el mismo correo, **Then** el sistema lo rechaza: el correo sigue reservado.
 4. **Given** una cuenta eliminada, **When** el CAE busca restaurarla desde la app, **Then** no existe esa opción (la restauración no forma parte de esta función).
+5. **Given** un estudiante eliminado con inscripciones vigentes, **When** el CAE confirma, **Then** sus inscripciones se cancelan y el cupo queda libre, igual que al desactivarlo.
 
 ---
 
@@ -134,9 +142,9 @@ Si un docente perdió su clave temporal o su cuenta quedó bloqueada, el CAE gen
 - **FR-005**: El CAE MUST poder desactivar y reactivar la cuenta de un docente o de un estudiante.
 - **FR-006**: Una cuenta desactivada o eliminada MUST perder el acceso de inmediato: sus sesiones abiertas se cierran, ninguna petición posterior se acepta y no puede iniciar sesión ni recuperar la clave. Su historial (módulos, inscripciones, sesiones y avisos) MUST conservarse.
 - **FR-007**: El CAE MUST poder eliminar (borrado lógico) la cuenta de un docente o de un estudiante; la cuenta deja de aparecer en las listas y en los selectores, el registro se conserva y el correo sigue reservado.
-- **FR-008**: Antes de confirmar una desactivación o una eliminación, la app MUST mostrar al CAE el efecto concreto con números (de un docente, los módulos del periodo activo que quedarán con "docente no disponible"; de un estudiante, sus inscripciones vigentes) y exigir confirmación.
+- **FR-008**: Antes de confirmar una desactivación o una eliminación, la app MUST mostrar al CAE el efecto concreto con números (de un docente, los módulos del periodo activo que quedarán con "docente no disponible"; de un estudiante, las inscripciones vigentes que se cancelarán y los cupos que quedarán libres) y exigir confirmación.
 - **FR-009**: Desactivar o eliminar a un docente MUST NOT bloquearse por tener módulos (D-088); el efecto sobre los módulos es la marca "docente no disponible".
-- **FR-010**: Desactivar o eliminar a un estudiante MUST dejar sus inscripciones vigentes como se define en la clarificación de esta spec. [NEEDS CLARIFICATION: ¿Qué pasa con las inscripciones vigentes de un estudiante desactivado o eliminado? Si se cancelan, libera cupo para otros; si se conservan, ocupa cupo sin poder asistir]
+- **FR-010**: Desactivar o eliminar a un estudiante MUST cancelar sus inscripciones vigentes en la misma operación, de modo que el cupo de esos módulos quede libre para otros estudiantes; reactivar la cuenta MUST NOT restaurar las inscripciones.
 - **FR-011**: El CAE MUST poder actualizar el nombre, el apellido y el teléfono de un docente; el nombre y el apellido son obligatorios y el correo MUST NOT poder cambiarse.
 - **FR-012**: El CAE MUST poder regenerar la clave temporal de un docente activo: la clave se muestra una sola vez, la anterior deja de servir, las sesiones abiertas del docente se cierran y debe cambiarla en su primer ingreso.
 - **FR-013**: El sistema MUST NOT entregar avisos de módulo (bandeja, push ni correo) a una cuenta desactivada o eliminada desde el momento de la acción.
@@ -162,6 +170,7 @@ Si un docente perdió su clave temporal o su cuenta quedó bloqueada, el CAE gen
 - **SC-005**: El CAE ve el efecto con números antes de confirmar cada baja en el 100 % de las pantallas de desactivar y eliminar.
 - **SC-006**: Un docente que perdió su clave recupera el acceso con una clave regenerada en menos de 2 minutos, sin crear de nuevo la cuenta.
 - **SC-007**: Un usuario que no es CAE recibe acceso prohibido en el 100 % de las acciones y listas de esta función.
+- **SC-008**: Tras desactivar o eliminar a un estudiante, el 100 % de sus inscripciones vigentes quedan canceladas y el cupo de cada módulo se libera en la misma operación; si la operación falla, no queda ninguna a medias.
 
 ## Assumptions
 
@@ -172,5 +181,6 @@ Si un docente perdió su clave temporal o su cuenta quedó bloqueada, el CAE gen
 - El correo de una cuenta eliminada sigue reservado, igual que hoy impide el registro la regla de la spec 001.
 - No se avisa por correo ni push a la persona cuya cuenta se desactiva o elimina; el CAE lo comunica por sus medios.
 - Un estudiante o docente conserva su nombre en el historial (sesiones pasadas, módulos) aunque la cuenta esté eliminada.
+- Cancelar las inscripciones de un estudiante dado de baja no genera avisos a otros: libera cupo y nada más. Las sesiones ya dadas conservan su registro de asistencia.
 - No hay registro de auditoría de quién hizo cada cambio en esta función; si se necesita, será una spec aparte.
 - La búsqueda se hace sobre nombre, apellido y correo; la lista de estudiantes es de solo lectura salvo desactivar, reactivar y eliminar.

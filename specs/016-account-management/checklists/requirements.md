@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,5 +31,5 @@
 
 ## Notes
 
-- Un marcador abierto: FR-010 (qué pasa con las inscripciones vigentes de un estudiante desactivado o eliminado). Se resuelve antes de `/speckit-plan`.
+- Sin marcadores abiertos: FR-010 se resolvió el 2026-11-21 (se cancelan las inscripciones vigentes, se libera el cupo y no se restauran al reactivar).
 - Estado de partida revisado en el código de `tutorias_uts_back` el 2026-11-21: el inicio de sesión ya rechaza cuentas desactivadas o eliminadas, y D-088 ya cubre los módulos de un docente dado de baja.
