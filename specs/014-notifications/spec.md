@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-18
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Notificaciones (spec 014). Alcance: consumidor del outbox (outbox_events de las specs 010 y 012), cola BullMQ, plantillas es/en, bandeja de notificaciones en la app, push (Expo) y correo (Nodemailer). Todo cambio o cancelación notifica a los estudiantes inscritos (push, correo y en la app), según docs/Context.md y D-087."
 
