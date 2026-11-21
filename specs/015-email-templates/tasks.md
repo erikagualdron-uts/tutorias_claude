@@ -118,13 +118,13 @@ description: "Task list for Plantillas de correo institucionales"
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T026 [P] [US3] Escribir `tutorias_uts_back/src/mail/templates/smtp-test.spec.ts`: es y en con asunto, HTML y texto, marca y la frase de que el servidor funciona y se puede ignorar
-- [ ] T027 [P] [US3] Añadir a `tutorias_uts_back/test/smtp-settings.e2e-spec.ts`: la prueba llega con marca en el idioma del CAE; sin servidor configurado responde `409 SMTP_NOT_CONFIGURED` y no envía nada
+- [x] T026 [P] [US3] Escribir `tutorias_uts_back/src/mail/templates/smtp-test.spec.ts`: es y en con asunto, HTML y texto, marca y la frase de que el servidor funciona y se puede ignorar
+- [x] T027 [P] [US3] Añadir a `tutorias_uts_back/test/smtp-settings.e2e-spec.ts`: la prueba llega con marca en el idioma del CAE; sin servidor configurado responde `409 SMTP_NOT_CONFIGURED` y no envía nada
 
 ### Implementation for User Story 3
 
-- [ ] T028 [P] [US3] Crear `tutorias_uts_back/src/mail/templates/smtp-test.es.ts` y `tutorias_uts_back/src/mail/templates/smtp-test.en.ts` con `layout()`
-- [ ] T029 [US3] Reemplazar `renderSmtpTestMail` en `tutorias_uts_back/src/mail/templates/index.ts` para usar esas plantillas y borrar el adaptador temporal `withLayout` de `tutorias_uts_back/src/mail/templates/layout.ts` (ya sin usos; comprobar con búsqueda); hace pasar T026 y T027
+- [x] T028 [P] [US3] Crear `tutorias_uts_back/src/mail/templates/smtp-test.es.ts` y `tutorias_uts_back/src/mail/templates/smtp-test.en.ts` con `layout()`
+- [x] T029 [US3] Reemplazar `renderSmtpTestMail` en `tutorias_uts_back/src/mail/templates/index.ts` para usar esas plantillas y borrar el adaptador temporal `withLayout` de `tutorias_uts_back/src/mail/templates/layout.ts` (ya sin usos; comprobar con búsqueda); hace pasar T026 y T027
 
 **Checkpoint**: Las cuatro familias usan la plantilla institucional (SC-001)
 
