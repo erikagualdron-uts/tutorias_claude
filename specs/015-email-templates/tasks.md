@@ -94,17 +94,17 @@ description: "Task list for Plantillas de correo institucionales"
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T018 [P] [US2] Escribir `tutorias_uts_back/src/mail/templates/code.spec.ts`: verificación y restablecimiento en es y en contienen el código en el HTML y en el texto, muestran `expiresAt` en hora de Bogotá, el asunto no contiene el código, y el restablecimiento advierte que nadie de la UTS pide la clave
-- [ ] T019 [P] [US2] Crear `tutorias_uts_back/src/auth/code.service.spec.ts` (no existe; Vitest con `PrismaService`, `SettingsService` y `Clock` falsos) con la prueba de que `issue` devuelve `expiresAt` igual a `now + ttl` de la configuración del propósito
-- [ ] T020 [P] [US2] Añadir a `tutorias_uts_back/test/mail-locale.e2e-spec.ts`: el correo de registro y el de recuperación llegan con marca, el código fuera del asunto y la vigencia; el código no aparece en ninguna línea de los registros que captura T003 (SC-006)
+- [x] T018 [P] [US2] Escribir `tutorias_uts_back/src/mail/templates/code.spec.ts`: verificación y restablecimiento en es y en contienen el código en el HTML y en el texto, muestran `expiresAt` en hora de Bogotá, el asunto no contiene el código, y el restablecimiento advierte que nadie de la UTS pide la clave
+- [x] T019 [P] [US2] Crear `tutorias_uts_back/src/auth/code.service.spec.ts` (no existe; Vitest con `PrismaService`, `SettingsService` y `Clock` falsos) con la prueba de que `issue` devuelve `expiresAt` igual a `now + ttl` de la configuración del propósito
+- [x] T020 [P] [US2] Añadir a `tutorias_uts_back/test/mail-locale.e2e-spec.ts`: el correo de registro y el de recuperación llegan con marca, el código fuera del asunto y la vigencia; el código no aparece en ninguna línea de los registros que captura T003 (SC-006)
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Hacer que `CodeService.issue` devuelva `expiresAt` en `IssuedCode` en `tutorias_uts_back/src/auth/code.service.ts`; hace pasar T019
-- [ ] T022 [US2] Añadir `expiresAt` (cadena ISO UTC) a `MailJob` en `tutorias_uts_back/src/mail/mail.service.ts` y pasarlo desde `tutorias_uts_back/src/auth/registration.service.ts` y `tutorias_uts_back/src/auth/password-reset.service.ts`
-- [ ] T023 [P] [US2] Reescribir `tutorias_uts_back/src/mail/templates/verification.es.ts` y `tutorias_uts_back/src/mail/templates/verification.en.ts` con `layout()`: código en bloque destacado (fondo `#F2F4EF`, texto `#132F20`), vencimiento en hora de Bogotá e indicación de ignorar el mensaje si no creó la cuenta
-- [ ] T024 [P] [US2] Reescribir `tutorias_uts_back/src/mail/templates/reset.es.ts` y `tutorias_uts_back/src/mail/templates/reset.en.ts` con `layout()`: código destacado, vencimiento y advertencia de que nadie de la UTS pedirá la clave
-- [ ] T025 [US2] Hacer que `tutorias_uts_back/src/mail/mail.processor.ts` pase `expiresAt` a `renderMail` (firma `renderMail(template, locale, { code, expiresAt })`) en `tutorias_uts_back/src/mail/templates/index.ts`; hace pasar T018 y T020
+- [x] T021 [US2] Hacer que `CodeService.issue` devuelva `expiresAt` en `IssuedCode` en `tutorias_uts_back/src/auth/code.service.ts`; hace pasar T019
+- [x] T022 [US2] Añadir `expiresAt` (cadena ISO UTC) a `MailJob` en `tutorias_uts_back/src/mail/mail.service.ts` y pasarlo desde `tutorias_uts_back/src/auth/registration.service.ts` y `tutorias_uts_back/src/auth/password-reset.service.ts`
+- [x] T023 [P] [US2] Reescribir `tutorias_uts_back/src/mail/templates/verification.es.ts` y `tutorias_uts_back/src/mail/templates/verification.en.ts` con `layout()`: código en bloque destacado (fondo `#F2F4EF`, texto `#132F20`), vencimiento en hora de Bogotá e indicación de ignorar el mensaje si no creó la cuenta
+- [x] T024 [P] [US2] Reescribir `tutorias_uts_back/src/mail/templates/reset.es.ts` y `tutorias_uts_back/src/mail/templates/reset.en.ts` con `layout()`: código destacado, vencimiento y advertencia de que nadie de la UTS pedirá la clave
+- [x] T025 [US2] Hacer que `tutorias_uts_back/src/mail/mail.processor.ts` pase `expiresAt` a `renderMail` (firma `renderMail(template, locale, { code, expiresAt })`) en `tutorias_uts_back/src/mail/templates/index.ts`; hace pasar T018 y T020
 
 **Checkpoint**: Los correos de cuenta tienen marca y vigencia; US1 y US2 funcionan por separado
 
