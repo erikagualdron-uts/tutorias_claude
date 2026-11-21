@@ -1,0 +1,372 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - gestión de cuentas (spec 016)
+  version: 1.0.0
+  description: |
+    Endpoints del CAE para gestionar docentes y estudiantes. Todos exigen sesión y el rol SUPERADMIN;
+    cualquier otro rol recibe 403 y sin sesión 401. Los listados siguen la paginación del proyecto.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+tags:
+  - name: teachers
+  - name: students
+paths:
+  /teachers:
+    get:
+      tags: [teachers]
+      summary: Lista de docentes (sin los eliminados)
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+        - { $ref: '#/components/parameters/Status' }
+      responses:
+        '200':
+          description: Página de docentes, ordenados por apellido y nombre.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/TeacherListItem' }
+                  meta: { $ref: '#/components/schemas/PageMeta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [teachers]
+      summary: Crear docente (existente, spec 001)
+      description: Sin cambios en esta spec.
+      responses:
+        '201': { description: Docente creado con su clave temporal, visible una sola vez. }
+  /teachers/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      tags: [teachers]
+      summary: Detalle de un docente con el conteo de módulos
+      responses:
+        '200':
+          description: El docente.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TeacherDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [teachers]
+      summary: Actualizar nombre, apellido y teléfono
+      description: El correo no se puede cambiar; un campo `email` en el cuerpo se rechaza con 422.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateTeacher' }
+      responses:
+        '200':
+          description: El docente actualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TeacherDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Validation' }
+    delete:
+      tags: [teachers]
+      summary: Eliminar (borrado lógico) un docente
+      description: No se bloquea por tener módulos (D-088). Cierra sus sesiones.
+      responses:
+        '200':
+          description: Efecto de la baja.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TeacherBajaResult' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /teachers/{id}/deactivate:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [teachers]
+      summary: Desactivar la cuenta de un docente
+      description: Idempotente. Cierra sus sesiones y descarta sus dispositivos.
+      responses:
+        '200':
+          description: Efecto de la baja.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TeacherBajaResult' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /teachers/{id}/reactivate:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [teachers]
+      summary: Reactivar la cuenta de un docente
+      description: Idempotente.
+      responses:
+        '200':
+          description: La cuenta reactivada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AccountState' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /teachers/{id}/temporary-password:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [teachers]
+      summary: Regenerar la clave temporal de un docente activo
+      description: |
+        La clave se devuelve una sola vez, la anterior deja de servir, el docente debe cambiarla al
+        entrar y sus sesiones abiertas se cierran. En una cuenta desactivada responde 409.
+      responses:
+        '200':
+          description: La clave nueva, visible solo en esta respuesta.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [temporaryPassword]
+                properties:
+                  temporaryPassword: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: La cuenta no está activa (`ACCOUNT_NOT_ACTIVE`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /students:
+    get:
+      tags: [students]
+      summary: Lista de estudiantes registrados (correo verificado y sin eliminar)
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+        - { $ref: '#/components/parameters/Status' }
+      responses:
+        '200':
+          description: Página de estudiantes, ordenados por apellido y nombre.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/StudentListItem' }
+                  meta: { $ref: '#/components/schemas/PageMeta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /students/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      tags: [students]
+      summary: Detalle de un estudiante con el conteo de inscripciones vigentes
+      responses:
+        '200':
+          description: El estudiante.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentListItem' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [students]
+      summary: Eliminar (borrado lógico) un estudiante
+      description: Cancela en la misma transacción sus inscripciones vigentes y cierra sus sesiones.
+      responses:
+        '200':
+          description: Efecto de la baja.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentBajaResult' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /students/{id}/deactivate:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [students]
+      summary: Desactivar la cuenta de un estudiante
+      description: |
+        Idempotente. Cancela en la misma transacción sus inscripciones vigentes del periodo activo y
+        libera el cupo; al reactivar no se restauran.
+      responses:
+        '200':
+          description: Efecto de la baja.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentBajaResult' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /students/{id}/reactivate:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [students]
+      summary: Reactivar la cuenta de un estudiante
+      description: Idempotente. No restaura inscripciones.
+      responses:
+        '200':
+          description: La cuenta reactivada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AccountState' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    Search:
+      name: search
+      in: query
+      description: Parte del nombre, apellido o correo, sin distinguir mayúsculas ni tildes.
+      schema: { type: string, maxLength: 100 }
+    Status:
+      name: status
+      in: query
+      schema: { $ref: '#/components/schemas/UserStatus' }
+  responses:
+    Unauthorized:
+      description: Sin sesión o sesión inválida.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: El rol no es SUPERADMIN.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: No es un docente o estudiante vivo (`ACCOUNT_NOT_FOUND`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Validation:
+      description: Campos inválidos, con el detalle por campo.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    UserStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE]
+    PageMeta:
+      type: object
+      required: [page, limit, total]
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+    TeacherListItem:
+      type: object
+      required: [id, firstName, lastName, email, status, modulesCount]
+      properties:
+        id: { type: string, format: uuid }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string, format: email }
+        status: { $ref: '#/components/schemas/UserStatus' }
+        modulesCount:
+          type: integer
+          description: Módulos sin borrar del docente en el periodo activo.
+    TeacherDetail:
+      allOf:
+        - $ref: '#/components/schemas/TeacherListItem'
+        - type: object
+          required: [phone]
+          properties:
+            phone: { type: string, nullable: true }
+    UpdateTeacher:
+      type: object
+      additionalProperties: false
+      required: [firstName, lastName]
+      properties:
+        firstName: { type: string, minLength: 1, maxLength: 80 }
+        lastName: { type: string, minLength: 1, maxLength: 80 }
+        phone: { type: string, nullable: true, maxLength: 30 }
+    StudentListItem:
+      type: object
+      required: [id, firstName, lastName, email, program, status, enrolledCount]
+      properties:
+        id: { type: string, format: uuid }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string, format: email }
+        program: { type: string, nullable: true }
+        status: { $ref: '#/components/schemas/UserStatus' }
+        enrolledCount:
+          type: integer
+          description: Inscripciones vigentes del estudiante en el periodo activo.
+    AccountState:
+      type: object
+      required: [id, status]
+      properties:
+        id: { type: string, format: uuid }
+        status: { $ref: '#/components/schemas/UserStatus' }
+    TeacherBajaResult:
+      allOf:
+        - $ref: '#/components/schemas/AccountState'
+        - type: object
+          required: [deleted, unavailableModules]
+          properties:
+            deleted: { type: boolean }
+            unavailableModules:
+              type: integer
+              description: Módulos del periodo activo que quedan con "docente no disponible".
+    StudentBajaResult:
+      allOf:
+        - $ref: '#/components/schemas/AccountState'
+        - type: object
+          required: [deleted, cancelledEnrollments]
+          properties:
+            deleted: { type: boolean }
+            cancelledEnrollments:
+              type: integer
+              description: Inscripciones vigentes canceladas, cada una con su cupo liberado.
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string, description: Código estable que la app traduce. }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
