@@ -128,6 +128,7 @@ Si un docente perdió su clave temporal o su cuenta quedó bloqueada, el CAE gen
 - Una cuenta con una verificación de correo pendiente (estudiante que no terminó el registro) no aparece como registrada y no se gestiona.
 - Una cuenta desactivada o eliminada no recibe avisos de módulo, ni push ni correo, desde el momento de la acción.
 - La lista de estudiantes puede ser larga (cientos): se carga por páginas y la búsqueda sigue siendo rápida.
+- Si no hay un periodo activo (entre semestres), desactivar o eliminar a un estudiante solo cambia su cuenta: no hay inscripciones vigentes que cancelar.
 - El nombre de un docente o estudiante con tildes o caracteres especiales se busca sin distinguir mayúsculas ni tildes.
 - Una cuenta eliminada no vuelve a aparecer en ninguna lista de selección (por ejemplo al elegir docente de un módulo).
 
@@ -174,6 +175,7 @@ Si un docente perdió su clave temporal o su cuenta quedó bloqueada, el CAE gen
 
 ## Assumptions
 
+- En esta spec "baja" significa desactivar o eliminar una cuenta.
 - Esta función gestiona solo docentes y estudiantes; las cuentas de administrativos (CAE) no se crean, editan ni borran desde la app.
 - "Desactivar" ya significa lo definido en el glosario: la cuenta queda bloqueada, sigue visible y se puede reactivar. "Eliminar" es el borrado lógico y no se puede deshacer desde la app.
 - El correo de un docente no se edita porque es su identidad de acceso y debe mantener el dominio institucional de docentes; cambiarlo implicaría verificarlo de nuevo, y queda fuera de alcance.

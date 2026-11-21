@@ -31,7 +31,7 @@ Enfoque técnico (detalle en [research.md](research.md)):
 
 **Project Type**: mobile-app + web-service + base de datos. Toca `tutorias_uts_back`, `tutorias_uts_mobile` y `tutorias_uts_db` (una migración).
 
-**Performance Goals**: lista de 500 cuentas con búsqueda en menos de 300 ms en el servidor (SC-001 se mide desde la persona: menos de 10 s para encontrar una cuenta); una baja de estudiante con 20 inscripciones en una sola transacción de menos de 1 s.
+**Performance Goals**: meta informativa: lista de 500 cuentas con búsqueda en menos de 300 ms en el servidor (no hay prueba automática con tiempo para que la carga no la haga fallar; SC-001 se mide a mano en T056); una baja de estudiante con 20 inscripciones en una sola transacción de menos de 1 s.
 
 **Constraints**: solo rol `SUPERADMIN` en cada endpoint; la baja no se bloquea por módulos (D-088) pero un estudiante pierde sus inscripciones vigentes de forma atómica; el borrado es siempre lógico (`deletedAt`); el correo no cambia; las claves temporales se muestran una sola vez y nunca se registran; textos solo en `es.json` y `en.json` y en los códigos de error traducidos; colores solo de `Design.md`; objetivos de 48 px; íconos solo Iconify en `src/icons/`; todo botón con ícono a la izquierda y 16 px entre botones apilados; campos con relleno y borde tenue; todo estado de pantalla (cargando, vacío, error, con datos).
 
@@ -80,7 +80,9 @@ tutorias_uts_db/
 
 tutorias_uts_back/
 ├── src/accounts/                              # lo que comparten docentes y estudiantes
-│   ├── account-status.ts                      # changeStatus(): estado o borrado + cierre de sesiones, idempotente
+│   ├── accounts.module.ts                     # importa el módulo que exporta SessionService y exporta el servicio
+│   ├── account-status.ts                      # AccountStatusService: estado o borrado + cierre de sesiones, idempotente
+│   ├── list-accounts.dto.ts                   # ListAccountsQuery: PageQuery + search + status (la usan docentes y estudiantes)
 │   ├── account-search.ts                      # condición SQL con unaccent para nombre, apellido y correo
 │   └── account-status.spec.ts
 ├── src/teachers/
@@ -107,7 +109,7 @@ tutorias_uts_mobile/
 ├── src/features/accounts/
 │   ├── screens/{TeachersScreen,StudentsScreen,TeacherEditScreen}.tsx
 │   ├── components/{AccountCard,AccountSheet,BajaDialog}.tsx # tarjeta, hoja con acciones y confirmación con efecto
-│   ├── hooks/{useTeachers,useStudents,useAccountActions}.ts # TanStack Query, páginas y mutaciones
+│   ├── hooks/{useTeacherAccounts,useStudentAccounts,useAccountActions}.ts # TanStack Query, páginas y mutaciones (no `useTeachers`, que ya es el selector del formulario de módulo)
 │   ├── schemas.ts
 │   └── __tests__/
 ├── src/features/shell/screens/MoreScreen.tsx               # filas "Docentes" y "Estudiantes"

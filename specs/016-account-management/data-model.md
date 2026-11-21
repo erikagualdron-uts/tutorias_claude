@@ -34,7 +34,7 @@ Una baja de estudiante cancela sus inscripciones vigentes así:
 | `cancelledAt` | la hora de la baja |
 | `effectiveUntil` | la hora de la baja (el cupo queda libre para toda sesión posterior; las ya dadas conservan al estudiante) |
 
-"Vigente" = `status = ACTIVE`, `deletedAt` nulo, módulo sin borrar y de un periodo **Activo**. Las inscripciones de periodos Cerrados no se tocan (solo lectura, historial).
+"Vigente" = `status = ACTIVE`, `deletedAt` nulo, módulo sin borrar y de un periodo **Activo**. Las inscripciones de periodos Cerrados no se tocan (solo lectura, historial). Sin periodo activo no hay inscripciones vigentes.
 
 ## Conteos derivados (no se guardan)
 
