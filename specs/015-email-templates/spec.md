@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-21
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Plantillas de correo (spec 015). Plantillas institucionales con la marca UTS, en español e inglés según el idioma del usuario, un correo propio por tipo de aviso, aplicadas en todos los servicios que hoy envían correo tras una revisión de los mismos. Incluye las pruebas de entrega por correo que quedaron diferidas de la spec 014."
 
