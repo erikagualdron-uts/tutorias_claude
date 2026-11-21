@@ -35,3 +35,11 @@ Guía para comprobar la feature de punta a punta. Detalle de tipos y configuraci
 
 - Escenarios 3 a 6 y 11 cubren el recorrido del quickstart de la 014 (T078) para el canal de correo. El push real en iPhone sigue siendo verificación de dispositivo.
 - Al terminar, correr `feature-done-check` sobre la 014 y la 015 (T079).
+
+## Resultado del recorrido (2026-11-21)
+
+**Hecho (renderizado y entrega a Mailpit):** se enviaron a `localhost:1025` los 20 correos reales (7 avisos, verificación, restablecimiento y prueba SMTP, en español e inglés) con `MessageBuilder`. Llegaron los 20, cada uno con asunto propio y en su idioma, el logo `logo-uts.png` incrustado (`cid:uts-logo`, 96 455 bytes), HTML de unos 1,9 KB y texto simple equivalente con el pie institucional y los datos de contacto de la configuración. La revisión de compatibilidad de Mailpit da 88,8 % de soporte, 10,0 % parcial y 1,2 % sin soporte (el estilo del `<body>`, que no afecta porque el fondo lo pone la tabla exterior). Los escenarios 1 a 8 y 11 a 12 quedan cubiertos por las pruebas automáticas (`mail-templates`, `mail-locale`, `smtp-settings` y `notifications-delivery-email`).
+
+**Pendiente (manual):** recorrer 3 a 6 con la app y el API en marcha, abrir los correos en Mailpit para el juicio visual de SC-002 y, cuando la UTS entregue su SMTP, mirarlos en Gmail y Outlook.
+
+**Observación fuera de esta spec:** los cuerpos de los avisos de la 014 terminan la fecha con "p. m." y luego un punto ("2:00 p. m.. Solo afecta..."). Viene del texto de `notifications/templates`, no de las plantillas de correo.
