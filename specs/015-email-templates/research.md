@@ -19,12 +19,12 @@ Sin `NEEDS CLARIFICATION` pendientes. Las decisiones de abajo salen de la revisi
 - **Decision**: adjuntar `logo-uts.png` con `cid`, leído una vez al arrancar. Copia sin modificar de `mobile/assets/brand/logo-uts.png` en `tutorias_uts_back/assets/brand/`. Respuesta a la clarificación del 2026-11-21.
 - **Rationale**: la API aún no tiene despliegue ni dirección pública, y los clientes bloquean imágenes remotas. De los logos disponibles, `logo-uts.png` pesa 96 KB; los demás superan 380 KB y no convienen en un correo. Se usa sobre fondo blanco, donde el logo a color se ve bien.
 - **Alternatives considered**: URL pública configurable (sin servidor público hoy, se vería roto); imagen en base64 dentro del HTML (infla el cuerpo y Gmail recorta por encima de ~100 KB); sin imagen (descartado por la clarificación).
-- **Riesgo**: dos copias del logo (app y API). Si la UTS entrega el logo oficial nuevo (D-051 y D-0xx de marca), hay que actualizar ambos; queda anotado en D-101.
+- **Riesgo**: dos copias del logo (app y API). Si la UTS entrega el logo oficial nuevo (ver las decisiones de marca de `docs/Decisions.md`), hay que actualizar ambos; queda anotado en D-101.
 
 ## R4. Un correo por tipo de aviso sin migración
 
 - **Decision**: el correo de aviso es `notice.{es,en}` con un marco por tipo (`OutboxEventType`): encabezado, color de acento, una frase de introducción y el título y cuerpo del aviso. El nombre del módulo y las fechas ya vienen dentro del cuerpo que escribe `notifications/templates` (única fuente, 014 FR-006).
-- **Rationale**: `notifications` guarda `type`, `title` y `body`, no el contexto estructurado; el cuerpo ya contiene módulo, sesión y el dato nuevo. Re-leer el contexto al enviar o agregar una columna exigiría migración y duplicaría la lógica de fechas.
+- **Rationale**: `notifications` guarda `type`, `title` y `body`, no el contexto estructurado; el cuerpo ya contiene módulo, sesión y el dato nuevo (en los avisos de salón y de docente, solo el nuevo; el valor anterior no se guarda y queda fuera de alcance). Ese cuerpo ya termina con "Revisa el módulo en la app.", así que el marco no agrega frase de cierre. Re-leer el contexto al enviar o agregar una columna exigiría migración y duplicaría la lógica de fechas.
 - **Alternatives considered**: columna `payload` en `notifications` para pintar una tabla "Antes / Ahora" (migración en `tutorias_uts_db` y segundo sitio que formatea fechas; se pospone hasta que se pida); volver a leer el contexto del evento al enviar (consultas extra y desfase si el módulo cambia entre aviso y envío).
 - **Acentos por tipo (paleta de `Design.md`)**: cancelaciones → Error (`#B3261E`); reprogramada → Warning (`#FB8C00`, solo relleno, con texto `#132F20`); restauradas → Success (`#2BA640`, solo relleno); cambio de docente o salón → Primary (`#34531F`). El estado nunca va solo por color: cada encabezado lleva su texto.
 

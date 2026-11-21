@@ -27,6 +27,7 @@ La clave temporal de un docente no se envía por correo: el CAE la ve una sola v
 
 - Q: ¿Cómo debe llegar el logo de la UTS dentro de los correos? → A: Incrustado en el correo (viaja adjunto en línea, sin servidor público).
 - Q: ¿Los correos de aviso incluyen un botón que abra la app, o solo el texto? → A: Solo texto: el correo indica abrir la app UTS Tutorías, sin botón ni enlace.
+- Análisis 2026-11-21: el aviso de salón y de docente informa solo el dato nuevo (no el anterior), y el idioma siempre es es o en.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -41,7 +42,7 @@ Un estudiante inscrito recibe, cuando cambia algo en un módulo, un correo claro
 **Acceptance Scenarios**:
 
 1. **Given** un estudiante inscrito con idioma español, **When** el docente reprograma una sesión, **Then** recibe un correo en español con el nombre del módulo, la hora anterior, la hora nueva (hora de Bogotá) y la marca UTS.
-2. **Given** un estudiante con idioma inglés, **When** el CAE cambia el salón de un módulo, **Then** recibe el correo en inglés con el salón anterior y el nuevo.
+2. **Given** un estudiante con idioma inglés, **When** el CAE cambia el salón de un módulo, **Then** recibe el correo en inglés con el salón nuevo (el aviso informa el dato nuevo, no el anterior).
 3. **Given** un festivo que cancela sesiones, **When** se envía el aviso, **Then** el correo lista la fecha del festivo y las sesiones afectadas, y el de restauración indica que vuelven a darse.
 4. **Given** un cliente de correo que no muestra imágenes o formato, **When** el estudiante abre el correo, **Then** el contenido completo se lee igual en texto simple.
 
@@ -99,7 +100,7 @@ El equipo cuenta con pruebas automáticas que comprueban la entrega por correo d
 
 - Nombre de módulo, salón o docente con caracteres especiales, tildes, o texto muy largo: el correo no se rompe ni se corta de forma ilegible.
 - Texto con código o marcas escritas por un usuario (por ejemplo en el nombre de un módulo): se muestra como texto, nunca se interpreta.
-- Idioma del usuario no disponible: se usa español.
+- El idioma del usuario es siempre español o inglés (dato obligatorio de la cuenta); no existe un destinatario sin idioma.
 - Datos de marca o de contacto ausentes en la configuración: el correo se envía igual, sin ese bloque.
 - Un aviso de un tipo sin plantilla propia: se envía con la plantilla general en lugar de perderse.
 - Sesión reprogramada que cruza el cambio de día: la fecha y hora se muestran en hora de Bogotá.
@@ -110,8 +111,8 @@ El equipo cuenta con pruebas automáticas que comprueban la entrega por correo d
 ### Functional Requirements
 
 - **FR-001**: El sistema MUST enviar con la plantilla institucional todos los correos que hoy salen de la API: código de verificación, código de restablecimiento, avisos de módulos y prueba del servidor de correo.
-- **FR-002**: Cada uno de los siete tipos de aviso de módulos MUST tener su propio correo, con asunto y contenido propios que muestren los datos que cambiaron y que cierren indicando abrir la app para ver el detalle, sin botón ni enlace.
-- **FR-003**: Todo correo MUST existir en español e inglés y MUST enviarse en el idioma del destinatario; si no se conoce, en español.
+- **FR-002**: Cada uno de los siete tipos de aviso de módulos MUST tener su propio correo, con asunto y contenido propios que muestren los datos que cambiaron y que cierren indicando abrir la app para ver el detalle, sin botón ni enlace (la frase "Revisa el módulo en la app." que ya cierra el cuerpo del aviso cumple esto).
+- **FR-003**: Todo correo MUST existir en español e inglés y MUST enviarse en el idioma del destinatario.
 - **FR-004**: Todo correo MUST incluir una versión en texto simple con el mismo contenido, para clientes que no muestran formato.
 - **FR-005**: Los correos MUST seguir la marca de `Design.md`: solo colores de la paleta (el lima nunca como texto sobre blanco), logo desde `mobile/assets/brand/` sin modificar e incrustado en el propio correo (se ve sin cargar imágenes remotas), tipografía de respaldo segura para correo y el nombre oficial de la institución en el pie.
 - **FR-006**: Los datos de marca que cambian entre ambientes (nombre mostrado, correo de contacto y textos legales del pie) MUST vivir en configuración, nunca escritos en las plantillas.
@@ -147,6 +148,7 @@ El equipo cuenta con pruebas automáticas que comprueban la entrega por correo d
 - Los correos llevan formato (HTML) con alternativa en texto simple; esto es un cambio visible respecto del texto plano de hoy.
 - El logo va incrustado en cada correo; no se necesita servidor público para imágenes. Si el cliente de correo no lo muestra, el nombre de la institución en texto basta para identificar el mensaje.
 - Las pruebas de entrega usan un servidor de correo simulado; un envío real a una bandeja de la UTS queda como verificación manual cuando la institución entregue su servidor SMTP.
+- Los avisos de cambio de salón y de docente informan solo el dato nuevo, igual que el texto de la bandeja y del push de la spec 014; mostrar el valor anterior exigiría guardarlo en el evento y queda fuera de esta spec.
 - No se agregan correos nuevos (por ejemplo, anuncios del docente o PQRS); esos usarán estas plantillas en sus propias specs.
 - Los correos de código mantienen la vigencia que ya define la spec 001.
 - El diseño de los correos respeta la paleta y el nombre oficial de `Design.md`; no se agregan colores nuevos.

@@ -33,7 +33,7 @@ Enfoque técnico (detalle en [research.md](research.md)):
 
 **Performance Goals**: sin metas nuevas; el armado del correo es síntesis de texto en memoria y no cambia los tiempos de entrega de la 014 (SC-001 y SC-006 de esa spec).
 
-**Constraints**: solo la paleta de `Design.md` (lima nunca como texto sobre blanco; sin degradados porque muchos clientes no los muestran, se usa el Primary sólido); fuentes de respaldo seguras para correo (el nombre de fuente corporativa no se escribe en componentes de la app, pero en correo se usa una pila genérica sin `Myriad Pro`); HTML por debajo de ~100 KB para que Gmail no lo recorte; logo `logo-uts.png` (≈ 94 KB) sin modificar; el código nunca en asunto ni en registros; textos solo en las plantillas de correo (es/en); fechas en `America/Bogota`; entrega, reintentos y estados de la 014 intactos.
+**Constraints**: solo la paleta de `Design.md` (lima nunca como texto sobre blanco; sin degradados porque muchos clientes no los muestran, se usa el Primary sólido); fuentes de respaldo seguras para correo (`Arial, Helvetica, sans-serif`; excepción explícita a la regla de no escribir nombres de fuente, que rige para los componentes de la app, porque Myriad Pro no se incrusta en correo; se registra en D-102); HTML por debajo de ~100 KB para que Gmail no lo recorte; logo `logo-uts.png` (≈ 94 KB) sin modificar; el código nunca en asunto ni en registros; textos solo en las plantillas de correo (es/en); fechas en `America/Bogota`; entrega, reintentos y estados de la 014 intactos.
 
 **Scale/Scope**: una institución; decenas de correos por día. 4 familias, 10 plantillas lógicas (verificación, restablecimiento, prueba y 7 avisos) × 2 idiomas = 20 versiones.
 

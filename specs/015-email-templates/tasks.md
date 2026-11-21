@@ -39,7 +39,7 @@ description: "Task list for Plantillas de correo institucionales"
 
 - [ ] T001 Copiar sin modificar `tutorias_uts_mobile/assets/brand/logo-uts.png` a `tutorias_uts_back/assets/brand/logo-uts.png` y comprobar que pesa menos de 100 KB (D-101)
 - [ ] T002 [P] Declarar `MAIL_BRAND_NAME` (por defecto `Institución Universitaria Tecnológica de Santander – UTS`), `MAIL_CONTACT_EMAIL` (opcional, vacío por defecto) y `MAIL_FOOTER_TEXT` (opcional, vacío por defecto) en `tutorias_uts_back/src/config/env.ts` y `tutorias_uts_back/.env.example`, con una prueba de valores por defecto en `tutorias_uts_back/src/config/env.spec.ts`
-- [ ] T003 [P] Comprobar en `tutorias_uts_back/test/utils/test-app.ts` cómo captura `SentMail` el transporte falso y ampliarlo para guardar también `html` y `attachments` de cada mensaje
+- [ ] T003 [P] Comprobar en `tutorias_uts_back/test/utils/test-app.ts` cómo captura `SentMail` el transporte falso y ampliarlo para guardar también `html` y `attachments` de cada mensaje; añadir en el mismo archivo una captura de los registros (logger de Nest) que las pruebas puedan leer, para comprobar que ningún código aparece en ellos
 
 ---
 
@@ -54,8 +54,8 @@ description: "Task list for Plantillas de correo institucionales"
 - [ ] T006 Crear `tutorias_uts_back/src/mail/brand.ts` que lee `MAIL_BRAND_NAME`, `MAIL_CONTACT_EMAIL` y `MAIL_FOOTER_TEXT` de `ConfigService` y entrega `MailBrand { name, contactEmail, footerText }` (data-model.md)
 - [ ] T007 Crear `tutorias_uts_back/src/mail/templates/layout.ts` con `escapeHtml()` y `layout({ title, preheader, tone, blocks, brand })`: tabla centrada de 600 px, estilos en línea, pila `Arial, Helvetica, sans-serif`, encabezado blanco con el logo (`alt` con el nombre de la institución) y franja de acento según `tone` (`info` = `#34531F`, `warning` = `#FB8C00`, `error` = `#B3261E`, `success` = `#2BA640`, solo como relleno), tarjeta `#FFFFFF` sobre `#F2F4EF`, texto `#132F20` y secundario `#575756`, pie con nombre oficial, contacto y texto legal opcionales; hace pasar T004
 - [ ] T008 Ampliar `RenderedMail` en `tutorias_uts_back/src/mail/templates/index.ts` con `html: string` y crear `tutorias_uts_back/src/mail/message.ts` con `buildMessage({ from, to, rendered })` que lee el logo una sola vez al arrancar y lo adjunta con `cid`; hace pasar T005
-- [ ] T009 Hacer que los tres caminos de envío armen el mensaje con `buildMessage` y no con su propio `sendMail`: `tutorias_uts_back/src/mail/mail.processor.ts`, `tutorias_uts_back/src/notifications/deliveries.service.ts` y `tutorias_uts_back/src/settings/smtp/smtp.service.ts`; las plantillas actuales devuelven `html` generado con `layout()` a partir de su texto, sin cambiar aún el contenido
-- [ ] T010 Correr `npm run lint`, `npm test` y `npm run test:e2e` en `tutorias_uts_back` y ajustar las pruebas existentes que comparan el mensaje completo (`tutorias_uts_back/src/mail/templates/notification.spec.ts`, `tutorias_uts_back/test/mail-locale.e2e-spec.ts`, `tutorias_uts_back/test/notifications-delivery-email.e2e-spec.ts`); el comportamiento de entrega no cambia (FR-012)
+- [ ] T009 Hacer que los tres caminos de envío armen el mensaje con `buildMessage` y no con su propio `sendMail`: `tutorias_uts_back/src/mail/mail.processor.ts`, `tutorias_uts_back/src/notifications/deliveries.service.ts` y `tutorias_uts_back/src/settings/smtp/smtp.service.ts`; para que compile sin reescribir las plantillas, crear un adaptador temporal `withLayout(rendered)` en `tutorias_uts_back/src/mail/templates/layout.ts` que envuelve el texto actual en `layout()` y devuelve `html`; cada historia lo reemplaza y T029 lo borra
+- [ ] T010 Correr `npm run lint`, `npm test` y `npm run test:e2e` en `tutorias_uts_back` y ajustar las pruebas existentes que comparan el mensaje completo (`tutorias_uts_back/test/mail-locale.e2e-spec.ts`, `tutorias_uts_back/test/notifications-delivery-email.e2e-spec.ts`); el comportamiento de entrega no cambia (FR-012)
 
 **Checkpoint**: Todo correo sale por `buildMessage` con marco y logo; el contenido aún es el de la 014 y de la spec 001
 
@@ -77,9 +77,9 @@ description: "Task list for Plantillas de correo institucionales"
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Crear `tutorias_uts_back/src/mail/templates/notice.es.ts` con el marco de los siete tipos (`heading`, `intro`, `tone`) según la tabla de data-model.md y la frase final "Abre la app UTS Tutorías para ver el detalle." sin botón ni enlace
-- [ ] T015 [P] [US1] Crear `tutorias_uts_back/src/mail/templates/notice.en.ts` con los mismos siete marcos en inglés y "Open the UTS Tutorías app to see the details."
-- [ ] T016 [US1] Reemplazar `renderNotificationMail` en `tutorias_uts_back/src/mail/templates/index.ts` por `renderNoticeMail(type, locale, notice)` que usa los marcos, `layout()` y `escapeHtml()` sobre el título y el cuerpo (párrafos por salto de línea); el asunto es `<título> - UTS Tutorías`; borrar `notification.es.ts`, `notification.en.ts` y su prueba antigua (código reemplazado); hace pasar T011 y T012
+- [ ] T014 [P] [US1] Crear `tutorias_uts_back/src/mail/templates/notice.es.ts` con el marco de los siete tipos (`heading`, `intro`, `tone`) según la tabla de data-model.md sin frase de cierre propia, sin botón ni enlace: el cuerpo del aviso ya termina con "Revisa el módulo en la app." (`CHECK` en `tutorias_uts_back/src/notifications/templates/es.ts`)
+- [ ] T015 [P] [US1] Crear `tutorias_uts_back/src/mail/templates/notice.en.ts` con los mismos siete marcos en inglés, sin frase de cierre propia (el cuerpo ya termina con "Check the module in the app.")
+- [ ] T016 [US1] Reemplazar `renderNotificationMail` en `tutorias_uts_back/src/mail/templates/index.ts` por `renderNoticeMail(type, locale, notice)` que usa los marcos, `layout()` y `escapeHtml()` sobre el título y el cuerpo (párrafos por salto de línea); el asunto es `<título> - UTS Tutorías`; borrar `notification.es.ts`, `notification.en.ts` y `tutorias_uts_back/src/mail/templates/notification.spec.ts` (código reemplazado; sus casos pasan a `notice.spec.ts`); los avisos de salón y de docente muestran solo el dato nuevo, como la bandeja; hace pasar T011 y T012
 - [ ] T017 [US1] Hacer que `tutorias_uts_back/src/notifications/deliveries.service.ts` pase `notification.type` a `renderNoticeMail`; hace pasar T013
 
 **Checkpoint**: Los siete avisos llegan con su propio correo; US1 se prueba sola
@@ -95,8 +95,8 @@ description: "Task list for Plantillas de correo institucionales"
 ### Tests for User Story 2 ⚠️
 
 - [ ] T018 [P] [US2] Escribir `tutorias_uts_back/src/mail/templates/code.spec.ts`: verificación y restablecimiento en es y en contienen el código en el HTML y en el texto, muestran `expiresAt` en hora de Bogotá, el asunto no contiene el código, y el restablecimiento advierte que nadie de la UTS pide la clave
-- [ ] T019 [P] [US2] Añadir a `tutorias_uts_back/src/auth/code.service.spec.ts` (o la prueba existente del servicio) que `issue` devuelve `expiresAt` igual a `now + ttl` de la configuración del propósito
-- [ ] T020 [P] [US2] Añadir a `tutorias_uts_back/test/mail-locale.e2e-spec.ts`: el correo de registro y el de recuperación llegan con marca, el código fuera del asunto y la vigencia; el código no aparece en ninguna línea de los registros capturados (SC-006)
+- [ ] T019 [P] [US2] Crear `tutorias_uts_back/src/auth/code.service.spec.ts` (no existe; Vitest con `PrismaService`, `SettingsService` y `Clock` falsos) con la prueba de que `issue` devuelve `expiresAt` igual a `now + ttl` de la configuración del propósito
+- [ ] T020 [P] [US2] Añadir a `tutorias_uts_back/test/mail-locale.e2e-spec.ts`: el correo de registro y el de recuperación llegan con marca, el código fuera del asunto y la vigencia; el código no aparece en ninguna línea de los registros que captura T003 (SC-006)
 
 ### Implementation for User Story 2
 
@@ -124,7 +124,7 @@ description: "Task list for Plantillas de correo institucionales"
 ### Implementation for User Story 3
 
 - [ ] T028 [P] [US3] Crear `tutorias_uts_back/src/mail/templates/smtp-test.es.ts` y `tutorias_uts_back/src/mail/templates/smtp-test.en.ts` con `layout()`
-- [ ] T029 [US3] Reemplazar `renderSmtpTestMail` en `tutorias_uts_back/src/mail/templates/index.ts` para usar esas plantillas; hace pasar T026 y T027
+- [ ] T029 [US3] Reemplazar `renderSmtpTestMail` en `tutorias_uts_back/src/mail/templates/index.ts` para usar esas plantillas y borrar el adaptador temporal `withLayout` de `tutorias_uts_back/src/mail/templates/layout.ts` (ya sin usos; comprobar con búsqueda); hace pasar T026 y T027
 
 **Checkpoint**: Las cuatro familias usan la plantilla institucional (SC-001)
 
@@ -141,7 +141,7 @@ description: "Task list for Plantillas de correo institucionales"
 - [ ] T030 [US4] Escribir `tutorias_uts_back/test/mail-templates.e2e-spec.ts`: dispara los siete avisos y los dos códigos con el transporte falso y comprueba que cada correo llega una sola vez, con marca, logo adjunto, idioma del destinatario y texto simple equivalente al HTML
 - [ ] T031 [US4] Añadir a `tutorias_uts_back/test/notifications-delivery-email.e2e-spec.ts` (si falta) los cuatro escenarios de la historia 4: envío único aunque se reintente, servidor caído que deja el aviso pendiente con su causa y llega al reintentar, dominio no permitido omitido con motivo, servidor sin configurar sin gastar intentos
 - [ ] T032 [US4] Correr `npm run lint`, `npm test` y `npm run test:e2e` completos en `tutorias_uts_back` y corregir lo que falle; es el cierre de T052, T057, T062 y T072 de la spec 014
-- [ ] T033 [US4] Recorrer los 12 escenarios de `specs/015-email-templates/quickstart.md` con Mailpit (`http://localhost:8025`) en español e inglés, revisando el HTML y el texto de cada correo, y anotar el resultado en ese archivo; es el cierre de T078 para el canal de correo
+- [ ] T033 [US4] Recorrer los 12 escenarios de `specs/015-email-templates/quickstart.md` con Mailpit (`http://localhost:8025`) en español e inglés, revisando el HTML y el texto de cada correo, y anotar el resultado en ese archivo, incluido el juicio de SC-002 (¿se identifica qué cambió en menos de 10 segundos?); es el cierre de T078 para el canal de correo
 - [ ] T034 [US4] Ejecutar la habilidad `feature-done-check` sobre las specs 014 y 015 (spec, pruebas de reglas, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte; es el cierre de T079
 
 **Checkpoint**: Las verificaciones diferidas de la 014 están cerradas
@@ -153,10 +153,11 @@ description: "Task list for Plantillas de correo institucionales"
 **Purpose**: Documentación, decisiones y cierre
 
 - [ ] T035 [P] Actualizar `Claude/docs/Architecture.md` §9 (correo): un solo armador de mensaje, plantillas con HTML y texto, logo incrustado, marca por configuración y vigencia de códigos
-- [ ] T036 [P] Actualizar `Claude/docs/Design.md` con el correo como superficie de marca: acentos por tono con la paleta existente, sin degradados, lima solo como relleno, fuentes de respaldo y logo `logo-uts.png`
-- [ ] T037 Registrar en `Claude/docs/Decisions.md` D-101 (logo incrustado, copia en el backend), D-102 (un armador de mensaje y plantillas sin dependencias), D-103 (un correo por tipo de aviso sin migración; la tabla "Antes / Ahora" queda descartada por ahora) y D-104 (marca por configuración y `expiresAt` en el código)
+- [ ] T036 [P] Actualizar `Claude/docs/Design.md` con el correo como superficie de marca: acentos por tono con la paleta existente, sin degradados, lima solo como relleno, fuentes de respaldo (`Arial, Helvetica, sans-serif`: excepción explícita a "nunca escribir nombres de fuente", que rige para los componentes de la app, porque Myriad Pro no se puede incrustar en correo) y logo `logo-uts.png`
+- [ ] T037 Registrar en `Claude/docs/Decisions.md` D-101 (logo incrustado, copia en el backend), D-102 (un armador de mensaje y plantillas sin dependencias; fuentes de respaldo en el correo como excepción a la regla de tipografía de la app), D-103 (un correo por tipo de aviso sin migración; la tabla "Antes / Ahora" queda descartada por ahora) y D-104 (marca por configuración y `expiresAt` en el código)
 - [ ] T038 [P] Comprobar en `tutorias_uts_back` que ningún archivo fuera de `src/mail/templates/` contiene texto de correo escrito (búsqueda de `subject:` y `text:` en `src/`) y que `grep` de `Unidades Tecnológicas` no encuentra nada (FR-011, SC-004)
-- [ ] T039 Cambiar `Status` de `specs/015-email-templates/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_back` y `Claude` (el de `Claude` apunta a `001-auth-roles`)
+- [ ] T039 Actualizar las notas de `Claude/specs/014-notifications/tasks.md` en T052, T057, T062, T072, T078 y T079 (hoy dicen "se difiere a la 015" o "se retoma en la 015") para que digan que se cerraron en la spec 015 con T032, T033 y T034
+- [ ] T040 Cambiar `Status` de `specs/015-email-templates/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_back` y `Claude` (el de `Claude` apunta a `001-auth-roles`)
 
 ---
 
