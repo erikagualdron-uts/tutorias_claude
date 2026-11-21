@@ -124,7 +124,7 @@ Formato único de error:
 - **Decoración:** nada de figuras geométricas (círculos, arcos, manchas); se usa el componente `BrandPattern` (hojas, plumas y libros). La única excepción es el anillo giratorio del `BrandLoader`, que es retroalimentación funcional y no decoración (D-080).
 - **Nombre de la institución:** "Institución Universitaria Tecnológica de Santander – UTS" (corto: "UTS"). No usar "Unidades Tecnológicas" en la app. El nombre vive en los archivos de traducción.
 - Cada pantalla maneja sus cuatro estados: cargando (`BrandLoader` o skeleton), vacío, error y con datos.
-- **Loader:** el indicador de carga es el componente `BrandLoader` (un solo ícono de la marca por iteración, que va cambiando entre libro, pluma y hoja, dentro de un anillo giratorio; cada ícono crece al entrar y se reduce al salir, sin sacudida; todo con movimientos que respetan "reducir movimiento"). Prohibido `ActivityIndicator` en componentes y pantallas; un botón en carga usa el `BrandLoader` compacto (D-078, D-080).
+- **Loader:** el indicador de carga es el componente `BrandLoader` (un solo ícono de la marca por iteración, que va cambiando entre libro, pluma y hoja, dentro de un anillo giratorio; cada ícono crece al entrar y se reduce al salir, sin sacudida; todo con movimientos que respetan "reducir movimiento"). Prohibido `ActivityIndicator` en componentes y pantallas; un botón en carga usa el `BrandLoader` compacto (D-078, D-080). Una pantalla sin datos que no muestra nada más devuelve `LoadingScreen` (loader centrado en la pantalla), no un `BrandLoader` suelto (D-101).
 - Tokens y datos de sesión en `expo-secure-store`; nunca en `AsyncStorage`.
 
 ## 6. Pruebas

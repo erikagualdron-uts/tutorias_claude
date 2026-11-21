@@ -206,7 +206,7 @@ A decorative pattern inspired by the elements of the university crest replaces a
 
 
 ## Navigation
-Bottom tab bar, 64px plus safe area, white, 1px #E5E5E5 top border, Level 1. Active tab: icon inside a 56 x 32px #F2F4EF pill, icon and label in #34531F with weight 700. Inactive: #575756. Unread tab badge: #B3261E circle with white number, 16px min. Top app bar 56px, white, Level 1 on scroll, screen title left, user avatar right (opens profile and sign out).
+Bottom tab bar, 64px plus safe area, white, 1px #E5E5E5 top border, Level 1. Active tab: icon inside a 56 x 32px #F2F4EF pill, icon and label in #34531F with weight 700. Inactive: #575756. Unread tab badge: #B3261E circle with white number, 16px min. Top app bar 56px, white, Level 1 on scroll, screen title left, then the notifications bell and the user avatar on the right (the avatar opens profile and sign out). The bell (`solar:bell-linear`, bold when there is something unread) is a 48px target with the unread count in a #B3261E badge with a white number (16px min, `99+` above 99); it opens the inbox of the role.
 
 Tabs per role:
 - **STUDENT**: Home · Modules · Schedule · Messages · PQRS
@@ -274,6 +274,7 @@ The app's own loading indicator replaces the system spinner everywhere (`Activit
 - **Look:** the icon and the ring in #34531F on light surfaces; the near-white text color on dark surfaces (never lime) and white on filled buttons. No background shape behind it.
 - **Sizes:** the icon is 32px (regular, screens and content areas) or 14px (compact, buttons and inline rows) inside a ring of 64px and 28px, so it never touches the ring or the message below.
 - **Motion:** the icons fade; the ring spins; each icon grows as it enters and shrinks as it leaves; there is no shake anywhere. With reduce motion: no size change and no spinning; the icon changes every 900ms with no fade (instant swap), the ring stays still and its arc pulses between 40% and 100% opacity every 1.2s so the app still looks busy, and the entrance and exit of the whole loader are a 150ms fade. The phases and the message stay the same.
+- **Position:** a screen with no data yet and nothing else to show returns `LoadingScreen`, which centers the loader on both axes over the screen background (D-101). Inside a built screen (under a title, in a list) the loader is centered horizontally within its area.
 - **Where:** full-screen and content-area loading, and the loading state of buttons. List and card layouts may still use skeleton shapes (see States).
 - **Accessibility:** one element with the role `progressbar`, the label `Loading…` from the translation files and the busy state; the icon and the ring are hidden from screen readers and the label does not change with the icon. The delay message is announced once when it appears.
 - **Component:** one `BrandLoader` component with a `size` prop (`regular` or `compact`) and an optional `color`; no animation or timer runs while it is not mounted.
@@ -362,6 +363,11 @@ Tapping a block opens a bottom sheet with the full detail. **Students: read-only
 Week navigation is limited to the dates of the active academic period; outside them, show `Outside the academic period`. Sessions repeat weekly, so each week shows the same module blocks unless a session was rescheduled or cancelled.
 
 Empty day: icon, `No sessions this day`.
+
+### Notifications inbox and mail settings
+**Inbox (all roles, reached from the bell):** a list of cards, newest first, loaded in pages as the end is reached. Each card shows a leading icon by type (cancelled sessions in #B3261E, the rest in #34531F), the title in Card Title, the text in Body, and the date and time in Bogota time in Body Small #575756. An unread notice has a 4px left line, a bold icon and an "Unread" badge (state is never only color); tapping a card marks it read and opens the module it refers to (48px target for the whole card). A tonal "Mark all as read" button with a leading icon sits at the top of the list while something is unread. States: loading (Brand loader), empty (`solar:bell-off-linear` icon, a title and what will appear here), error with "Try again", and a #F8E9D4 banner with the error when a later load fails and the loaded notices stay. When the phone permission for push was not given, a banner above the list explains why it matters and an outlined "Turn on notifications" button asks for it (or opens the phone settings if it was denied). The first time, a dialog explains the permission before the system one appears; "Not now" is a real choice and is not asked again.
+
+**Mail settings (CAE, More tab):** a status badge (text plus icon: Configured in #2BA640, Not configured in #575756, Needs to be configured again in #FB8C00), a #F8E9D4 banner when the app server's own settings are in use or the saved password cannot be read, and filled fields with a soft border and a leading icon: server, port (number keypad), user, password (hidden, never shown again; an empty one keeps the saved one, with that said in the placeholder) and sender. "Save" and "Send test email" are stacked 16px apart, each with a leading icon; the test button is disabled with the reason below it ("Save the settings to be able to test them") until there is something saved. The result of the test is a banner with a plain-words cause, never the text of the mail server.
 
 ### Messages
 The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
