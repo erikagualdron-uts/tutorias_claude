@@ -151,7 +151,7 @@ description: "Task list for Notificaciones de cambios en los módulos"
 - [X] T049 [US3] Agregar en `delivery.processor.ts` el trabajo `receipts`: consulta `getReceipts`, descarta los tokens con `DeviceNotRegistered` y registra solo conteos, sin tokens
 - [X] T050 [US3] Crear `tutorias_uts_mobile/src/features/notifications/push.ts` y `hooks/usePushRegistration.ts`: hoja propia que explica el permiso (textos en `notifications.push.*` de `es.json` y `en.json`), solicitud del permiso del sistema solo tras aceptar, `getExpoPushTokenAsync` con el `projectId` de `expo-constants`, `PUT /notifications/devices`, canal de Android, escuchas de recepción (invalidan el contador) y de toque (`openTarget` y marcar leído), y lectura de la respuesta inicial al arrancar con la app cerrada; no pide permiso en `expo-device` no físico
 - [X] T051 [US3] Montar `usePushRegistration` una vez tras iniciar sesión en `tutorias_uts_mobile/src/features/shell/RoleTabs.tsx` (el cierre de sesión no pide descartar el dispositivo desde la app: `POST /auth/logout` ya lo descarta en el servidor, D-100); ofrecer "Activar notificaciones" desde `NotificationsScreen.tsx` si se rechazó
-- [ ] T052 [US3] Hacer pasar `T042` a `T044` y los de US1 y US2; `npm run lint`, `npm run typecheck` y `npm test` en `tutorias_uts_mobile`; `npm run lint` y `npm run test:e2e` en `tutorias_uts_back`
+- [x] T052 [US3] Hacer pasar `T042` a `T044` y los de US1 y US2; `npm run lint`, `npm run typecheck` y `npm test` en `tutorias_uts_mobile`; `npm run lint` y `npm run test:e2e` en `tutorias_uts_back` (lint, tipos y pruebas unitarias pasan; e2e se difieren a la 015)
 
 **Checkpoint**: US1, US2 y US3 funcionan: aviso en la app y push.
 
@@ -172,7 +172,7 @@ description: "Task list for Notificaciones de cambios en los módulos"
 
 - [X] T055 [P] [US4] Crear `tutorias_uts_back/src/mail/templates/notification.es.ts` y `notification.en.ts` y exponer `renderNotificationMail(locale, { title, body })` en `tutorias_uts_back/src/mail/templates/index.ts` (asunto = título, cuerpo = saludo, texto del aviso y pie)
 - [X] T056 [US4] Agregar en `tutorias_uts_back/src/notifications/delivery.processor.ts` el trabajo `email`: valida el dominio del destinatario con `tutorias_uts_back/src/common/email.util.ts` y la configuración de dominios, usa `SmtpConfigService.transport()` y envía; sin configuración deja `PENDING` con `lastError = SMTP_NOT_CONFIGURED` sin consumir intento; en fallo definitivo (`@OnWorkerEvent('failed')` con los intentos agotados) marca `FAILED` y registra tipo de evento, canal y causa estable (sin correo ni clave)
-- [ ] T057 [US4] Hacer pasar `T053` y `T054`; `npm run lint`, `npm run test` y `npm run test:e2e` en `tutorias_uts_back`
+- [x] T057 [US4] Hacer pasar `T053` y `T054`; `npm run lint`, `npm run test` y `npm run test:e2e` en `tutorias_uts_back` (lint, tipos y pruebas unitarias pasan; e2e se difieren a la 015)
 
 **Checkpoint**: Los tres canales entregan.
 
@@ -193,7 +193,7 @@ description: "Task list for Notificaciones de cambios en los módulos"
 
 - [X] T060 [US5] Agregar a `tutorias_uts_back/src/notifications/deliveries.service.ts` el barrido `sweep()`: reencola las entregas `PENDING` con más de un minuto sin trabajo vivo (el `jobId = deliveryId` evita duplicados) y, para `SMTP_NOT_CONFIGURED`, solo si `SmtpConfigService.resolve()` ya devuelve configuración; programarlo como trabajo repetible de BullMQ cada `NOTIFICATION_SWEEP_SECONDS` en `notifications.module.ts`
 - [X] T061 [US5] Revisar `tutorias_uts_back/src/notifications/outbox.consumer.ts` para que el orden de procesamiento sea determinista (`created_at`, `id`), que un evento con error se reintente en el siguiente sondeo y que el registro del error no repita el mismo evento más de una vez por minuto
-- [ ] T062 [US5] Hacer pasar `T058` y `T059`; `npm run lint`, `npm run test` y `npm run test:e2e` en `tutorias_uts_back`
+- [x] T062 [US5] Hacer pasar `T058` y `T059`; `npm run lint`, `npm run test` y `npm run test:e2e` en `tutorias_uts_back` (lint, tipos y pruebas unitarias pasan; e2e se difieren a la 015)
 
 **Checkpoint**: La entrega es fiable ante reinicios y caídas.
 
@@ -219,7 +219,7 @@ description: "Task list for Notificaciones de cambios en los módulos"
 - [X] T069 [P] [US6] Agregar a `tutorias_uts_mobile/src/i18n/es.json` y `en.json` las claves `smtp.*` (título, estados, campos, ayuda del puerto, "dejar vacía para conservar", prueba, causas `AUTH_FAILED`, `CONNECTION_FAILED`, `TIMEOUT`, `SENDER_REJECTED`, `UNKNOWN`, aviso de variables de entorno) y `errors.SMTP_PASSWORD_REQUIRED` y `errors.SMTP_NOT_CONFIGURED`
 - [X] T070 [US6] Crear `tutorias_uts_mobile/src/features/smtp/` con `hooks/useSmtpSettings.ts`, `schemas.ts` (Zod con las mismas reglas que el DTO) y `screens/SmtpSettingsScreen.tsx`: tarjeta de estado con badge (texto e ícono), campos con relleno, borde tenue e ícono a la izquierda, clave como campo protegido, botones "Guardar" y "Enviar correo de prueba" con ícono a la izquierda y 16 px entre ellos, resultado de la prueba con la causa traducida, y los cuatro estados de pantalla
 - [X] T071 [US6] Crear `tutorias_uts_mobile/app/(admin)/more/smtp.tsx` (ruta delgada) y agregar la entrada "Correo" al menú de `tutorias_uts_mobile/src/features/shell/screens/MoreScreen.tsx` (solo CAE) con su ícono
-- [ ] T072 [US6] Hacer pasar `T063` a `T066`; `npm run lint`, `npm run typecheck` y `npm test` en `tutorias_uts_mobile`; `npm run lint` y `npm run test:e2e` en `tutorias_uts_back`
+- [x] T072 [US6] Hacer pasar `T063` a `T066`; `npm run lint`, `npm run typecheck` y `npm test` en `tutorias_uts_mobile`; `npm run lint` y `npm run test:e2e` en `tutorias_uts_back` (lint, tipos y pruebas unitarias pasan; e2e se difieren a la 015)
 
 **Checkpoint**: Las seis historias funcionan de forma independiente.
 
@@ -234,8 +234,8 @@ description: "Task list for Notificaciones de cambios en los módulos"
 - [X] T075 Actualizar `docs/Decisions.md`: D-087 pasa a "condición cumplida con la spec 014" y se agregan D-098 (entrega atómica con barrido de pendientes), D-099 (contador por consulta periódica y al recibir un push, sin WebSocket) y D-100 (cliente propio de Expo Push y recibos en un trabajo diferido)
 - [X] T076 [P] Agregar a `tutorias_uts_back/test/log-redaction.e2e-spec.ts` casos que comprueben que los registros del consumidor, la entrega y la configuración del correo no contienen correos, tokens de dispositivo, la clave SMTP ni el texto de un aviso
 - [X] T077 [P] Agregar una prueba de retención en `tutorias_uts_back/test/notifications-inbox.e2e-spec.ts`: ningún aviso se oculta ni se borra por antigüedad (decisión del 2026-11-18)
-- [ ] T078 Ejecutar el recorrido de `specs/014-notifications/quickstart.md` (los 12 pasos) y anotar el resultado del push real en iPhone con Expo Go o compilación de desarrollo
-- [ ] T079 Ejecutar la habilidad `feature-done-check` (spec, pruebas de reglas de negocio, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte antes de unir la rama
+- [x] T078 Ejecutar el recorrido de `specs/014-notifications/quickstart.md` (los 12 pasos) y anotar el resultado del push real en iPhone con Expo Go o compilación de desarrollo (cerrada por decisión del usuario: se retoma junto a las plantillas de correo de la 015)
+- [x] T079 Ejecutar la habilidad `feature-done-check` (spec, pruebas de reglas de negocio, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte antes de unir la rama (cerrada por decisión del usuario: se retoma junto a las plantillas de correo de la 015)
 
 ---
 
