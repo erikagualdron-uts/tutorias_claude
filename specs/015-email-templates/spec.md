@@ -23,6 +23,11 @@ Hoy la API envía correo en cuatro casos, todos como texto plano sin marca:
 
 La clave temporal de un docente no se envía por correo: el CAE la ve una sola vez en la app. Esta spec no cambia eso.
 
+### Session 2026-11-21
+
+- Q: ¿Cómo debe llegar el logo de la UTS dentro de los correos? → A: Incrustado en el correo (viaja adjunto en línea, sin servidor público).
+- Q: ¿Los correos de aviso incluyen un botón que abra la app, o solo el texto? → A: Solo texto: el correo indica abrir la app UTS Tutorías, sin botón ni enlace.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Recibir avisos de módulos con la imagen de la UTS (Priority: P1)
@@ -105,11 +110,11 @@ El equipo cuenta con pruebas automáticas que comprueban la entrega por correo d
 ### Functional Requirements
 
 - **FR-001**: El sistema MUST enviar con la plantilla institucional todos los correos que hoy salen de la API: código de verificación, código de restablecimiento, avisos de módulos y prueba del servidor de correo.
-- **FR-002**: Cada uno de los siete tipos de aviso de módulos MUST tener su propio correo, con asunto y contenido propios que muestren los datos que cambiaron.
+- **FR-002**: Cada uno de los siete tipos de aviso de módulos MUST tener su propio correo, con asunto y contenido propios que muestren los datos que cambiaron y que cierren indicando abrir la app para ver el detalle, sin botón ni enlace.
 - **FR-003**: Todo correo MUST existir en español e inglés y MUST enviarse en el idioma del destinatario; si no se conoce, en español.
 - **FR-004**: Todo correo MUST incluir una versión en texto simple con el mismo contenido, para clientes que no muestran formato.
-- **FR-005**: Los correos MUST seguir la marca de `Design.md`: solo colores de la paleta (el lima nunca como texto sobre blanco), logo desde `mobile/assets/brand/` sin modificar, tipografía de respaldo segura para correo y el nombre oficial de la institución en el pie.
-- **FR-006**: Los datos de marca que cambian entre ambientes (nombre mostrado, enlace al logo, correo de contacto y textos legales del pie) MUST vivir en configuración, nunca escritos en las plantillas.
+- **FR-005**: Los correos MUST seguir la marca de `Design.md`: solo colores de la paleta (el lima nunca como texto sobre blanco), logo desde `mobile/assets/brand/` sin modificar e incrustado en el propio correo (se ve sin cargar imágenes remotas), tipografía de respaldo segura para correo y el nombre oficial de la institución en el pie.
+- **FR-006**: Los datos de marca que cambian entre ambientes (nombre mostrado, correo de contacto y textos legales del pie) MUST vivir en configuración, nunca escritos en las plantillas.
 - **FR-007**: Los dominios de correo permitidos MUST seguir leyéndose de configuración, sin valores escritos en el código.
 - **FR-008**: Los correos de código MUST mostrar el código de forma destacada y su vigencia, y el código MUST NOT aparecer en el asunto ni en registros.
 - **FR-009**: Toda fecha y hora mostrada MUST estar en `America/Bogota`.
@@ -140,7 +145,7 @@ El equipo cuenta con pruebas automáticas que comprueban la entrega por correo d
 
 - La API es el único servicio que envía correo; no hay otros servicios con envíos propios (confirmado en la revisión previa).
 - Los correos llevan formato (HTML) con alternativa en texto simple; esto es un cambio visible respecto del texto plano de hoy.
-- El logo se muestra desde un enlace público configurable; si no está disponible el correo se lee igual con el nombre de la institución.
+- El logo va incrustado en cada correo; no se necesita servidor público para imágenes. Si el cliente de correo no lo muestra, el nombre de la institución en texto basta para identificar el mensaje.
 - Las pruebas de entrega usan un servidor de correo simulado; un envío real a una bandeja de la UTS queda como verificación manual cuando la institución entregue su servidor SMTP.
 - No se agregan correos nuevos (por ejemplo, anuncios del docente o PQRS); esos usarán estas plantillas en sus propias specs.
 - Los correos de código mantienen la vigencia que ya define la spec 001.
