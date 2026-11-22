@@ -175,7 +175,7 @@ description: "Task list for Dashboards de los tres roles"
 - [X] T042 Registrar en `Claude/docs/Decisions.md` D-116 (dashboards: endpoints de solo lectura por rol y por bloque del CAE, reutilización de los contadores y de `GET /pqrs/mine`, cambios recientes desde `module_sessions` sin festivos, umbral de baja inscripción en configuración, sin selector de periodo), con su motivo y lo descartado
 - [X] T043 [P] Comprobar en `tutorias_uts_back` y `tutorias_uts_mobile` que ningún `console.log` ni registro escribe datos de personas, que `grep` de `Unidades Tecnológicas` no encuentra nada, que `python .claude/skills/i18n-strings/scripts/check_i18n.py <es.json> <en.json>` da paridad es/en y que no hay hexadecimales, `fontFamily`, `fontWeight` ni librerías de íconos distintas de Iconify en los componentes nuevos
 - [ ] T044 Recorrer los 16 escenarios de `specs/019-dashboards/quickstart.md` en español e inglés con la app y la API en marcha y anotar el resultado en ese archivo, incluido el tiempo de carga del dashboard completo con 200 módulos y 200 PQRS (SC-001, menos de 3 s) y el de identificar la próxima tutoría (SC-004, menos de 5 s)
-- [ ] T045 Ejecutar la habilidad `feature-done-check` (spec, pruebas, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
+- [X] T045 Ejecutar la habilidad `feature-done-check` (spec, pruebas, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
 - [ ] T046 Cambiar `Status` de `specs/019-dashboards/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_back`, `tutorias_uts_mobile` (contra `main`) y `Claude` (contra `master`); `tutorias_uts_db` no lleva PR porque esta spec no lo cambia
 
 ---
@@ -226,3 +226,5 @@ T017 StatusStackBar, ChangeRow, RoomBars      T020 textos del CAE
 - El "Ver todo" de cambios es la ruta `app/(admin)/changes.tsx`, oculta de la barra con la nueva propiedad `hidden` de `RoleTabs`. La lista de PQRS del CAE abre ya filtrada por el estado que se tocó en el dashboard (`AdminPqrsScreen` lee `status`).
 - **Pendiente de la persona que prueba**: T044 (recorrido manual de los 16 escenarios y los tiempos de SC-001 y SC-004). Las pantallas no se han visto corriendo en un simulador.
 - Los números de las tarjetas no cuentan hacia arriba al cargar (`Design.md` lo sugiere); queda como pulido.
+- **T045 (feature-done-check, 2026-11-22)**: backend 285 pruebas unitarias, lint y tipos verdes; e2e completas 777 de 783: `zz-worker-smoke` falla igual sin esta spec (ya anotado en la 017) y otras 4 e2e (auth-reset, contract, notifications-devices, notifications-sweep) fallaron por carga y pasan al correrlas solas, 37 de 37. App: lint y tipos verdes, 658 de 659 en serie; `module-form` (de módulos) agotó los 5 s una vez y pasa solo, 8 de 8.
+
