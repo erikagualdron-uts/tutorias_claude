@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Implemented
+**Status**: Done
 
 **Input**: User description: "PQRS: radicación y gestión. Los docentes y estudiantes radican una PQRS con tipo, asunto y descripción. El tipo sale de la lista administrable PQRS_TYPE del CAE, en español e inglés. Cada usuario ve solo sus PQRS y el estado de cada una (radicada, en revisión, resuelta). El CAE ve todas, con filtros por estado, tipo y rol del autor. Puede pasarlas a "en revisión", responder dentro de la PQRS y marcarla "resuelta". Cada cambio de estado y cada respuesta del CAE notifican al autor por la bandeja, el push y el correo, en el idioma del dispositivo. Los permisos se validan con guards de roles en el backend: solo STUDENT y TEACHER radican, y solo SUPERADMIN gestiona. Un tipo de la lista que ya tiene PQRS asociadas solo se desactiva, no se borra (D-073). Los borrados son lógicos."
 
