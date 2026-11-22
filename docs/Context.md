@@ -63,7 +63,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 1. **Elegir tutorías** en formato de tarjetas.
 2. **Cancelar** las tutorías en las que esté inscrito.
-3. **Cronograma** semanal de solo lectura.
+3. **Cronograma** semanal de solo lectura: un calendario (vistas Día y Semana) con las sesiones de los módulos en los que asiste, cada una con hora, módulo, salón y docente, y su estado (programada, reprogramada con la hora original, cancelada por festivo, por el docente o por él mismo). Se navega por las semanas del periodo académico y al tocar una sesión se abre su módulo; desde el calendario no se cambia nada (spec 021, D-118).
 4. **Notificaciones**: anuncios de las tutorías, mensajes directos con docentes y avisos de cambios. Los avisos de cambios (hora, cancelación, reactivación, docente, salón y festivos) llegan a la **bandeja de la app** (campana con contador en la barra superior), por **push** y por **correo**, en el idioma del dispositivo (spec 014).
 5. **PQRS**: solo radicar (vista de usuario).
 
