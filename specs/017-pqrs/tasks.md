@@ -205,7 +205,7 @@ description: "Task list for PQRS: radicación y gestión"
 - [X] T060 [P] Comprobar en `tutorias_uts_back` y `tutorias_uts_mobile` que ningún `console.log` ni registro escribe texto de una PQRS, que `grep` de `Unidades Tecnológicas` no encuentra nada, que `python .claude/skills/i18n-strings/scripts/check_i18n.py <es.json> <en.json>` da paridad es/en y que no hay hexadecimales, `fontFamily`, `fontWeight` ni librerías de íconos distintas de Iconify en los componentes nuevos
 - [ ] T061 Recorrer los 16 escenarios de `specs/017-pqrs/quickstart.md` en español e inglés con la app y la API en marcha y anotar el resultado en ese archivo, incluido el tiempo de radicar (SC-001, menos de 2 minutos) y el de encontrar una PQRS con filtros entre 200 (SC-004, menos de 30 s)
 - [X] T062 Ejecutar la habilidad `feature-done-check` (spec, pruebas de reglas de negocio, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
-- [ ] T063 Cambiar `Status` de `specs/017-pqrs/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_db`, `tutorias_uts_back`, `tutorias_uts_mobile` (contra `main`) y `Claude` (contra `master`)
+- [X] T063 Cambiar `Status` de `specs/017-pqrs/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_db`, `tutorias_uts_back`, `tutorias_uts_mobile` (contra `main`) y `Claude` (contra `master`)
 
 ---
 
