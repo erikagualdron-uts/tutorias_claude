@@ -422,6 +422,43 @@
 - **Motivo:** Dos llamadas no justifican una dependencia; el descarte en el servidor cumple "al cerrar sesión deja de recibir" aunque la app falle; leer la configuración en cada envío hace que un cambio rija sin reiniciar.
 - **Descartado:** `expo-server-sdk`; FCM y APNs directos (más credenciales y código, ya se eligió Expo Push en D-024); verificar los recibos en el mismo trabajo (bloquea el worker); depender de que la app pida el descarte al salir.
 
+### D-102 · Logo del correo incrustado, con copia en el backend
+- **Estado:** Aceptada
+- **Decisión:** El logo `logo-uts.png` viaja incrustado en cada correo (`cid`) y se copia, sin modificarlo, a `tutorias_uts_back/assets/brand/`.
+- **Motivo:** El backend aún no tiene despliegue ni dirección pública, y los clientes de correo bloquean las imágenes remotas. De los logos disponibles es el único que pesa menos de 100 KB (96 KB; los demás superan 380 KB).
+- **Descartado:** Una URL pública configurable (se vería roto sin servidor); el logo en base64 dentro del HTML (infla el cuerpo y Gmail recorta cerca de los 102 KB); un correo sin imagen. Riesgo: hay dos copias del logo; si la UTS entrega el oficial nuevo, hay que actualizar la app y la API.
+
+### D-103 · Un armador de mensaje y plantillas sin dependencias
+- **Estado:** Aceptada
+- **Decisión:** Todo correo sale por `MessageBuilder` (módulo `mail`), que arma el HTML, el texto simple y el logo a partir de un `MailContent` que producen las plantillas. El marco es una función de tablas con estilos en línea y un `escapeHtml` propio. El correo escribe sus propias pilas de fuentes (D-107), como excepción a la regla de no escribir nombres de fuente, que rige para los componentes de la app.
+- **Motivo:** Había tres caminos de envío (códigos, avisos y prueba SMTP), cada uno con su propio `sendMail`. Myriad Pro y Source Code Pro no se pueden incrustar en un correo.
+- **Descartado:** MJML, Handlebars o EJS (una dependencia y un paso de compilación para unas diez plantillas); HTML escrito a mano en cada plantilla.
+
+### D-104 · Un correo por tipo de aviso, sin guardar datos nuevos
+- **Estado:** Aceptada
+- **Decisión:** Cada tipo de aviso tiene su insignia, su tono (acento) y su introducción en español e inglés. El título y el cuerpo siguen saliendo de `notifications/templates`, única fuente del texto del aviso. Los avisos de salón y de docente informan solo el dato nuevo.
+- **Motivo:** El aviso guarda tipo, título y cuerpo, no datos estructurados; mostrar "antes y después" exigiría una migración y un segundo sitio que formatee fechas.
+- **Descartado:** Una columna `payload` en `notifications` para pintar una tabla "Antes / Ahora"; volver a leer el contexto del evento al enviar (consultas extra y desfase si el módulo cambió).
+
+### D-105 · Marca del correo en configuración y vencimiento del código en el trabajo
+- **Estado:** Aceptada
+- **Decisión:** `MAIL_BRAND_NAME` (por defecto el nombre oficial de la institución), `MAIL_CONTACT_EMAIL` y `MAIL_FOOTER_TEXT` viven en variables de entorno. `CodeService.issue` devuelve `expiresAt`, el trabajo de correo lo lleva y la plantilla lo muestra en hora de Bogotá.
+- **Motivo:** Lo que cambia entre ambientes no va escrito en el código (constitución, principio III). La vigencia del código es configurable (`auth.verificationCodeTtlHours` y `auth.resetCodeTtlMinutes`); un texto fijo mentiría si el CAE la cambia.
+- **Descartado:** Una tabla de ajustes editable por el CAE (sobredimensionado); un texto fijo "vence en 60 minutos".
+
+### D-106 · Lenguaje visual del correo
+- **Estado:** Aceptada
+- **Decisión:** Tarjeta blanca de 16 px de radio sobre #F2F4EF, con el logo arriba y una franja verde institucional (#34531F con degradado a #132F20 solo como mejora; color sólido de respaldo) que lleva una insignia de texto, el título en blanco (26/32 Bold) y la línea lima de 4 px de los héroes. Texto de 16/24 en #132F20; el detalle del aviso va en una caja #F2F4EF con un filo de 4 px del color del tono; el código va en una caja con relleno y borde tenue como los campos; el pie lleva el nombre oficial, el contacto como enlace y el texto legal. Solo tema claro (`color-scheme: light`). Sin el patrón de hojas, plumas y libros: el correo no tiene Iconify ni una imagen del patrón. Accesibilidad: `lang` en la página, un solo `h1`, tablas `presentation`, pre-encabezado, texto de 12 px como mínimo y de 16 px en el cuerpo, estado siempre con texto (insignia) además del color y todos los pares texto/fondo con contraste mínimo 4.5:1, comprobado por prueba. Para evitar lo que el verificador de Mailpit marca sin soporte se evita `overflow`, estilos en `<body>` y el atajo `background`, y todo relleno lleva también `bgcolor`.
+- **Motivo:** Seguir `Design.md` (tarjeta, radios, héroe verde, línea lima, campo con borde, nombre oficial) y mejorar lo que Mailpit marcó: el promedio de los 20 correos pasó de 88,8 % a 94,1 % de soporte y lo parcial de 10,0 % a 4,9 %. Lo que queda marcado es propio de cualquier correo (la etiqueta `<body>`, el pre-encabezado oculto, `max-width` en Outlook, el degradado con color de respaldo y `border-radius`).
+- **Insignia de éxito:** el correo usa texto #132F20 sobre #2BA640 (4,6:1) porque el blanco da 3,2:1 y no cumple AA. La insignia de éxito de la app (`Design.md`, "Badges") usa texto blanco con la misma razón de contraste: queda **por revisar** en la app.
+- **Descartado:** Un degradado como único fondo (muchos clientes no lo muestran); un modo oscuro propio (la mayoría de los clientes ya invierte colores y se arriesga el contraste); el logo con letras blancas (380 a 530 KB).
+
+### D-107 · Fuente del correo: pila con Myriad Pro primero
+- **Estado:** Aceptada
+- **Decisión:** El texto del correo usa la pila `'Myriad Pro', 'Source Sans 3', Arial, Helvetica, sans-serif` y el código `'Source Code Pro', 'Courier New', Courier, monospace`. Viven como las constantes `FONTS` de `mail/templates/layout.ts`, el único lugar donde se cambia la fuente de todos los correos.
+- **Motivo:** Un correo solo muestra las fuentes que ya están instaladas en el dispositivo de quien lo lee; no se pueden incrustar archivos de fuente. Pedir primero la tipografía corporativa (Myriad Pro, `Design.md`) la usa donde exista, y la pila cae a Source Sans 3 (el respaldo de `Design.md`) y a Arial, que está en casi todos los dispositivos. Nombrar una fuente instalada en CSS no la distribuye, así que no choca con la licencia pendiente (D-051). En la práctica, la mayoría de los lectores verá Arial.
+- **Descartado:** Fuentes web (`@font-face`, `@import` o Google Fonts): Gmail y Outlook las ignoran, la petición externa avisa a un tercero de que el correo se abrió y Myriad Pro es comercial; incrustar el archivo de fuente (los clientes de correo no lo soportan); una variable de entorno para la fuente (cambiar una constante basta).
+
 ---
 
 ## Plantilla para nuevas decisiones
