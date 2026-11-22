@@ -176,7 +176,7 @@ description: "Task list for Dashboards de los tres roles"
 - [X] T043 [P] Comprobar en `tutorias_uts_back` y `tutorias_uts_mobile` que ningún `console.log` ni registro escribe datos de personas, que `grep` de `Unidades Tecnológicas` no encuentra nada, que `python .claude/skills/i18n-strings/scripts/check_i18n.py <es.json> <en.json>` da paridad es/en y que no hay hexadecimales, `fontFamily`, `fontWeight` ni librerías de íconos distintas de Iconify en los componentes nuevos
 - [ ] T044 Recorrer los 16 escenarios de `specs/019-dashboards/quickstart.md` en español e inglés con la app y la API en marcha y anotar el resultado en ese archivo, incluido el tiempo de carga del dashboard completo con 200 módulos y 200 PQRS (SC-001, menos de 3 s) y el de identificar la próxima tutoría (SC-004, menos de 5 s)
 - [X] T045 Ejecutar la habilidad `feature-done-check` (spec, pruebas, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
-- [ ] T046 Cambiar `Status` de `specs/019-dashboards/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_back`, `tutorias_uts_mobile` (contra `main`) y `Claude` (contra `master`); `tutorias_uts_db` no lleva PR porque esta spec no lo cambia
+- [X] T046 Cambiar `Status` de `specs/019-dashboards/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_back`, `tutorias_uts_mobile` (contra `main`) y `Claude` (contra `master`); `tutorias_uts_db` no lleva PR porque esta spec no lo cambia
 
 ---
 

@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Dashboards para los tres roles. CAE: ocupación general de cupos, módulos llenos y con baja inscripción, tarjetas de módulos, estudiantes y docentes activos y PQRS radicadas, PQRS por estado con tiempo promedio de respuesta, últimas 5 cancelaciones y reprogramaciones, uso de salones. Docente: próxima sesión, sesiones de la semana, mensajes sin leer, cupo por módulo, sus 3 PQRS más recientes. Estudiante (Inicio): próxima sesión, sesiones inscritas de la semana, avisos y mensajes sin leer, cambios recientes que lo afectan, sus 3 PQRS más recientes. Solo lectura, sin datos nuevos. Fuera de alcance: selector de periodo."
 
