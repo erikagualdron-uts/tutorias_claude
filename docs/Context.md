@@ -43,7 +43,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 3. **Notificaciones**: mensajes directos entre el CAE y los docentes (en ambos sentidos).
 4. **Docentes**: crear, ver y buscar, regenerar la clave temporal, actualizar nombre, apellido y teléfono (el correo no cambia), desactivar, reactivar y borrado lógico (spec 016).
 5. **Estudiantes**: ver y buscar a los registrados, desactivar, reactivar y borrado lógico; dar de baja cancela sus inscripciones vigentes (spec 016).
-6. **PQRS**: ver las generadas por docentes y estudiantes, atenderlas, y luego notificar al usuario o mantener la conversación por correo con la persona encargada.
+6. **PQRS**: ver todas las de docentes y estudiantes con filtros por estado, tipo y rol del autor; pasarlas a "En revisión", responderlas y resolverlas (spec 017); si hace falta, mantener la conversación por correo con la persona.
 7. **Dashboard**.
 
 ### 4.2 DOCENTE
@@ -137,8 +137,12 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
   - Chats individuales: se conservan **2 años**.
 
 ### PQRS
-- Docentes y estudiantes solo **radican** PQRS.
-- Solo el CAE las **gestiona**: las atiende, notifica al usuario o continúa la conversación por correo.
+- Docentes y estudiantes solo **radican** PQRS, con tipo (lista administrable "Tipos de PQRS"), asunto y descripción. Cada uno ve solo las suyas y su estado.
+- Solo el CAE las **gestiona**: ve todas con filtros por estado, tipo y rol del autor, las atiende y puede continuar la conversación por correo.
+- Estados: **Radicada → En revisión → Resuelta**, sin saltos ni retrocesos (spec 017, D-111). El CAE solo puede responder y resolver una PQRS **En revisión**, y para resolverla debe haber escrito al menos una respuesta. Una PQRS resuelta no admite respuestas ni cambios y no se reabre.
+- Las respuestas van del CAE al autor dentro de la PQRS; el autor no responde en ella (si necesita aportar algo más, radica otra). No hay adjuntos.
+- Cada cambio de estado y cada respuesta avisan al autor por la bandeja, el push y el correo, en el idioma del dispositivo; el aviso no copia el texto de la respuesta (D-112).
+- Un tipo de PQRS con PQRS asociadas solo se desactiva; las PQRS conservan su tipo (D-073).
 
 ## 8. Dashboards (métricas propuestas)
 

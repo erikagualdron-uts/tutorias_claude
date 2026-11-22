@@ -477,6 +477,18 @@
 - **Motivo:** `Design.md` ya definía Destructivo y Acento pero la app solo tenía Primario, Tonal, Delineado y Enlace, y un error se veía igual que un aviso (crema) o quedaba como una insignia discreta arriba. El color de relleno deja leer el riesgo antes que la etiqueta, y un error sólido no se confunde con un aviso. El texto es verde oscuro sobre éxito y advertencia porque el blanco da 3,2:1 y 2,2:1, por debajo de AA (D-106).
 - **Descartado:** Un modal o toast para cada error (interrumpe y los toasts son solo para éxitos); colorear solo el borde o el ícono (el color solo no basta); más de tres severidades (no hay un caso que las necesite); un botón destructivo sin confirmación.
 
+### D-111 · Flujo de las PQRS
+- **Estado:** Aceptada
+- **Decisión:** Una PQRS pasa por Radicada → En revisión → Resuelta, sin saltos ni retrocesos, y la transición la valida el servidor con una fila bloqueada (`FOR UPDATE`) para que dos acciones del CAE no se crucen. El CAE solo responde y resuelve una PQRS En revisión, y para resolverla debe haber escrito al menos una respuesta; una Resuelta no admite respuestas ni cambios y no se reabre. Las respuestas son del CAE hacia el autor: el autor no responde dentro de la PQRS (radica otra) y no hay adjuntos. El tipo viene de `PQRS_TYPE` y, con una PQRS asociada, el elemento solo se desactiva. Los largos máximos viven en configuración (`pqrs.*MaxLength`: 120, 2000 y 2000). Radicar es idempotente: la app manda un `clientRequestId` por intento y un reintento devuelve la misma PQRS.
+- **Motivo:** El CAE es el único que gestiona y el autor necesita saber en qué va su trámite: pasar siempre por "En revisión" deja constancia de que alguien la atiende, y exigir una respuesta evita que llegue un "Resuelta" sin explicación. Un hilo de un solo sentido mantiene el canal simple (`Context.md`: el CAE continúa la conversación por correo si hace falta). La clave de idempotencia evita duplicados por doble toque o reintento de red.
+- **Descartado:** Dejar resolver desde "Radicada" o sin respuesta; que la primera respuesta pase sola a "En revisión"; reabrir una PQRS resuelta; que el autor responda en el hilo, adjuntos, un tiempo máximo de respuesta o alertas al CAE (quedan para otra spec); solo deshabilitar el botón para no duplicar.
+
+### D-112 · Avisos de una PQRS sin módulo
+- **Estado:** Aceptada
+- **Decisión:** `outbox_events` y `notifications` aceptan `pqrs_id` y su `module_id` pasa a opcional; una restricción `CHECK (num_nonnulls(module_id, pqrs_id) = 1)` exige exactamente uno de los dos. Tres tipos de evento nuevos (`PQRS_IN_REVIEW`, `PQRS_RESPONDED`, `PQRS_RESOLVED`) avisan solo al autor, por bandeja, push y correo, y solo si su cuenta está activa. El aviso lleva el asunto y el estado, nunca el texto de la respuesta, y el push y la bandeja llevan `pqrsId` para abrir esa PQRS.
+- **Motivo:** Reutiliza bandeja, entregas, cola, reintentos y recibos tal cual y mantiene el índice único por evento y persona. El texto de la respuesta es del autor y del CAE: lo que sale a canales externos (correo y push) no debe copiarlo.
+- **Descartado:** Un módulo ficticio para colgar los avisos (ensucia las listas y los conteos de módulos); una segunda tabla de avisos (dos bandejas y dos contadores); incluir la respuesta completa en el correo.
+
 ---
 
 ## Plantilla para nuevas decisiones
