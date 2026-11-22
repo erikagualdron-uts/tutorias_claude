@@ -407,14 +407,18 @@ The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 
 **Chat screen**:
 - App bar with avatar, name and a subtitle (`Module name` or connection state).
-- Bubbles: max width 78%, 16px radius, with a 4px radius on the tail corner. Sent: #34531F fill, white text, right aligned. Received: #F2F4EF fill, #132F20 text, left aligned. A timestamp (Metadata) under the last message of each group of consecutive messages.
+- Bubbles: max width 78%, 16px radius, with a 4px radius on the tail corner. Sent: #34531F fill, white text, right aligned. Received: white fill with a soft level-1 shadow, #132F20 text, left aligned (D-115). Consecutive messages from the same person form a group: only the first has the tail corner (top, 4px) and the writer's name; 2px between messages of a group, 16px between groups. The time and the state icon sit inside the bubble, bottom right.
 - Date separators: centered neutral chip (`Today`, `Yesterday`, date).
 - Message states: sending (clock icon, 60% opacity), sent (single check), failed (red icon with "Tap to retry").
 - Teacher announcements to a module are not bubbles: they are full-width banner cards (#F8E9D4) labeled "Announcement" with the teacher's name.
-- Composer: pinned above the keyboard, #F2F4EF pill input with a 1px #C9D0C3 border (min 48px, grows to 5 lines), 48px circular send button (#34531F, white icon). The send button is disabled while the input is empty.
+- Composer: sits right above the tab bar and rises with the keyboard (measured against the window, D-115), pinned above the keyboard, #F2F4EF pill input with a 1px #C9D0C3 border (min 48px, grows to 5 lines), 48px circular send button (#34531F, white icon). The send button is disabled while the input is empty.
 - Typing indicator: three #575756 dots animating, in a received-style bubble.
 - Connection: while reconnecting, a #F8E9D4 banner under the app bar says `Reconnecting…`. Messages typed offline stay in the "sending" state and are sent when the connection returns.
 - Lists load newest first with infinite scroll upward.
+
+**As built (spec 018)**: the tab has a segmented control "Alerts" (the inbox of spec 014) and "Chats". Chats: a "New message" button with the add icon above the list; each row has a 48px avatar circle (person icon, or group icon for a module chat), the name or module, the last message in one line (prefixed "Announcement:" for an announcement), the time and an unread pill whose text is the count. Chat screen: a title header (the module chat adds "Module chat"), an inverted list with date separators ("Today", "Yesterday", date), bubbles as above (the writer's name above a message of someone else in a module chat), announcements as full-width cream cards with the label and the teacher's name, the "Reconnecting…" warning banner under the header, and the composer at the bottom: a pill input with the character counter under it, a 48px circular icon-only send button (label "Send", disabled while empty; D-115) and, only for the teacher of a module, a segmented control "Message" and "Announcement". What I send shows its state as an icon with an accessibility label ("Sending…" at 60% opacity, "Sent"); "Not sent" keeps its text and "Tap to retry". A read-only conversation hides the composer and shows the rule in an info banner (no shared module, closed period, unavailable account).
+
+**Not built yet (chat)**: typing indicator, read receipts, floating action button, avatar photos or initials, editing or deleting a message, attachments, and the pending-message queue surviving an app restart.
 
 ### PQRS
 **Status chips**: Filed (Neutral badge), In review (Warning badge), Resolved (Success badge). Type labels: Petition, Complaint, Claim, Suggestion.

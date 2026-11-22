@@ -119,9 +119,9 @@
 | `OutboxEvent` | id, type (cambio de docente, de salón, festivos y, del docente, `SESSION_RESCHEDULED`, `SESSION_CANCELLED_TEACHER`, `SESSION_RESTORED_TEACHER`, y de una PQRS, `PQRS_IN_REVIEW`, `PQRS_RESPONDED`, `PQRS_RESOLVED`), moduleId o pqrsId (exactamente uno de los dos, con `CHECK`), payload (ids, fechas y alcance, nunca datos de estudiantes), createdAt, processedAt (eventos que las notificaciones envían después) |
 | `Enrollment` | id, studentId, moduleId, status (ACTIVE / CANCELLED), cancelledAt, effectiveUntil (`cancelledAt` + `STUDENT_CANCEL_LEAD_MINUTES`: las sesiones que empiezan antes conservan al estudiante), createdAt, deletedAt. Una sola ACTIVE por estudiante y módulo (índice único parcial) |
 | `SessionAbsence` | id, enrollmentId, sessionId, createdAt, deletedAt (el estudiante sigue inscrito pero no asiste a esa sesión; `deletedAt` marca que la reactivó). Una sola viva por inscripción y sesión |
-| `Conversation` | id, type (DIRECT / MODULE), moduleId?, createdAt |
-| `ConversationMember` | conversationId, userId, lastReadAt |
-| `Message` | id, conversationId, senderId, body, createdAt |
+| `Conversation` | id, type (DIRECT / MODULE), moduleId? (único: un chat por módulo, creado cuando alguien lo necesita), directKey? (`VarChar(73)`, los dos ids ordenados y unidos por `:`, único: una conversación por pareja), lastMessageAt, createdAt, updatedAt, deletedAt. `CHECK`: una DIRECT tiene `directKey` y no `moduleId`; una MODULE, al revés (spec 018) |
+| `ConversationMember` | conversationId, userId (clave de los dos), lastReadAt (hasta cuándo leyó; de ahí salen los sin leer), createdAt. En un chat de módulo la fila se crea al leer o enviar; quién lo ve sale de las inscripciones |
+| `Message` | id, conversationId, senderId, kind (TEXT / ANNOUNCEMENT), body (`VarChar(4000)`; el máximo que se aplica es `chat.messageMaxLength`, 2000), clientMessageId (único con conversación y remitente: un reintento devuelve el mismo mensaje), createdAt, deletedAt |
 | `Notification` | id, userId, eventId (único con userId: un aviso por cambio y persona), type, moduleId o pqrsId (exactamente uno de los dos), locale, title, body (ya redactados en el idioma del destinatario), readAt, createdAt. Sin borrado: nada lo elimina y se conservan todos (spec 014) |
 | `NotificationDelivery` | id (también es el id del trabajo de la cola), notificationId, channel (PUSH / EMAIL), status (PENDING / SENT / FAILED / SKIPPED), attempts, lastError (solo un código de causa), sentAt. Único por aviso y canal |
 | `PushToken` | id, userId, sessionId, token (único: un dispositivo pertenece a un solo usuario), platform (ANDROID / IOS), deletedAt (cierre de sesión o dispositivo inválido) |
@@ -181,10 +181,12 @@ Los límites de horas y los dominios se leen de **configuración**, no se escrib
 
 ## 8. Chat en tiempo real
 
-- Socket.IO con autenticación JWT al conectar.
-- Salas (rooms) por conversación; los mensajes se guardan en BD antes de emitirse.
-- Si el destinatario no está conectado, se envía **push**.
-- **Retención:** un job programado elimina mensajes de módulo con más de **6 meses** y chats individuales con más de **2 años**.
+- **Las órdenes van por REST y la entrega por WebSocket** (spec 018, D-113): enviar, leer, listar y paginar son endpoints con los guards de siempre (`GET /chat/contacts`, `GET` y `POST /chat/conversations`, `GET /chat/conversations/:id`, `GET` y `POST /chat/conversations/:id/messages`, `POST /chat/conversations/:id/read` y `GET /chat/unread-count`); una conversación ajena responde `404 CHAT_NOT_FOUND`. El WebSocket (Socket.IO, espacio `/chat`, mismo puerto) solo entrega: ver `specs/018-chat/contracts/chat-socket.md`.
+- **Autenticación del socket:** el token de acceso viaja en el saludo y se valida con la misma regla del guard HTTP (sesión viva y cuenta activa). El guard JWT global ignora los eventos que no son HTTP; el socket ya se autenticó al conectar.
+- **A quién se emite:** nunca a una sala de conversación, solo a las salas `user:<id>` de quienes el servidor calcula en ese momento (cuenta activa y visibilidad). Un mensaje se guarda antes de emitirse; un reintento no se vuelve a emitir.
+- **Permisos calculados, no copiados** (`chat-access.ts`): la pareja docente-estudiante, el solo lectura y los anuncios salen de las inscripciones, módulos, periodos y cuentas vivos; la ventana de visibilidad del chat de un módulo, de las inscripciones del estudiante.
+- **Presencia y push:** `ChatPresence` guarda en memoria qué conversación tiene abierta cada dispositivo; si el destinatario no la tiene abierta se envía **push** (D-114). **Límite conocido:** la presencia en memoria sirve para una sola instancia del servidor; con varias haría falta el adaptador de Redis de Socket.IO.
+- **Retención:** una tarea programada (`ChatRetentionTask`, a las 03:00 de `America/Bogota`) pone `deletedAt` en los mensajes de módulo con más de `chat.moduleRetentionMonths` (6 meses) y en los individuales con más de `chat.directRetentionMonths` (24 meses). Las claves de configuración del chat son `chat.messageMaxLength` (2000), `chat.directRetentionMonths`, `chat.moduleRetentionMonths` y `chat.pushBurstSeconds` (60).
 
 ## 9. Notificaciones
 
