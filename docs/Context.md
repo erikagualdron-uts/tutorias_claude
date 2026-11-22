@@ -173,6 +173,15 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - Notificaciones y mensajes sin leer.
 - Estado de las PQRS que radicó.
 
+### Cómo se calculan (spec 019, D-116)
+- **Ocupación general:** inscritos activos sobre la suma de las capacidades de los módulos activos (no eliminados, del periodo vigente). Una cuenta desactivada o eliminada no cuenta como inscrita. Con capacidad total 0 se muestra 0 %.
+- **Módulo lleno:** inscritos igual o mayor que la capacidad. **Baja inscripción:** menos del 30 % del cupo y no lleno; el 30 % es el valor por defecto de la configuración `dashboard.lowEnrollmentPercent`.
+- **Uso de un salón:** el cupo ocupado de sus módulos activos (inscritos sobre capacidad). Se muestran los 3 más y los 3 menos ocupados, sin repetir uno.
+- **Tiempo promedio de respuesta:** de la radicación a la resolución, solo de las PQRS resueltas.
+- **Semana:** de lunes a domingo en `America/Bogota`; las sesiones canceladas no se cuentan. La próxima sesión es la primera futura no cancelada; las sesiones que un estudiante omitió no cuentan para él.
+- **Cambios recientes:** reprogramaciones y cancelaciones del docente, de la más reciente a la más antigua. No incluyen las cancelaciones por festivo (las genera el calendario) ni las sesiones ya restauradas. El estudiante ve solo las de sus módulos inscritos.
+- Los dashboards solo leen datos que ya existen; no hay selector de periodo.
+
 ## 9. Idiomas
 
 - La app tendrá **soporte multilenguaje** (i18n) en **español** (idioma base) e **inglés**.

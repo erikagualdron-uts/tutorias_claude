@@ -461,6 +461,10 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 3. Recent changes: list of cancellations and reschedules affecting them.
 4. My PQRS: up to 3 recent items with status badges.
 
+**Built (spec 019)**: the three dashboards replace the empty tab screens. Each block loads on its own and has its four states (loading, empty with its sentence, error with a "Try again" button, data), so one failing block never hides the others; pull-to-refresh and a refresh when the tab regains focus. Every block leads to where that data is worked with: the hero card to the module (teacher: the schedule), the unread counters to Messages and the inbox, "My PQRS" and the PQRS-by-status legend to the PQRS list (the CAE opens it already filtered by the tapped state), and each change to its module. The hero "View details" button uses the new **Accent** button variant (lime fill, #132F20 text and icon, dark surfaces only).
+
+**Recent changes list (CAE)**: opened from "See all" in the Recent changes block. A screen on the Screen background with one white card per change (icon, module, `Cancelled · 5 min ago` or `Rescheduled · 2 h ago`), loading more pages at the end, with the four states. The kind of change is always written, never only an icon.
+
 ### Admin management patterns
 - **Lists (teachers, students, rooms)**: search field, filter chips (All, Active, Inactive), rows with avatar, name, email (Metadata) and a status badge (Active neutral-success, Inactive neutral). Overflow menu per row: Edit, Deactivate/Reactivate, Delete. Deleting is a logical delete and always uses a destructive confirmation dialog; its text says the record is hidden, not erased.
 - **Create teacher**: form (name, institutional email, other data). Email validated against the allowed domain with an inline error. On success, a dialog shows the **temporary password** once, in Source Code Pro on a #F2F4EF block with a "Copy" button, and the note that the teacher must change it at first login.

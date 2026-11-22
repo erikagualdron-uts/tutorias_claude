@@ -37,12 +37,8 @@ paths:
           description: Cambios por fecha de cambio descendente
           content:
             application/json:
-              schema:
-                type: object
-                required: [data, meta]
-                properties:
-                  data: { type: array, items: { $ref: '#/components/schemas/RecentChange' } }
-                  meta: { $ref: '#/components/schemas/PageMeta' }
+              schema: { $ref: '#/components/schemas/RecentChangePage' }
+        '400': { $ref: '#/components/responses/Error' }
         '401': { $ref: '#/components/responses/Error' }
         '403': { $ref: '#/components/responses/Error' }
   /dashboard/admin/rooms:
@@ -55,12 +51,7 @@ paths:
           description: Hasta 3 salones por lista, sin repetir uno
           content:
             application/json:
-              schema:
-                type: object
-                required: [most, least]
-                properties:
-                  most: { type: array, items: { $ref: '#/components/schemas/RoomUsage' } }
-                  least: { type: array, items: { $ref: '#/components/schemas/RoomUsage' } }
+              schema: { $ref: '#/components/schemas/AdminRooms' }
         '401': { $ref: '#/components/responses/Error' }
         '403': { $ref: '#/components/responses/Error' }
   /dashboard/teacher:
@@ -97,14 +88,15 @@ components:
       description: Error con código estable
       content:
         application/json:
-          schema:
-            type: object
-            required: [statusCode, code, message]
-            properties:
-              statusCode: { type: integer }
-              code: { type: string }
-              message: { type: string }
+          schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string }
+        message: { type: string }
     PageMeta:
       type: object
       required: [page, limit, total]
@@ -156,6 +148,18 @@ components:
         originalStartsAt: { type: string, format: date-time }
         startsAt: { type: string, format: date-time }
         changedAt: { type: string, format: date-time }
+    RecentChangePage:
+      type: object
+      required: [data, meta]
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/RecentChange' } }
+        meta: { $ref: '#/components/schemas/PageMeta' }
+    AdminRooms:
+      type: object
+      required: [most, least]
+      properties:
+        most: { type: array, items: { $ref: '#/components/schemas/RoomUsage' } }
+        least: { type: array, items: { $ref: '#/components/schemas/RoomUsage' } }
     RoomUsage:
       type: object
       required: [roomId, name, location, percent, modules]
@@ -180,7 +184,7 @@ components:
       type: object
       required: [nextSession, weekSessions, modules]
       properties:
-        nextSession: { allOf: [{ $ref: '#/components/schemas/NextSession' }], nullable: true }
+        nextSession: { oneOf: [{ $ref: '#/components/schemas/NextSession' }, { type: 'null' }] }
         weekSessions: { type: integer }
         modules:
           type: array
@@ -196,7 +200,7 @@ components:
       type: object
       required: [nextSession, weekSessions, changes]
       properties:
-        nextSession: { allOf: [{ $ref: '#/components/schemas/NextSession' }], nullable: true }
+        nextSession: { oneOf: [{ $ref: '#/components/schemas/NextSession' }, { type: 'null' }] }
         weekSessions: { type: integer }
         changes:
           type: array

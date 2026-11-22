@@ -507,6 +507,12 @@
 - **Motivo:** Pedido del equipo de un aspecto más elegante, cercano a WhatsApp. Agrupar reduce ruido visual y el texto del estado se vuelve redundante junto al ícono; el error sigue con texto para no depender del color.
 - **Descartado:** Mantener el texto "Enviado" en cada mensaje propio; cola en la esquina inferior; mantener el área de texto con etiqueta y botón ancho.
 
+### D-116 · Dashboards de los tres roles
+- **Estado:** Aceptada
+- **Decisión:** Los dashboards solo leen datos que ya existen: sin tablas, migración ni selector de periodo. El backend tiene un módulo `dashboard/` con cinco endpoints por rol; los del CAE van separados (`overview`, `changes`, `rooms`) para que un bloque que falle no tumbe a los demás. Los mensajes y avisos sin leer y las 3 PQRS propias reutilizan los endpoints que ya existen, así la cifra coincide con la de la pestaña. Quién asiste a una sesión lo decide el servidor con `ATTENDS_SESSION`. La ocupación es inscritos activos sobre la capacidad de los módulos activos; "baja inscripción" es menos del 30 % del cupo, configurable (`dashboard.lowEnrollmentPercent`); el uso de un salón es su cupo ocupado; el tiempo de respuesta es de radicación a resolución de las PQRS resueltas; la semana va de lunes a domingo en `America/Bogota`. Los cambios recientes salen de `module_sessions` reprogramadas o canceladas por el docente, sin las cancelaciones por festivo.
+- **Motivo:** Es la pantalla de entrada de cada rol y los datos ya estaban en el sistema; no crear datos nuevos mantiene la spec pequeña y evita cifras que se desvíen de las pantallas de origen. Los festivos llenarían las cinco filas con la misma fecha en todos los módulos a la vez, y no son una decisión de nadie.
+- **Descartado:** Un endpoint con todo por rol (duplica las consultas de chat, avisos y PQRS y un fallo tumba toda la pantalla); calcular en la app (la semana, las ausencias y las canceladas quedarían en el cliente); una tabla de historial de cambios (viola "sin datos nuevos"); medir el salón por horas asignadas; una librería de gráficos (barras hechas con `View`); un selector de periodo (queda para otra spec). Limitación aceptada: una sesión restaurada sale de la lista de cambios y los cambios de docente o de salón del módulo no aparecen.
+
 ---
 
 ## Plantilla para nuevas decisiones
