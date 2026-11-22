@@ -111,14 +111,14 @@ description: "Task list for Pulido de PQRS, dashboards y pruebas"
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T021 [P] [US3] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/filedBadge.test.tsx` (debe fallar): `badgeLabel(0)` es `undefined`, `badgeLabel(7)` es `'7'`, `badgeLabel(99)` es `'99'` y `badgeLabel(100)` es `'99+'`; `useFiledCount` pide `/pqrs?status=FILED&limit=1` y devuelve `meta.total`, devuelve 0 si la consulta falla y no muestra error; su clave de consulta empieza por `['pqrs']` para que las acciones del CAE que ya invalidan `['pqrs']` la actualicen
-- [ ] T022 [P] [US3] Escribir `tutorias_uts_mobile/src/features/shell/__tests__/RoleTabs.test.tsx` (debe fallar): una pestaña con `badge` mayor que 0 lleva `tabBarBadge` con fondo de error y número blanco, sin `badge` o con 0 no lleva insignia, y solo la pestaña que la recibe la muestra (las de docente y estudiante no)
+- [X] T021 [P] [US3] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/filedBadge.test.tsx` (debe fallar): `badgeLabel(0)` es `undefined`, `badgeLabel(7)` es `'7'`, `badgeLabel(99)` es `'99'` y `badgeLabel(100)` es `'99+'`; `useFiledCount` pide `/pqrs?status=FILED&limit=1` y devuelve `meta.total`, devuelve 0 si la consulta falla y no muestra error; su clave de consulta empieza por `['pqrs']` para que las acciones del CAE que ya invalidan `['pqrs']` la actualicen
+- [X] T022 [P] [US3] Escribir `tutorias_uts_mobile/src/features/shell/__tests__/RoleTabs.test.tsx` (debe fallar): una pestaña con `badge` mayor que 0 lleva `tabBarBadge` con fondo de error y número blanco, sin `badge` o con 0 no lleva insignia, y solo la pestaña que la recibe la muestra (las de docente y estudiante no)
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] Crear `tutorias_uts_mobile/src/features/pqrs/hooks/useFiledCount.ts`: `useFiledCount()` con `useQuery` sobre `/pqrs?status=FILED&limit=1` (clave `['pqrs', 'admin', 'filed-count']`), `refetchInterval` de 60 s y refresco al volver la app a primer plano (mismo patrón de `useUnreadCount.ts`), que devuelve `meta.total` o 0; y `badgeLabel(count)` en el mismo archivo
-- [ ] T024 [US3] Modificar `tutorias_uts_mobile/src/features/shell/RoleTabs.tsx`: `TabSpec` gana `badge?: number` y la pestaña lo traduce a `tabBarBadge` con `badgeLabel`, `tabBarBadgeStyle` de fondo `palette.error`, texto `palette.onError` y mínimo de 16 px (`Design.md`, "Unread tab badge")
-- [ ] T025 [US3] Modificar `tutorias_uts_mobile/app/(admin)/_layout.tsx` para llamar a `useFiledCount()` y pasar `badge` a la pestaña `pqrs`; los layouts de docente y estudiante no cambian
+- [X] T023 [US3] Crear `tutorias_uts_mobile/src/features/pqrs/hooks/useFiledCount.ts`: `useFiledCount()` con `useQuery` sobre `/pqrs?status=FILED&limit=1` (clave `['pqrs', 'admin', 'filed-count']`), `refetchInterval` de 60 s y refresco al volver la app a primer plano (mismo patrón de `useUnreadCount.ts`), que devuelve `meta.total` o 0; y `badgeLabel(count)` en el mismo archivo
+- [X] T024 [US3] Modificar `tutorias_uts_mobile/src/features/shell/RoleTabs.tsx`: `TabSpec` gana `badge?: number` y la pestaña lo traduce a `tabBarBadge` con `badgeLabel`, `tabBarBadgeStyle` de fondo `palette.error`, texto `palette.onError` y mínimo de 16 px (`Design.md`, "Unread tab badge")
+- [X] T025 [US3] Modificar `tutorias_uts_mobile/app/(admin)/_layout.tsx` para llamar a `useFiledCount()` y pasar `badge` a la pestaña `pqrs`; los layouts de docente y estudiante no cambian
 
 **Checkpoint**: US3 funciona; US1, US2 y US3 son independientes.
 
@@ -132,14 +132,14 @@ description: "Task list for Pulido de PQRS, dashboards y pruebas"
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T026 [P] [US4] Escribir `tutorias_uts_mobile/src/features/dashboard/__tests__/useCountUp.test.tsx` (debe fallar) con temporizadores simulados: con valor 40 arranca en 0, sube sin retroceder y termina exactamente en 40 a los 600 ms; si el valor pasa a 45 después, muestra 45 de inmediato sin volver a 0; con "reducir movimiento" muestra el valor final desde el primer cuadro; un valor no numérico o con decimales se devuelve tal cual; si el valor cambia durante el conteo, termina en el más reciente
-- [ ] T027 [P] [US4] Actualizar `tutorias_uts_mobile/src/features/dashboard/__tests__/components.test.tsx` (debe fallar): `MetricCard` expone un `accessibilityLabel` con el valor final y la etiqueta (`40 Estudiantes activos`) desde el primer cuadro, incluso mientras cuenta
+- [X] T026 [P] [US4] Escribir `tutorias_uts_mobile/src/features/dashboard/__tests__/useCountUp.test.tsx` (debe fallar) con temporizadores simulados: con valor 40 arranca en 0, sube sin retroceder y termina exactamente en 40 a los 600 ms; si el valor pasa a 45 después, muestra 45 de inmediato sin volver a 0; con "reducir movimiento" muestra el valor final desde el primer cuadro; un valor no numérico o con decimales se devuelve tal cual; si el valor cambia durante el conteo, termina en el más reciente
+- [X] T027 [P] [US4] Actualizar `tutorias_uts_mobile/src/features/dashboard/__tests__/components.test.tsx` (debe fallar): `MetricCard` expone un `accessibilityLabel` con el valor final y la etiqueta (`40 Estudiantes activos`) desde el primer cuadro, incluso mientras cuenta
 
 ### Implementation for User Story 4
 
-- [ ] T028 [US4] Crear `tutorias_uts_mobile/src/features/dashboard/hooks/useCountUp.ts` con `useCountUp(value)`: un entero no negativo sube de 0 a su valor en 600 ms (`requestAnimationFrame`, curva de salida suave), solo en el primer montaje; los cambios posteriores devuelven el valor nuevo de inmediato; con `useMotion().movement` en falso devuelve el valor final; cualquier otro valor se devuelve sin cambios; limpia el cuadro pendiente al desmontar
-- [ ] T029 [US4] Modificar `tutorias_uts_mobile/src/features/dashboard/components/MetricCard.tsx` para mostrar `useCountUp(value)` y poner `accessibilityLabel={`${value} ${label}`}` en la tarjeta (también la que no se pulsa) con `accessible`, de modo que el lector de pantalla lea el valor final y no los intermedios
-- [ ] T030 [US4] Ajustar las pruebas existentes de los dashboards (`AdminDashboardScreen.test.tsx`, `TeacherDashboardScreen.test.tsx`, `StudentHomeScreen.test.tsx`, `dashboard-links.test.tsx` en `tutorias_uts_mobile/src/features/dashboard/__tests__/`) para que esperen el valor final con `findBy*` o con los temporizadores simulados, ya que ahora el número aparece contando
+- [X] T028 [US4] Crear `tutorias_uts_mobile/src/features/dashboard/hooks/useCountUp.ts` con `useCountUp(value)`: un entero no negativo sube de 0 a su valor en 600 ms (`requestAnimationFrame`, curva de salida suave), solo en el primer montaje; los cambios posteriores devuelven el valor nuevo de inmediato; con `useMotion().movement` en falso devuelve el valor final; cualquier otro valor se devuelve sin cambios; limpia el cuadro pendiente al desmontar
+- [X] T029 [US4] Modificar `tutorias_uts_mobile/src/features/dashboard/components/MetricCard.tsx` para mostrar `useCountUp(value)` y poner `accessibilityLabel={`${value} ${label}`}` en la tarjeta (también la que no se pulsa) con `accessible`, de modo que el lector de pantalla lea el valor final y no los intermedios
+- [X] T030 [US4] Ajustar las pruebas existentes de los dashboards (`AdminDashboardScreen.test.tsx`, `TeacherDashboardScreen.test.tsx`, `StudentHomeScreen.test.tsx`, `dashboard-links.test.tsx` en `tutorias_uts_mobile/src/features/dashboard/__tests__/`) para que esperen el valor final con `findBy*` o con los temporizadores simulados, ya que ahora el número aparece contando
 
 **Checkpoint**: Las cuatro historias de comportamiento funcionan.
 
@@ -151,8 +151,8 @@ description: "Task list for Pulido de PQRS, dashboards y pruebas"
 
 **Independent Test**: Correr `npm test` tres veces seguidas en la app sin fallos.
 
-- [ ] T031 [US5] Añadir `"testTimeout": 15000` a la clave `jest` de `tutorias_uts_mobile/package.json`, sin cambiar el contenido de `src/features/modules/__tests__/module-form.test.tsx`
-- [ ] T032 [US5] Correr `npm test` en `tutorias_uts_mobile` tres veces seguidas (en paralelo, sin `--runInBand`) y anotar el resultado en las notas de este archivo; si falla alguna prueba por tiempo agotado, subir el valor o aislar la prueba y volver a correr
+- [X] T031 [US5] Añadir `"testTimeout": 15000` a la clave `jest` de `tutorias_uts_mobile/package.json`, sin cambiar el contenido de `src/features/modules/__tests__/module-form.test.tsx`
+- [X] T032 [US5] Correr `npm test` en `tutorias_uts_mobile` tres veces seguidas (en paralelo, sin `--runInBand`) y anotar el resultado en las notas de este archivo; si falla alguna prueba por tiempo agotado, subir el valor o aislar la prueba y volver a correr
 
 **Checkpoint**: Las cinco historias funcionan.
 
@@ -162,14 +162,14 @@ description: "Task list for Pulido de PQRS, dashboards y pruebas"
 
 **Purpose**: Documentación, decisión, revisión y cierre
 
-- [ ] T033 [P] Actualizar `Claude/docs/Design.md`: quitar de "Not built yet" de PQRS el número de radicado, la línea de tiempo y la insignia de la pestaña (dejar "Notificar usuario" y "Responder por correo"), y describir la pantalla de confirmación, la línea de tiempo (iconos, pasos, fechas y paso actual con texto), el número de radicado (`typography.code`) y el conteo animado de las tarjetas
-- [ ] T034 [P] Actualizar `Claude/docs/Architecture.md`: el detalle del autor (`GET /pqrs/mine/:id`) incluye `reviewedAt` y `resolvedAt`; la insignia del CAE usa `GET /pqrs?status=FILED&limit=1`; el número de radicado se calcula en la app a partir del identificador
-- [ ] T035 [P] Actualizar `Claude/docs/Context.md` en la sección de PQRS: el autor recibe un número de radicado (código de 8 caracteres derivado del identificador, no consecutivo) y ve la línea de tiempo del estado con las fechas de cada paso
-- [ ] T036 Registrar en `Claude/docs/Decisions.md` D-117 (pulido: número de radicado derivado del identificador sin dato nuevo y con colisión teórica aceptada, fechas de los pasos entregadas también al autor, insignia con la consulta del CAE de una fila, conteo animado propio sin librería y `testTimeout` global), con su motivo y lo descartado
-- [ ] T037 [P] Comprobar en `tutorias_uts_back` y `tutorias_uts_mobile` que `npm run test`, `npm run lint`, `npm run typecheck` y `python .claude/skills/i18n-strings/scripts/check_i18n.py <es.json> <en.json>` dan resultado limpio, que no hay hexadecimales, `fontFamily`, `fontWeight` ni librerías de íconos distintas de Iconify en los componentes nuevos, y que `grep` de `Unidades Tecnológicas` no encuentra nada
-- [ ] T038 Correr las e2e del backend de PQRS (`pqrs-mine`, `pqrs-contract`, `pqrs-roles`) con la base de datos de prueba y anotar el resultado
+- [X] T033 [P] Actualizar `Claude/docs/Design.md`: quitar de "Not built yet" de PQRS el número de radicado, la línea de tiempo y la insignia de la pestaña (dejar "Notificar usuario" y "Responder por correo"), y describir la pantalla de confirmación, la línea de tiempo (iconos, pasos, fechas y paso actual con texto), el número de radicado (`typography.code`) y el conteo animado de las tarjetas
+- [X] T034 [P] Actualizar `Claude/docs/Architecture.md`: el detalle del autor (`GET /pqrs/mine/:id`) incluye `reviewedAt` y `resolvedAt`; la insignia del CAE usa `GET /pqrs?status=FILED&limit=1`; el número de radicado se calcula en la app a partir del identificador
+- [X] T035 [P] Actualizar `Claude/docs/Context.md` en la sección de PQRS: el autor recibe un número de radicado (código de 8 caracteres derivado del identificador, no consecutivo) y ve la línea de tiempo del estado con las fechas de cada paso
+- [X] T036 Registrar en `Claude/docs/Decisions.md` D-117 (pulido: número de radicado derivado del identificador sin dato nuevo y con colisión teórica aceptada, fechas de los pasos entregadas también al autor, insignia con la consulta del CAE de una fila, conteo animado propio sin librería y `testTimeout` global), con su motivo y lo descartado
+- [X] T037 [P] Comprobar en `tutorias_uts_back` y `tutorias_uts_mobile` que `npm run test`, `npm run lint`, `npm run typecheck` y `python .claude/skills/i18n-strings/scripts/check_i18n.py <es.json> <en.json>` dan resultado limpio, que no hay hexadecimales, `fontFamily`, `fontWeight` ni librerías de íconos distintas de Iconify en los componentes nuevos, y que `grep` de `Unidades Tecnológicas` no encuentra nada
+- [X] T038 Correr las e2e del backend de PQRS (`pqrs-mine`, `pqrs-contract`, `pqrs-roles`) con la base de datos de prueba y anotar el resultado
 - [ ] T039 Recorrer los 16 escenarios de `specs/020-polish/quickstart.md` en español e inglés con la app y la API en marcha y anotar el resultado en ese archivo, incluidos SC-002 (paso de la PQRS en menos de 5 s) y SC-004 (conteo en menos de un segundo, sin repetirse)
-- [ ] T040 Ejecutar la habilidad `feature-done-check` (spec, pruebas, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
+- [X] T040 Ejecutar la habilidad `feature-done-check` (spec, pruebas, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
 - [ ] T041 Cambiar `Status` de `specs/020-polish/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de la rama `020-polish` a la rama principal: `tutorias_uts_back` y `tutorias_uts_mobile` contra `main` y `Claude` contra `master`; `tutorias_uts_db` no lleva PR porque esta spec no lo cambia
 
 ---
@@ -212,10 +212,11 @@ T009 rutas filed.tsx            T011 número en PqrsCard y PqrsBody
 
 ## Notas de implementación (2026-11-22)
 
-- **Primera pasada**: fundamentos, US1 y US2 en la app y el backend. Pendientes: US3 (insignia), US4 (conteo animado), US5 (suite estable) y el cierre (T021 a T041).
-- **Backend** (commit `11831f3`): 285 pruebas unitarias, lint y tipos en verde; las 8 e2e de PQRS pasan (87 de 87) con el campo aditivo `reviewedAt` y `resolvedAt` del detalle del autor y el contrato de la 017 actualizado.
-- **App** (commits `fec8721` y el de la línea de tiempo): lint, tipos y paridad es/en (750 claves) en verde; suite completa en serie 678 de 678.
-- La pantalla de confirmación toma `id`, `createdAt` y `status` de los parámetros de la ruta; no hace otra consulta. El formulario usa `router.replace` para que "atrás" no regrese a un formulario ya enviado.
-- Al mostrar la línea de tiempo en `PqrsBody`, el estado actual aparece dos veces en el detalle (insignia y paso actual); la prueba del autor ahora espera dos coincidencias.
+- **Pasada 1**: fundamentos, US1 y US2 (app y backend). **Pasada 2**: US3, US4, US5, documentación, D-117 y la revisión final. Pendientes: T039 (recorrido manual de los 16 escenarios) y T041 (spec en "Implemented" y PRs).
+- **Backend** (`11831f3`): 285 pruebas unitarias, lint y tipos en verde. Las e2e de PQRS, del dashboard y de redacción de logs pasan; en una corrida de 14 archivos a la vez 7 pruebas fallaron por "Hook timed out in 10000ms" (carga) y pasan al repartirlas: 13 archivos y 121 pruebas, y la de logs sola, 5 de 5.
+- **App**: lint, tipos y paridad es/en (750 claves) en verde; 691 pruebas en 88 suites.
+- **US5**: con solo `testTimeout: 15000` una de tres corridas falló por tiempo agotado en otras dos suites (`AccountSheet` y `cancel`, 34 y 43 s) por falta de procesador. Se agregó `maxWorkers: "50%"` y tres corridas seguidas pasan, de unos 12 s cada una. `module-form.test.tsx` no se tocó.
+- **US3**: la insignia usa `badgeLabel` y `tabBadgeOptions` en `src/features/shell/badge.ts` (en lugar de probar `RoleTabs` entero, que arrastra el socket del chat y el registro de push) y `useFiledCount` en `features/pqrs/hooks/`.
+- **US4**: las pruebas de las pantallas del dashboard sustituyen `useCountUp` por el valor directo y el conteo tiene sus propias pruebas; `MetricCard` sin enlace ahora es un elemento accesible con el valor final (la prueba que buscaba la ausencia de la etiqueta pasó a buscar el rol `button`).
+- **Documentación**: `Architecture.md` estaba guardado con saltos de línea mixtos desde antes; quedó todo en LF (el diff muestra más líneas de las que cambié).
 - Las pantallas no se han visto corriendo en un simulador.
-

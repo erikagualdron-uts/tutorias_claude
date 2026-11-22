@@ -147,6 +147,8 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - Las respuestas van del CAE al autor dentro de la PQRS; el autor no responde en ella (si necesita aportar algo más, radica otra). No hay adjuntos.
 - Cada cambio de estado y cada respuesta avisan al autor por la bandeja, el push y el correo, en el idioma del dispositivo; el aviso no copia el texto de la respuesta (D-112).
 - Un tipo de PQRS con PQRS asociadas solo se desactiva; las PQRS conservan su tipo (D-073).
+- Al radicar, el autor ve una confirmación con el **número de radicado** para citar la PQRS: un código de 8 caracteres derivado del identificador (por ejemplo `A1B2C3D4`), no consecutivo, que se muestra igual en la lista y el detalle del autor y del CAE (spec 020, D-117).
+- El detalle muestra una **línea de tiempo** con los tres pasos (Radicada, En revisión, Resuelta), la fecha y hora de cada paso cumplido en `America/Bogota` y el paso actual. El CAE ve en su pestaña "PQRS" cuántas están en "Radicada".
 
 ## 8. Dashboards (métricas propuestas)
 

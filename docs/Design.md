@@ -431,7 +431,14 @@ The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 
 **Status badge**: outlined pill with an icon and the state as text (never color alone): Filed `solar:clipboard-text` in primary, In review `solar:clock-circle` in warning, Resolved `solar:check-circle` in success; the text is always #132F20.
 
-**Not built yet**: filing number on a confirmation screen, vertical status timeline, count badge on the tab for "Filed", and the Notify user and Reply by email actions (the CAE continues by email outside the app).
+**Built in spec 020**:
+- **Filing number**: `N.º A1B2C3D4` in `typography.code` (Source Code Pro) on every PQRS card and detail, for the author and the CAE. It is the first 8 characters of the id in capitals, not consecutive.
+- **Confirmation screen**: after filing, the form is replaced (back never returns to the sent form) by a screen with the success icon, "Your PQRS was filed", a card with the filing number (large, in code type), the filing date and time in Bogota and the status badge, and two stacked buttons 16px apart: "View my PQRS" (primary, `solar:clipboard-text`) and "Back to my PQRS" (outlined, back icon).
+- **Status timeline** (author and CAE detail, between the description and the replies): a vertical rail with the three steps Filed, In review and Resolved. Each step has its icon (`clipboard-text`, `clock-circle`, `check-circle`), its name in text and, once it happened, its date and time in Bogota. The current step is in semibold with the word "Current"; pending steps are muted with the word "Pending" and no date; a done step without a stored date shows no time. Each step reads as one phrase for screen readers.
+- **Count badge on the CAE tab**: the "PQRS" tab shows the number of PQRS in "Filed" as the unread tab badge (#B3261E, white number, `99+` above 99, hidden at zero). Teacher and student tabs have none.
+- **Count-up**: the whole numbers of the metric cards count from 0 to their value in 600ms the first time they show, later changes show at once, "reduce motion" shows the final value, and the screen reader always reads the final value.
+
+**Not built yet**: the Notify user and Reply by email actions (the CAE continues by email outside the app).
 
 ### Dashboards
 Layout: Screen Title, an optional period selector chip (`This week`, `This month`, `Semester`), then content blocks stacked with 16px gaps.
