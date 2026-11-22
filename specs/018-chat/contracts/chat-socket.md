@@ -15,6 +15,7 @@ Socket.IO en el mismo servidor y puerto de la API, espacio de nombres **`/chat`*
 |---|---|---|
 | `conversation:open` | `{ conversationId }` | Revalida que la conversación es mía; si lo es, registra que este dispositivo la tiene abierta (no llegan push de ella) y responde con acuse `{ ok: true }`. Si no, acuse `{ ok: false, code: "CHAT_NOT_FOUND" }`. |
 | `conversation:close` | `{ conversationId }` | Deja de contarla como abierta. Al desconectar, todas las del socket se cierran solas. |
+| `typing` | `{ conversationId }` | **Spec 022.** Avisa que el usuario está escribiendo. El servidor revalida que la conversación es suya y que es **directa**; si no, no hace nada. Responde `{ ok: true }` siempre. Descarta, sin error, un `typing` del mismo socket y la misma conversación con menos de 2 s del anterior. |
 
 ## Del servidor al cliente
 
@@ -22,6 +23,7 @@ Socket.IO en el mismo servidor y puerto de la API, espacio de nombres **`/chat`*
 |---|---|---|
 | `message:new` | un `Message` del contrato REST | Cuando se guarda un mensaje, a cada destinatario que hoy puede verlo (cuenta activa y visibilidad), incluidos sus otros dispositivos, y al remitente en sus otros dispositivos. |
 | `unread:changed` | `{ unread }` | Cuando cambia el total de sin leer del usuario (llega un mensaje o marca una conversación como leída), para que dos dispositivos coincidan. |
+| `typing` | `{ conversationId, userId }` | **Spec 022.** A la otra persona de un chat directo, a su sala `user:<id>`, solo si tiene esa conversación abierta. Nunca al emisor, a un tercero ni en un chat de módulo. Sin texto, sin guardar; el receptor lo apaga a los 5 s. Ver `specs/022-chat-polish/contracts/chat-typing.md`. |
 
 ## Reglas
 
