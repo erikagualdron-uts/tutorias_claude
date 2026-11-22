@@ -27,14 +27,7 @@ paths:
           description: Página de docentes, ordenados por apellido y nombre.
           content:
             application/json:
-              schema:
-                type: object
-                required: [data, meta]
-                properties:
-                  data:
-                    type: array
-                    items: { $ref: '#/components/schemas/TeacherListItem' }
-                  meta: { $ref: '#/components/schemas/PageMeta' }
+              schema: { $ref: '#/components/schemas/TeacherPage' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
     post:
@@ -61,7 +54,7 @@ paths:
     patch:
       tags: [teachers]
       summary: Actualizar nombre, apellido y teléfono
-      description: El correo no se puede cambiar; un campo `email` en el cuerpo se rechaza con 422.
+      description: El correo no se puede cambiar; un campo `email` en el cuerpo se rechaza con 400.
       requestBody:
         required: true
         content:
@@ -76,7 +69,7 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
-        '422': { $ref: '#/components/responses/Validation' }
+        '400': { $ref: '#/components/responses/Validation' }
     delete:
       tags: [teachers]
       summary: Eliminar (borrado lógico) un docente
@@ -136,11 +129,7 @@ paths:
           description: La clave nueva, visible solo en esta respuesta.
           content:
             application/json:
-              schema:
-                type: object
-                required: [temporaryPassword]
-                properties:
-                  temporaryPassword: { type: string }
+              schema: { $ref: '#/components/schemas/TemporaryPassword' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
@@ -163,14 +152,7 @@ paths:
           description: Página de estudiantes, ordenados por apellido y nombre.
           content:
             application/json:
-              schema:
-                type: object
-                required: [data, meta]
-                properties:
-                  data:
-                    type: array
-                    items: { $ref: '#/components/schemas/StudentListItem' }
-                  meta: { $ref: '#/components/schemas/PageMeta' }
+              schema: { $ref: '#/components/schemas/StudentPage' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
   /students/{id}:
@@ -281,7 +263,7 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
     Validation:
-      description: Campos inválidos, con el detalle por campo.
+      description: Campos inválidos (`VALIDATION_FAILED`), con el detalle en `details.fields`.
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
@@ -296,6 +278,27 @@ components:
         page: { type: integer }
         limit: { type: integer }
         total: { type: integer }
+    TeacherPage:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/TeacherListItem' }
+        meta: { $ref: '#/components/schemas/PageMeta' }
+    StudentPage:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/StudentListItem' }
+        meta: { $ref: '#/components/schemas/PageMeta' }
+    TemporaryPassword:
+      type: object
+      required: [temporaryPassword]
+      properties:
+        temporaryPassword: { type: string }
     TeacherListItem:
       type: object
       required: [id, firstName, lastName, email, status, modulesCount]

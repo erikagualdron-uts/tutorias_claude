@@ -223,7 +223,15 @@ After login, the app routes to the tab set of the user's role. If `mustChangePas
 - **Primary**: #34531F fill, white text and icon, 52px height (44px compact), 20px horizontal padding, 9999px radius, Level 1, pressed #132F20 with scale 0.97. Full width on forms and card actions.
 - **Outlined**: 1px #E5E5E5 border, #132F20 text and icon, transparent fill.
 - **Tonal**: #F2F4EF fill, #132F20 text and icon.
-- **Destructive**: #B3261E fill, white text and icon, pressed #6D100A. Always opens a confirmation dialog.
+- **Severity buttons** (spec 016): the same shape as Primary (52px, 9999px radius, Level 1, scale 0.97 on press, leading icon). The fill says how serious the action is, so the user reads the risk before reading the label. Use the lowest severity that fits, and never more than one severity button next to a Primary.
+
+  | Severity | Fill | Text and icon | Pressed | Use | Confirmation |
+  |---|---|---|---|---|---|
+  | **Success** | #2BA640 | #132F20 (4.6:1) | #3DBB55 *(derived)* | A positive or restoring action: Reactivate, Restore, Enable | None |
+  | **Warning** | #FB8C00 | #132F20 | #E07B00 *(derived)* | A reversible action with side effects: Deactivate, Cancel a session, Close a period | Dialog that states the effect in numbers |
+  | **Destructive** | #B3261E *(derived)* | #FFFFFF | #6D100A *(brand)* | An action that cannot be undone from the app: Delete | Dialog that states the effect in numbers and that it cannot be undone |
+
+  Text on Success and Warning is deep green, not white: white on #2BA640 is 3.2:1 and on #FB8C00 is 2.2:1, below AA. Every pair above, pressed included, is at least 4.5:1 and a test checks it. The icon follows the action, not the severity (power for Deactivate, trash for Delete, activate for Reactivate). The confirm button of a dialog takes the severity of the action it confirms (`ConfirmDialog` prop `variant`); its Cancel stays Outlined.
 - **Accent** (dark surfaces only): #C3D730 fill, #132F20 text and icon.
 - **Disabled**: #F2F4EF fill, #878787 text and icon. A disabled action always shows a helper line below explaining why.
 - **Loading**: the icon is replaced by the compact brand loader (see Loader); the button keeps its width.
@@ -254,7 +262,16 @@ Every text field must read clearly as a field: it always has **both a fill and a
 2px radius, Label style, 4px/8px padding. Info: #C3D730 fill, #132F20 text. Success: #2BA640 fill, white text. Warning: #FB8C00 fill, #132F20 text. Error: #B3261E fill, white text. Neutral: #E5E5E5 fill, #575756 text.
 
 ### Banners
-#F8E9D4 fill, #132F20 text, 8px radius, 12px/16px padding, optional leading icon. Used for announcements, connection status and important notices.
+8px radius, 12px/16px padding, always a leading icon, and a short entrance (fade and 8px rise, fade only when motion is reduced). Banners have a severity; the louder it is, the more it stands out from the screen:
+
+| Severity | Fill | Text and icon | Icon | Weight | Use |
+|---|---|---|---|---|---|
+| **Info** | #F8E9D4 | #132F20 | info | Body text, no shadow | Announcements, connection status, the rule that explains a read-only or locked state |
+| **Success** | #2BA640 | #132F20 | success | Semibold, Level 1 | A saved or finished action that the user must notice |
+| **Warning** | #FB8C00 | #132F20 | warning | Semibold, Level 1 | A state that needs attention but did not fail: a teacher or room unavailable, no sessions generated |
+| **Error** | #B3261E | #FFFFFF | error | Semibold, Level 1 | A failure or a rule that blocked the action: the message is always the translated rule, never the raw API text |
+
+Alerts are placed where the user is looking: at the top of the form or sheet that produced them, above the fields and the action buttons, and they replace the previous alert instead of stacking. An error never appears only as a badge or a colored field border: it also shows this banner. `role="alert"` makes screen readers announce it.
 
 ### Dialogs and bottom sheets
 Dialogs: 20px radius, Level 3, max 320px wide, title + body + two buttons (cancel left, confirm right). Bottom sheets: 24px top radius, drag handle, Level 3, used for details, pickers and filters.
@@ -439,6 +456,7 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 ### Admin management patterns
 - **Lists (teachers, students, rooms)**: search field, filter chips (All, Active, Inactive), rows with avatar, name, email (Metadata) and a status badge (Active neutral-success, Inactive neutral). Overflow menu per row: Edit, Deactivate/Reactivate, Delete. Deleting is a logical delete and always uses a destructive confirmation dialog; its text says the record is hidden, not erased.
 - **Create teacher**: form (name, institutional email, other data). Email validated against the allowed domain with an inline error. On success, a dialog shows the **temporary password** once, in Source Code Pro on a #F2F4EF block with a "Copy" button, and the note that the teacher must change it at first login.
+- **Teacher and student accounts (spec 016)**: opened from the More tab. A list with a search field, filter chips (All, Active, Disabled), cards with name, email, a status badge with text and icon (never color alone) and a count (modules or enrollments), and the four states (loading, empty with its explanation, error with Retry, data) with more pages loading at the end. Tapping a card opens a bottom sheet with the actions, each button with a leading icon and 16 px between them: Edit and Regenerate password (teachers only; the latter disabled on a disabled account with the reason under it), Deactivate or Reactivate, and Delete. Deactivating or deleting opens a confirmation dialog that states the effect in numbers before anything happens (`2 modules will be left with an unavailable teacher.`, `3 enrollments will be cancelled and 3 seats will be freed.`) and, for Delete, that it cannot be undone from the app. Edit teacher is a form with fill-and-border fields (name, last name, phone) and the email shown disabled with the reason under it.
 - **Rooms**: card or row with name, location and capacity (`30 people`).
 - **Module management**: change room or teacher via a bottom sheet picker. When the selected room has less capacity than the enrolled students, the option is disabled and the message in #B3261E reads `Not enough capacity: 32 enrolled, this room holds 30`. Changing room, teacher or schedule shows a confirmation that states how many students will be notified.
 - **Settings**: grouped list rows (Data, Dropdown lists, Academic periods, Institutional emails, SMTP) with chevrons. SMTP form: host, port, user, password (masked, never shown after saving), from address, and a tonal "Send test email" button with inline success or error result. Save is a Primary button pinned at the bottom.

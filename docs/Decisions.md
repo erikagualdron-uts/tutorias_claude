@@ -459,6 +459,24 @@
 - **Motivo:** Un correo solo muestra las fuentes que ya están instaladas en el dispositivo de quien lo lee; no se pueden incrustar archivos de fuente. Pedir primero la tipografía corporativa (Myriad Pro, `Design.md`) la usa donde exista, y la pila cae a Source Sans 3 (el respaldo de `Design.md`) y a Arial, que está en casi todos los dispositivos. Nombrar una fuente instalada en CSS no la distribuye, así que no choca con la licencia pendiente (D-051). En la práctica, la mayoría de los lectores verá Arial.
 - **Descartado:** Fuentes web (`@font-face`, `@import` o Google Fonts): Gmail y Outlook las ignoran, la petición externa avisa a un tercero de que el correo se abrió y Myriad Pro es comercial; incrustar el archivo de fuente (los clientes de correo no lo soportan); una variable de entorno para la fuente (cambiar una constante basta).
 
+### D-108 · Gestión de cuentas del CAE
+- **Estado:** Aceptada
+- **Decisión:** El CAE gestiona las cuentas con rutas por rol, `/teachers` y `/students`, solo para `SUPERADMIN`: lista, detalle, desactivar, reactivar y eliminar (borrado lógico) en ambos; editar nombre, apellido y teléfono y regenerar la clave temporal solo en docentes. Las acciones que no crean un recurso responden `200`. Antes de confirmar una baja, la app muestra su efecto con números a partir del detalle recién pedido. La búsqueda ignora tildes y mayúsculas con la extensión `unaccent` de PostgreSQL. El correo no se puede cambiar.
+- **Motivo:** Mantiene el patrón de `/teachers` (spec 010) sin un recurso genérico de usuarios que mezclaría reglas distintas por rol; `unaccent` hace que `jose` encuentre a José sin duplicar columnas normalizadas; el correo es la identidad de la cuenta y sus avisos.
+- **Descartado:** Un `/users` genérico; normalizar el texto en una columna aparte; bloquear la baja de un docente con módulos (D-088); cambiar el correo (afectaría el dominio permitido y la identidad).
+
+### D-109 · La baja de un estudiante cancela sus inscripciones
+- **Estado:** Aceptada
+- **Decisión:** Desactivar o eliminar a un estudiante cancela, en la misma transacción, sus inscripciones vigentes del periodo activo con `effectiveUntil` igual a la hora de la baja, y no se restauran al reactivar; las de un periodo Cerrado y las sesiones ya dadas no se tocan. La transacción respeta el orden de bloqueo de D-092. Una entrega de correo o push ya creada para una cuenta dada de baja se omite (`SKIPPED`, `ACCOUNT_UNAVAILABLE`) y no se reintenta; si la cuenta se reactiva antes de entregarse, sale.
+- **Motivo:** Un estudiante que no puede entrar no debe ocupar un cupo, y cancelar con la hora de la baja libera el cupo desde esa hora sin borrar el historial. Restaurar inscripciones en silencio podría volver a ocupar cupos que ya se dieron a otros. Omitir el aviso cumple que una cuenta bloqueada no recibe nada.
+- **Descartado:** Dejar las inscripciones vigentes de una cuenta bloqueada (ocupan cupo sin que nadie asista); restaurarlas al reactivar; bloquear la baja de quien tiene inscripciones.
+
+### D-110 · Botones y alertas por severidad
+- **Estado:** Aceptada
+- **Decisión:** Los botones suman tres variantes de severidad además de las de énfasis: Éxito (#2BA640, texto #132F20) para restaurar o reactivar, Advertencia (#FB8C00, texto #132F20) para una acción reversible con efectos (desactivar, cancelar una sesión) y Destructivo (#B3261E, texto blanco) para lo que no se deshace desde la app (eliminar). El botón de confirmar de un diálogo toma la severidad de su acción. Los banners tienen la misma escala (Info, Éxito, Advertencia, Error): Info sigue siendo el aviso crema discreto y las otras tres son rellenos sólidos con texto semibold, sombra Level 1 y una entrada corta que respeta "reducir movimiento". Todo error del servidor se muestra como banner de Error. Se agregan dos colores derivados para el estado presionado (#3DBB55 y #E07B00) y el token `onError` (#FFFFFF); una prueba comprueba 4,5:1 en todos los pares, en claro y oscuro.
+- **Motivo:** `Design.md` ya definía Destructivo y Acento pero la app solo tenía Primario, Tonal, Delineado y Enlace, y un error se veía igual que un aviso (crema) o quedaba como una insignia discreta arriba. El color de relleno deja leer el riesgo antes que la etiqueta, y un error sólido no se confunde con un aviso. El texto es verde oscuro sobre éxito y advertencia porque el blanco da 3,2:1 y 2,2:1, por debajo de AA (D-106).
+- **Descartado:** Un modal o toast para cada error (interrumpe y los toasts son solo para éxitos); colorear solo el borde o el ícono (el color solo no basta); más de tres severidades (no hay un caso que las necesite); un botón destructivo sin confirmación.
+
 ---
 
 ## Plantilla para nuevas decisiones

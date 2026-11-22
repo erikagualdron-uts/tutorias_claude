@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-21
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Gestión de cuentas por el CAE (spec 016). Docentes: ver, buscar, actualizar datos, regenerar la clave temporal, desactivar o reactivar y borrado lógico. Estudiantes: ver los registrados, buscar, desactivar o reactivar y borrado lógico. Una cuenta desactivada o eliminada no puede entrar, conserva su historial y el CAE ve el efecto antes de confirmar."
 

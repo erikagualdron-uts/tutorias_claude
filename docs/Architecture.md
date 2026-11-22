@@ -217,6 +217,10 @@ Un consumidor del registro de eventos (`OutboxEvent`, D-087) crea el aviso de ca
 
 Eventos que notifican hoy: los siete tipos del registro (cambio de docente y de salón, festivo que cancela o restaura, sesión reprogramada, cancelada o reactivada por el docente). Los anuncios del docente, los mensajes nuevos y los cambios de estado de una PQRS reutilizarán la bandeja, los dispositivos y la cola con plantillas propias.
 
+**Gestión de cuentas (spec 016, D-108):** sin tablas nuevas. Solo rol `SUPERADMIN`; un administrativo, un eliminado o un estudiante sin verificar responden `404 ACCOUNT_NOT_FOUND`. Docentes: `GET /teachers` y `GET /teachers/:id` (con `email` y `modulesCount`), `PATCH /teachers/:id`, `POST /teachers/:id/deactivate`, `/reactivate` y `/temporary-password`, y `DELETE /teachers/:id`. Estudiantes: `GET /students`, `GET /students/:id`, `POST /students/:id/deactivate` y `/reactivate`, y `DELETE /students/:id`. Las acciones que no crean un recurso responden `200`; un dato inválido, `400 VALIDATION_FAILED`. La búsqueda usa la extensión `unaccent` de PostgreSQL (migración `enable_unaccent`) sobre nombre, apellido y correo, con el patrón escapado. El estado de la cuenta y el cierre de sus sesiones viven en `AccountStatusService` (`src/accounts/`).
+
+**Baja de un estudiante (D-092, D-109):** una transacción que bloquea en este orden el periodo activo (`FOR SHARE`), la fila del estudiante (`FOR UPDATE`) y los módulos de sus inscripciones vigentes ordenados por `id` (`FOR UPDATE`); cancela esas inscripciones con `cancelledAt` y `effectiveUntil` iguales a la hora de la baja y cambia el estado, todo o nada. La inscripción toma los mismos bloqueos en el mismo orden y, tras bloquear al estudiante, rechaza con `401 ACCOUNT_DISABLED` a quien se desactivó mientras tanto. Después de confirmar se cierran las sesiones. `DeliveriesService` omite (`SKIPPED`, `ACCOUNT_UNAVAILABLE`) la entrega de correo o push de una cuenta desactivada o eliminada.
+
 ## 10. Internacionalización (es / en)
 
 - La app usa i18next y toma el idioma del dispositivo; si no es español ni inglés, usa español.

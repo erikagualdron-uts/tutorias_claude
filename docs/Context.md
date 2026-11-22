@@ -41,8 +41,8 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
    - **Salones**: gestión de salones y ubicaciones.
    - **Gestión de módulos**: cambiar salón de un módulo y cambiar docente de un módulo.
 3. **Notificaciones**: mensajes directos entre el CAE y los docentes (en ambos sentidos).
-4. **Docentes**: crear, generar clave temporal, actualizar datos, desactivar y borrado lógico.
-5. **Estudiantes**: ver registrados, desactivar cuentas y borrado lógico.
+4. **Docentes**: crear, ver y buscar, regenerar la clave temporal, actualizar nombre, apellido y teléfono (el correo no cambia), desactivar, reactivar y borrado lógico (spec 016).
+5. **Estudiantes**: ver y buscar a los registrados, desactivar, reactivar y borrado lógico; dar de baja cancela sus inscripciones vigentes (spec 016).
 6. **PQRS**: ver las generadas por docentes y estudiantes, atenderlas, y luego notificar al usuario o mantener la conversación por correo con la persona encargada.
 7. **Dashboard**.
 
@@ -89,6 +89,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - Los **docentes** no se registran solos: los crea el CAE con clave temporal y deben cambiarla en el primer ingreso. El CAE solo puede crearlos con un correo del dominio @correo.uts.edu.co.
 - Los borrados son **lógicos**, nunca físicos.
 - Una cuenta desactivada no puede iniciar sesión, pero conserva su historial.
+- **Gestión de cuentas (spec 016):** el CAE ve las listas de docentes y de estudiantes (estos últimos solo con el correo verificado), con búsqueda sin distinguir tildes ni mayúsculas por nombre, apellido o correo. Desactivar o eliminar cierra las sesiones de la cuenta al instante, y antes de confirmar la app muestra el efecto con números. Dar de baja a un docente no se bloquea por sus módulos (D-088): quedan marcados "docente no disponible". Dar de baja a un estudiante cancela, en la misma transacción, sus inscripciones vigentes del periodo activo y libera su cupo; al reactivarlo no se restauran, y las de un periodo Cerrado no se tocan (D-109). Eliminar es siempre lógico y el correo sigue ocupado. El CAE solo puede regenerar la clave de un docente activo: la clave anterior deja de servir, se muestra una sola vez y el docente debe cambiarla al entrar. El correo de una cuenta no se puede cambiar.
 
 ### Módulos, cupos y horarios
 - **Solo el CAE** crea módulos y define su docente, salón y horario.
