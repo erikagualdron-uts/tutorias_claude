@@ -13,7 +13,7 @@
 | Qué ya existe | Dónde |
 |---|---|
 | Radicar una PQRS: al enviar, la app vuelve a la lista | spec 017 |
-| Estado de una PQRS y las fechas de cada paso (radicación, paso a "En revisión", resolución) | spec 017, `Design.md` |
+| Estado de una PQRS y las fechas de cada paso (radicación, paso a "En revisión", resolución); la API las entrega al CAE, no todavía al autor | spec 017 |
 | Total de PQRS en estado "Radicada" para el CAE | spec 019, `GET /dashboard/admin/overview` |
 | Tarjetas de métrica de los tres dashboards, sin animación de cifras | spec 019 |
 | Respeto de "reducir movimiento" en las animaciones de la app | specs 007 y 009 |
@@ -170,7 +170,7 @@ La suite completa de la app pasa de forma repetible: la prueba del formulario de
 ## Assumptions
 
 - Sin reglas de negocio nuevas: ni estados, ni permisos, ni plazos de PQRS cambian.
-- Las fechas de cada paso ya se guardan al radicar, pasar a "En revisión" y resolver, y también se entregan al autor; si alguna falta en datos viejos, se muestra el paso sin hora.
+- Las fechas de cada paso ya se guardan al radicar, pasar a "En revisión" y resolver. Hoy la API las entrega al CAE pero no al autor, así que el detalle del autor pasa a incluirlas (un campo más en una respuesta que ya existe, sin dato nuevo); si alguna falta en datos viejos, se muestra el paso sin hora.
 - El conteo animado dura unos 600 ms, termina en el valor exacto y no se usa en valores que no son números enteros simples.
 - La insignia se refresca con la misma cifra que el dashboard del CAE; no hay canal en vivo (los avisos y contadores se consultan, D-099).
 - La pantalla de confirmación es un paso nuevo después de radicar; no reemplaza la lista ni el detalle.
