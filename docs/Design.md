@@ -419,11 +419,15 @@ The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 ### PQRS
 **Status chips**: Filed (Neutral badge), In review (Warning badge), Resolved (Success badge). Type labels: Petition, Complaint, Claim, Suggestion.
 
-**Filing screen (students and teachers)**: single column form. Type as a chip group (single select), Subject input, Description textarea with counter. Primary full-width "Submit". After submitting: confirmation screen with a check icon, the filing number in Source Code Pro, and a button "View my PQRS".
+**Filing screen (students and teachers, spec 017)**: single column form. Type as a chip group (single select, only the active types, in the device language), Subject input and Description textarea with counter; the limits come from the API. Primary full-width "File" button with the send icon; the screen goes back to the list when it succeeds. A missing field is named under the field; a type that is no longer available shows the rule as an error banner.
 
-**My PQRS (students and teachers)**: card list, each card with the subject (2 lines), type label, status badge, and relative date (`3 days ago`). Detail screen: header with subject and status, a vertical status timeline (dots connected by a 2px #E5E5E5 line; completed dots #34531F), and the conversation thread below, using the same bubble style as chat. Users can reply only while the PQRS is not resolved.
+**My PQRS (students and teachers)**: card list, newest first, with a status filter chip bar (All, Filed, In review, Resolved) and a "New PQRS" button with the add icon above it. Each card has the subject, the type label, the filing date and the status badge. Detail screen: status badge, subject, type and date, a card with the description, and the replies of the CAE in chronological order, or a line saying there are none yet. The author does not reply inside a PQRS.
 
-**Management (CAE)**: list with a filter chip bar (All, Filed, In review, Resolved, plus type chips), oldest unattended first, and a count badge on the PQRS tab for items in "Filed". Detail screen adds a status control (tonal button with a bottom sheet to change status) and two actions: **Notify user** (sends an in-app notification) and **Reply by email** (opens a compose sheet; the thread keeps a copy of what was sent).
+**Management (CAE)**: list newest first with three chip bars that combine (status, type, including deactivated types, and author role); each card adds the name and role of the author. Detail screen: author card (name, role, email), the same body as the author view, and the actions of its state. "Filed" shows the rule "move it to In review first" and a button "Move to In review". "In review" shows the reply field with counter, "Send reply" and "Mark as resolved" (success button, disabled with its rule while there is no reply, and a confirmation dialog before it runs). "Resolved" shows that it no longer accepts changes.
+
+**Status badge**: outlined pill with an icon and the state as text (never color alone): Filed `solar:clipboard-text` in primary, In review `solar:clock-circle` in warning, Resolved `solar:check-circle` in success; the text is always #132F20.
+
+**Not built yet**: filing number on a confirmation screen, vertical status timeline, count badge on the tab for "Filed", and the Notify user and Reply by email actions (the CAE continues by email outside the app).
 
 ### Dashboards
 Layout: Screen Title, an optional period selector chip (`This week`, `This month`, `Semester`), then content blocks stacked with 16px gaps.

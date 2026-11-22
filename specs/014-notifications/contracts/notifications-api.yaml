@@ -176,7 +176,7 @@ components:
         details: { type: object, additionalProperties: true }
     Notification:
       type: object
-      required: [id, type, moduleId, title, body, readAt, createdAt]
+      required: [id, type, moduleId, pqrsId, title, body, readAt, createdAt]
       properties:
         id: { type: string, format: uuid }
         type:
@@ -189,7 +189,11 @@ components:
             - SESSION_RESCHEDULED
             - SESSION_CANCELLED_TEACHER
             - SESSION_RESTORED_TEACHER
-        moduleId: { type: string, format: uuid }
+            - PQRS_IN_REVIEW
+            - PQRS_RESPONDED
+            - PQRS_RESOLVED
+        moduleId: { type: string, format: uuid, nullable: true, description: 'El módulo del aviso; nulo en los avisos de una PQRS (spec 017).' }
+        pqrsId: { type: string, format: uuid, nullable: true, description: 'La PQRS del aviso (spec 017); nulo en los avisos de un módulo.' }
         title: { type: string }
         body: { type: string }
         readAt: { type: string, format: date-time, nullable: true }
