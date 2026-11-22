@@ -13,7 +13,7 @@ Enfoque técnico (detalle en [research.md](research.md)):
 - **Sin tablas ni migraciones**: ningún dato nuevo. Un módulo nuevo `dashboard/` en el backend solo lee.
 - **Cinco endpoints nuevos**, solo para lo que hoy no existe: `GET /dashboard/admin/overview`, `/admin/changes` y `/admin/rooms` (CAE), `GET /dashboard/teacher` y `GET /dashboard/student`. Los del CAE van separados para que el fallo de un bloque no tumbe a los demás (FR-012).
 - **Se reutiliza lo que ya responde**: mensajes sin leer (`GET /chat/unread-count`), avisos sin leer (`GET /notifications/unread-count`) y "Mis PQRS" (`GET /pqrs/mine?limit=3`). La cifra coincide con el contador de la pestaña porque es la misma consulta.
-- **Reglas de cupo y asistencia reutilizadas**: `ATTENDS_SESSION` y `sessionSeats` de `enrollments/seats.ts` deciden quién asiste a cada sesión (sesiones omitidas, inscripciones canceladas con vigencia), y la semana usa el helper de `calendar.rules.ts` en `America/Bogota`.
+- **Reglas de cupo y asistencia reutilizadas**: `ATTENDS_SESSION` y `sessionSeats` de `enrollments/seats.ts` deciden quién asiste a cada sesión (sesiones omitidas, inscripciones canceladas con vigencia), y la semana la calcula `weekRangeBogota` (nueva, pura) con `bogotaCalendarDay` de `common/clock.ts`, en `America/Bogota`.
 - **Cambios recientes sin tabla de historial**: sesiones con estado `RESCHEDULED` o `CANCELLED` por el docente, ordenadas por última modificación. Las cancelaciones por festivo no cuentan (R-4).
 - **Un solo valor nuevo de configuración**: `dashboard.lowEnrollmentPercent` (30 por defecto) para "baja inscripción" (FR-005).
 - **Sin dependencias nuevas** en backend ni en la app.
@@ -91,7 +91,7 @@ tutorias_uts_back/
 
 tutorias_uts_mobile/
 ├── app/(admin)/index.tsx, (teacher)/index.tsx, (student)/index.tsx   # pasan de EmptyTabScreen a su dashboard
-├── app/(admin)/changes/index.tsx              # "Ver todo" de cambios recientes
+├── app/(admin)/changes.tsx                    # "Ver todo" de cambios recientes
 ├── src/features/dashboard/
 │   ├── api.ts, hooks/                         # useAdminOverview, useAdminChanges, useAdminRooms, useTeacherDashboard, useStudentDashboard
 │   ├── components/                            # MetricCard, HeroSessionCard, CapacityBar, StatusStackBar, ChangeRow, RoomBars

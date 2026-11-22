@@ -16,7 +16,7 @@ Sin `NEEDS CLARIFICATION` abiertos. Cada punto resume qué se decidió y por qu�
 
 ## R-3. "Esta semana" y "próxima sesión"
 
-- **Decisión**: la semana es lunes a domingo en `America/Bogota`, con el helper de `calendar.rules.ts` y `bogotaCalendarDay` de `common/clock.ts`; se cuentan sesiones en estado `SCHEDULED` o `RESCHEDULED`, pasadas de la semana incluidas. La próxima sesión es la de menor `starts_at` mayor que ahora (`Clock`, no `new Date()`) en esos estados.
+- **Decisión**: la semana es lunes a domingo en `America/Bogota`, con `weekRangeBogota` (función pura nueva en `dashboard.rules.ts`, sobre `bogotaCalendarDay` de `common/clock.ts`; `calendar.rules.ts` no trae un helper de semana); se cuentan sesiones en estado `SCHEDULED` o `RESCHEDULED`, pasadas de la semana incluidas. La próxima sesión es la de menor `starts_at` mayor que ahora (`Clock`, no `new Date()`) en esos estados.
 - **Razón**: coincide con el calendario semanal del docente (spec 013) y permite mover el tiempo en las pruebas.
 - **Alternativas**: contar solo desde ahora (no coincide con "tutorías de la semana").
 
