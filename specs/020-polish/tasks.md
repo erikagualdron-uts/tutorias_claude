@@ -43,12 +43,12 @@ description: "Task list for Pulido de PQRS, dashboards y pruebas"
 
 ### Tests for Foundational ⚠️
 
-- [ ] T001 [P] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/code.test.ts` (debe fallar): `pqrsCode('a1b2c3d4-0000-4000-8000-000000000001')` es `'A1B2C3D4'`; siempre tiene 8 caracteres de `[0-9A-F]`; no depende de los guiones ni de mayúsculas o minúsculas; el mismo identificador siempre da el mismo código y dos identificadores distintos en sus 8 primeros caracteres dan códigos distintos
+- [X] T001 [P] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/code.test.ts` (debe fallar): `pqrsCode('a1b2c3d4-0000-4000-8000-000000000001')` es `'A1B2C3D4'`; siempre tiene 8 caracteres de `[0-9A-F]`; no depende de los guiones ni de mayúsculas o minúsculas; el mismo identificador siempre da el mismo código y dos identificadores distintos en sus 8 primeros caracteres dan códigos distintos
 
 ### Implementation for Foundational
 
-- [ ] T002 Crear `tutorias_uts_mobile/src/features/pqrs/code.ts` con `pqrsCode(id: string): string` (los 8 primeros caracteres del identificador sin guiones, en mayúsculas)
-- [ ] T003 [P] Cambiar en `tutorias_uts_mobile/src/api/types.ts` `PqrsDetail` para que lleve `reviewedAt: string | null` y `resolvedAt: string | null`, y quitar esos dos campos de `PqrsAdminDetail` (ya los hereda)
+- [X] T002 Crear `tutorias_uts_mobile/src/features/pqrs/code.ts` con `pqrsCode(id: string): string` (los 8 primeros caracteres del identificador sin guiones, en mayúsculas)
+- [X] T003 [P] Cambiar en `tutorias_uts_mobile/src/api/types.ts` `PqrsDetail` para que lleve `reviewedAt: string | null` y `resolvedAt: string | null`, y quitar esos dos campos de `PqrsAdminDetail` (ya los hereda)
 
 **Checkpoint**: El número y el tipo están listos; las historias pueden empezar.
 
@@ -62,17 +62,17 @@ description: "Task list for Pulido de PQRS, dashboards y pruebas"
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T004 [P] [US1] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/PqrsFiledScreen.test.tsx` (debe fallar): muestra el número (`pqrsCode(id)`), la fecha en `America/Bogota` y el estado "Radicada" con texto; "Ver mi PQRS" abre el detalle de esa PQRS y "Volver a mis PQRS" abre la lista, con la ruta del estudiante o la del docente según el rol de la sesión; los textos salen en español e inglés
-- [ ] T005 [P] [US1] Añadir a `tutorias_uts_mobile/src/features/pqrs/__tests__/NewPqrsScreen.test.tsx` que al radicar bien la app hace `router.replace` a la confirmación con `id`, `createdAt` y `status` de la respuesta (y no `router.back`), que un reintento con la misma respuesta lleva al mismo número y que, si falla, no hay confirmación y el formulario conserva lo escrito
-- [ ] T006 [P] [US1] Añadir a `tutorias_uts_mobile/src/features/pqrs/__tests__/MyPqrsScreen.test.tsx` y `AdminPqrsScreen.test.tsx` que cada tarjeta de la lista muestra "N.º" con el mismo número que `pqrsCode(id)`, y que los detalles del autor y del CAE (`PqrsBody`) lo muestran igual
+- [X] T004 [P] [US1] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/PqrsFiledScreen.test.tsx` (debe fallar): muestra el número (`pqrsCode(id)`), la fecha en `America/Bogota` y el estado "Radicada" con texto; "Ver mi PQRS" abre el detalle de esa PQRS y "Volver a mis PQRS" abre la lista, con la ruta del estudiante o la del docente según el rol de la sesión; los textos salen en español e inglés
+- [X] T005 [P] [US1] Añadir a `tutorias_uts_mobile/src/features/pqrs/__tests__/NewPqrsScreen.test.tsx` que al radicar bien la app hace `router.replace` a la confirmación con `id`, `createdAt` y `status` de la respuesta (y no `router.back`), que un reintento con la misma respuesta lleva al mismo número y que, si falla, no hay confirmación y el formulario conserva lo escrito
+- [X] T006 [P] [US1] Añadir a `tutorias_uts_mobile/src/features/pqrs/__tests__/MyPqrsScreen.test.tsx` y `AdminPqrsScreen.test.tsx` que cada tarjeta de la lista muestra "N.º" con el mismo número que `pqrsCode(id)`, y que los detalles del autor y del CAE (`PqrsBody`) lo muestran igual
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Añadir los textos a `tutorias_uts_mobile/src/i18n/es.json` y `en.json` (`pqrs.filed.title`, `pqrs.filed.number`, `pqrs.filed.date`, `pqrs.filed.view`, `pqrs.filed.back`, `pqrs.code` con la etiqueta "N.º"/"No.") con las claves ordenadas, y ejecutar `check_i18n.py`
-- [ ] T008 [US1] Crear `tutorias_uts_mobile/src/features/pqrs/screens/PqrsFiledScreen.tsx`: lee `id`, `createdAt` y `status` de los parámetros; muestra el ícono de éxito, el título, el número de radicado con el tipo de letra de código del tema (`typography.code`), la fecha con `bogotaParts` y `StatusBadge`; botón "Ver mi PQRS" (ícono a la izquierda) hacia `${base}/[id]` y botón "Volver a mis PQRS" hacia `${base}`, con 16 px entre ellos y el mismo `base` por rol que `MyPqrsScreen.tsx`
-- [ ] T009 [P] [US1] Crear las rutas `tutorias_uts_mobile/app/(student)/pqrs/filed.tsx` y `app/(teacher)/pqrs/filed.tsx` que exportan `PqrsFiledScreen`
-- [ ] T010 [US1] Cambiar `tutorias_uts_mobile/src/features/pqrs/screens/NewPqrsScreen.tsx`: el `onSuccess` de `create.mutate` hace `router.replace` a `${base}/filed` con `id`, `createdAt` y `status` de la respuesta, en lugar de `router.back()`
-- [ ] T011 [P] [US1] Mostrar el número en `tutorias_uts_mobile/src/features/pqrs/components/PqrsCard.tsx` (una línea `N.º A1B2C3D4` con `typography.code`) y en `PqrsBody.tsx` bajo el asunto, con `pqrsCode(pqrs.id)`
+- [X] T007 [P] [US1] Añadir los textos a `tutorias_uts_mobile/src/i18n/es.json` y `en.json` (`pqrs.filed.title`, `pqrs.filed.number`, `pqrs.filed.date`, `pqrs.filed.view`, `pqrs.filed.back`, `pqrs.code` con la etiqueta "N.º"/"No.") con las claves ordenadas, y ejecutar `check_i18n.py`
+- [X] T008 [US1] Crear `tutorias_uts_mobile/src/features/pqrs/screens/PqrsFiledScreen.tsx`: lee `id`, `createdAt` y `status` de los parámetros; muestra el ícono de éxito, el título, el número de radicado con el tipo de letra de código del tema (`typography.code`), la fecha con `bogotaParts` y `StatusBadge`; botón "Ver mi PQRS" (ícono a la izquierda) hacia `${base}/[id]` y botón "Volver a mis PQRS" hacia `${base}`, con 16 px entre ellos y el mismo `base` por rol que `MyPqrsScreen.tsx`
+- [X] T009 [P] [US1] Crear las rutas `tutorias_uts_mobile/app/(student)/pqrs/filed.tsx` y `app/(teacher)/pqrs/filed.tsx` que exportan `PqrsFiledScreen`
+- [X] T010 [US1] Cambiar `tutorias_uts_mobile/src/features/pqrs/screens/NewPqrsScreen.tsx`: el `onSuccess` de `create.mutate` hace `router.replace` a `${base}/filed` con `id`, `createdAt` y `status` de la respuesta, en lugar de `router.back()`
+- [X] T011 [P] [US1] Mostrar el número en `tutorias_uts_mobile/src/features/pqrs/components/PqrsCard.tsx` (una línea `N.º A1B2C3D4` con `typography.code`) y en `PqrsBody.tsx` bajo el asunto, con `pqrsCode(pqrs.id)`
 
 **Checkpoint**: US1 funciona y se prueba sola; es el MVP.
 
@@ -86,18 +86,18 @@ description: "Task list for Pulido de PQRS, dashboards y pruebas"
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T012 [P] [US2] Añadir a `tutorias_uts_back/test/pqrs-mine.e2e-spec.ts` (debe fallar): el detalle del autor devuelve `reviewedAt` y `resolvedAt` como `null` en una PQRS "Radicada", `reviewedAt` en fecha y `resolvedAt` en `null` en una "En revisión", y ambas en fecha en una "Resuelta"; una PQRS ajena sigue respondiendo `404 PQRS_NOT_FOUND`; el CAE y los roles ajenos siguen recibiendo `403`
-- [ ] T013 [P] [US2] Actualizar `Claude/specs/017-pqrs/contracts/pqrs-api.yaml`: el esquema `PqrsMineDetail` agrega `reviewedAt` y `resolvedAt` (`type: string, format: date-time, nullable: true`, obligatorios) y comprobar en `tutorias_uts_back/test/pqrs-contract.e2e-spec.ts` que el detalle del autor se valida contra él también en "En revisión" y "Resuelta"
-- [ ] T014 [P] [US2] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/timeline.test.ts` (debe fallar) para `timelineSteps(pqrs)`: una "Radicada" da `FILED` cumplido y actual con `createdAt`, y los otros dos pendientes sin fecha; una "En revisión" da dos cumplidos con su fecha y el segundo actual; una "Resuelta" da los tres cumplidos y el tercero actual; un paso cumplido con fecha `null` queda cumplido con `at` nulo y nunca con una fecha inventada
-- [ ] T015 [P] [US2] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/StatusTimeline.test.tsx` (debe fallar): dibuja los tres pasos en orden con nombre en texto (`pqrs.status.*`) y un ícono cada uno, la fecha y hora de Bogotá en los cumplidos, el paso actual marcado con texto y no solo con color, los pendientes sin fecha; un paso cumplido sin fecha se muestra sin hora; y el detalle del autor y el del CAE incluyen la línea de tiempo
+- [X] T012 [P] [US2] Añadir a `tutorias_uts_back/test/pqrs-mine.e2e-spec.ts` (debe fallar): el detalle del autor devuelve `reviewedAt` y `resolvedAt` como `null` en una PQRS "Radicada", `reviewedAt` en fecha y `resolvedAt` en `null` en una "En revisión", y ambas en fecha en una "Resuelta"; una PQRS ajena sigue respondiendo `404 PQRS_NOT_FOUND`; el CAE y los roles ajenos siguen recibiendo `403`
+- [X] T013 [P] [US2] Actualizar `Claude/specs/017-pqrs/contracts/pqrs-api.yaml`: el esquema `PqrsMineDetail` agrega `reviewedAt` y `resolvedAt` (`type: string, format: date-time, nullable: true`, obligatorios) y comprobar en `tutorias_uts_back/test/pqrs-contract.e2e-spec.ts` que el detalle del autor se valida contra él también en "En revisión" y "Resuelta"
+- [X] T014 [P] [US2] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/timeline.test.ts` (debe fallar) para `timelineSteps(pqrs)`: una "Radicada" da `FILED` cumplido y actual con `createdAt`, y los otros dos pendientes sin fecha; una "En revisión" da dos cumplidos con su fecha y el segundo actual; una "Resuelta" da los tres cumplidos y el tercero actual; un paso cumplido con fecha `null` queda cumplido con `at` nulo y nunca con una fecha inventada
+- [X] T015 [P] [US2] Escribir `tutorias_uts_mobile/src/features/pqrs/__tests__/StatusTimeline.test.tsx` (debe fallar): dibuja los tres pasos en orden con nombre en texto (`pqrs.status.*`) y un ícono cada uno, la fecha y hora de Bogotá en los cumplidos, el paso actual marcado con texto y no solo con color, los pendientes sin fecha; un paso cumplido sin fecha se muestra sin hora; y el detalle del autor y el del CAE incluyen la línea de tiempo
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Modificar `tutorias_uts_back/src/pqrs/pqrs.service.ts`: la función `detail(p)` del autor incluye `reviewedAt: p.reviewedAt` y `resolvedAt: p.resolvedAt` (mismos campos y orden que `adminDetail`); sin tocar guards, consultas ni propiedad
-- [ ] T017 [P] [US2] Crear `tutorias_uts_mobile/src/features/pqrs/timeline.ts` con `timelineSteps(pqrs)` (según [data-model.md](data-model.md): `step`, `at`, `done`, `current`)
-- [ ] T018 [P] [US2] Añadir los textos de la línea de tiempo a `tutorias_uts_mobile/src/i18n/es.json` y `en.json` (`pqrs.timeline.title`, `pqrs.timeline.current`, `pqrs.timeline.pending`, `pqrs.timeline.noTime`) y ejecutar `check_i18n.py`
-- [ ] T019 [US2] Crear `tutorias_uts_mobile/src/features/pqrs/components/StatusTimeline.tsx`: columna vertical con un ícono por paso (`pqrs`, `clock`, `success` del registro), nombre en texto, fecha con `bogotaParts` y una línea conectora entre pasos; el cumplido en color primario, el actual en negrita con la etiqueta "Actual", el pendiente atenuado; cada paso con `accessibilityLabel` completo (nombre, estado y fecha)
-- [ ] T020 [US2] Mostrar `StatusTimeline` en `tutorias_uts_mobile/src/features/pqrs/components/PqrsBody.tsx` entre la descripción y las respuestas, de modo que lo vean `PqrsDetailScreen` y `AdminPqrsDetailScreen`
+- [X] T016 [US2] Modificar `tutorias_uts_back/src/pqrs/pqrs.service.ts`: la función `detail(p)` del autor incluye `reviewedAt: p.reviewedAt` y `resolvedAt: p.resolvedAt` (mismos campos y orden que `adminDetail`); sin tocar guards, consultas ni propiedad
+- [X] T017 [P] [US2] Crear `tutorias_uts_mobile/src/features/pqrs/timeline.ts` con `timelineSteps(pqrs)` (según [data-model.md](data-model.md): `step`, `at`, `done`, `current`)
+- [X] T018 [P] [US2] Añadir los textos de la línea de tiempo a `tutorias_uts_mobile/src/i18n/es.json` y `en.json` (`pqrs.timeline.title`, `pqrs.timeline.current`, `pqrs.timeline.pending`, `pqrs.timeline.noTime`) y ejecutar `check_i18n.py`
+- [X] T019 [US2] Crear `tutorias_uts_mobile/src/features/pqrs/components/StatusTimeline.tsx`: columna vertical con un ícono por paso (`pqrs`, `clock`, `success` del registro), nombre en texto, fecha con `bogotaParts` y una línea conectora entre pasos; el cumplido en color primario, el actual en negrita con la etiqueta "Actual", el pendiente atenuado; cada paso con `accessibilityLabel` completo (nombre, estado y fecha)
+- [X] T020 [US2] Mostrar `StatusTimeline` en `tutorias_uts_mobile/src/features/pqrs/components/PqrsBody.tsx` entre la descripción y las respuestas, de modo que lo vean `PqrsDetailScreen` y `AdminPqrsDetailScreen`
 
 **Checkpoint**: US1 y US2 funcionan de forma independiente.
 
@@ -209,3 +209,13 @@ T009 rutas filed.tsx            T011 número en PqrsCard y PqrsBody
 - **Entrega incremental**: US2 (con el único campo de backend), luego US3, US4 y US5; cada una se prueba sin las siguientes.
 - Un commit por tarea o grupo pequeño, en formato Conventional Commits (`feat(pqrs): ...`, `feat(dashboard): ...`, `test(app): ...`), y la rama `020-polish` en cada repositorio que cambie.
 - Si el conteo animado falla en la suite (temporizadores), se prefiere `jest.useFakeTimers()` en esas pruebas antes que cambiar la duración de 600 ms.
+
+## Notas de implementación (2026-11-22)
+
+- **Primera pasada**: fundamentos, US1 y US2 en la app y el backend. Pendientes: US3 (insignia), US4 (conteo animado), US5 (suite estable) y el cierre (T021 a T041).
+- **Backend** (commit `11831f3`): 285 pruebas unitarias, lint y tipos en verde; las 8 e2e de PQRS pasan (87 de 87) con el campo aditivo `reviewedAt` y `resolvedAt` del detalle del autor y el contrato de la 017 actualizado.
+- **App** (commits `fec8721` y el de la línea de tiempo): lint, tipos y paridad es/en (750 claves) en verde; suite completa en serie 678 de 678.
+- La pantalla de confirmación toma `id`, `createdAt` y `status` de los parámetros de la ruta; no hace otra consulta. El formulario usa `router.replace` para que "atrás" no regrese a un formulario ya enviado.
+- Al mostrar la línea de tiempo en `PqrsBody`, el estado actual aparece dos veces en el detalle (insignia y paso actual); la prueba del autor ahora espera dos coincidencias.
+- Las pantallas no se han visto corriendo en un simulador.
+

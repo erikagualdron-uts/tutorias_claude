@@ -302,9 +302,12 @@ components:
       allOf:
         - $ref: '#/components/schemas/PqrsMine'
         - type: object
-          required: [description, messages]
+          required: [description, reviewedAt, resolvedAt, messages]
           properties:
             description: { type: string }
+            # Spec 020: the dates of the steps after filing, for the timeline of the detail.
+            reviewedAt: { type: string, format: date-time, nullable: true }
+            resolvedAt: { type: string, format: date-time, nullable: true }
             messages:
               type: array
               items: { $ref: '#/components/schemas/PqrsMessage' }
