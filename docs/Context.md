@@ -126,12 +126,16 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - La importación nunca es obligatoria: si el servicio externo falla, el CAE registra los festivos a mano.
 
 ### Comunicación
-- La **mensajería es en tiempo real** (chat).
+- La **mensajería es en tiempo real** (chat) y solo de texto (spec 018).
 - Las notificaciones llegan a la **bandeja de la app**, por **push** y por **correo** (vía el SMTP que configura el CAE). La bandeja funciona aunque se rechace el permiso de push o el correo no esté configurado, y conserva todos los avisos.
 - Quién puede escribir a quién:
   - CAE ↔ docentes.
-  - Docente ↔ estudiantes de sus módulos.
+  - Docente ↔ estudiantes inscritos en sus módulos.
   - El estudiante **puede iniciar** la conversación con el docente de un módulo en el que está inscrito.
+  - No hay chat entre estudiantes ni entre un estudiante y el CAE.
+  - Dos personas tienen **una sola conversación** entre ellas. Si un estudiante y un docente dejan de compartir un módulo (baja, periodo cerrado o módulo borrado), la conversación queda de **solo lectura** para los dos y la app muestra la regla; lo mismo si la cuenta de la otra persona se desactiva o se elimina (D-113).
+- Cada **módulo** tiene un **chat grupal** donde escriben el docente y los inscritos; el docente publica **anuncios**, que se ven como tarjetas distintas de los mensajes. El estudiante solo lo ve mientras está inscrito, y solo lo publicado mientras lo estuvo; quien se da de baja deja de verlo. Con el periodo cerrado es de solo lectura. El CAE no participa (D-113).
+- **Avisos del chat:** quien no tiene la conversación abierta recibe un **push** con el nombre de quien escribe y el texto. En un chat individual, uno por ráfaga de mensajes; en el chat de un módulo, solo para los anuncios (los demás mensajes suman al contador). No hay correo por mensaje. Un mensaje escrito sin conexión se reenvía solo mientras la app sigue abierta (D-114).
 - **Retención del historial:**
   - Mensajes de módulo (anuncios y chats grupales): **6 meses** (lo que dura un semestre).
   - Chats individuales: se conservan **2 años**.
