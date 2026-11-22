@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "El horario de los estudiantes. La pestaña Cronograma (Schedule) del estudiante no está desarrollada: muestra una pantalla vacía. Debe ser el calendario semanal de solo lectura con las tutorías en las que está inscrito, como ya lo tiene el docente."
 

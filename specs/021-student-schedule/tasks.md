@@ -155,7 +155,7 @@ description: "Task list for Cronograma semanal del estudiante"
 - [X] T038 Correr las e2e del backend de `student-calendar*`, `teacher-calendar*`, `enrollments*`, `dashboard*` y `log-redaction` por lotes pequeños con la base de datos de prueba y anotar el resultado; correr `npm test` en la app tres veces seguidas y anotar que no hay fallos
 - [ ] T039 Recorrer los 16 escenarios de `specs/021-student-schedule/quickstart.md` en español e inglés con la app y la API en marcha y anotar el resultado en ese archivo, incluidos SC-001 (próxima tutoría en menos de 10 s) y SC-004 (cambio de semana en menos de 2 s)
 - [X] T040 Ejecutar la habilidad `feature-done-check` (spec, pruebas, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
-- [ ] T041 Cambiar `Status` de `specs/021-student-schedule/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de la rama `021-student-schedule` a la rama principal: `tutorias_uts_back` y `tutorias_uts_mobile` contra `main` y `Claude` contra `master`; cerrar con un comentario los PRs de la 020 que quedan incluidos (`tutorias_uts_back` #12, `tutorias_uts_front` #11 y `tutorias_claude` #13); `tutorias_uts_db` no lleva PR nuevo porque esta spec no lo cambia
+- [X] T041 Cambiar `Status` de `specs/021-student-schedule/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de la rama `021-student-schedule` a la rama principal: `tutorias_uts_back` y `tutorias_uts_mobile` contra `main` y `Claude` contra `master`; cerrar con un comentario los PRs de la 020 que quedan incluidos (`tutorias_uts_back` #12, `tutorias_uts_front` #11 y `tutorias_claude` #13); `tutorias_uts_db` no lleva PR nuevo porque esta spec no lo cambia
 
 ---
 
