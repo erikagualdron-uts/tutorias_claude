@@ -200,7 +200,7 @@ description: "Task list for Gestión de cuentas de docentes y estudiantes"
 - [X] T055 [P] Comprobar en `tutorias_uts_back` que ningún `console.log` ni registro escribe una clave temporal, un correo o un nombre, y que `grep` de `Unidades Tecnológicas` no encuentra nada en el código ni en las traducciones
 - [X] T056 Recorrer los 14 escenarios de `specs/016-account-management/quickstart.md` en español e inglés con la app y la API en marcha y anotar el resultado en ese archivo, incluido el tiempo de encontrar una cuenta entre 500 (SC-001, menos de 10 s) y el de regenerar una clave (SC-006, menos de 2 min) (pruebas manuales hechas por el equipo; sin tiempos anotados)
 - [X] T057 Ejecutar la habilidad `feature-done-check` (spec, pruebas de reglas de negocio, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
-- [ ] T058 Cambiar `Status` de `specs/016-account-management/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_db`, `tutorias_uts_back`, `tutorias_uts_mobile` y `Claude` (el de `Claude` apunta a `001-auth-roles`)
+- [X] T058 Cambiar `Status` de `specs/016-account-management/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de `tutorias_uts_db`, `tutorias_uts_back`, `tutorias_uts_mobile` y `Claude` (el de `Claude` apunta a `001-auth-roles`)
 
 ---
 
