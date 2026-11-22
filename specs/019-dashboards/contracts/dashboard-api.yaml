@@ -1,0 +1,204 @@
+openapi: 3.0.3
+info:
+  title: Dashboards API (spec 019)
+  version: 1.0.0
+  description: |
+    Solo lectura. Cinco endpoints; cada uno exige su rol (`403 FORBIDDEN` con otro rol, `401` sin sesión).
+    Los avisos sin leer, los mensajes sin leer y las 3 PQRS propias salen de `GET /notifications/unread-count`,
+    `GET /chat/unread-count` y `GET /pqrs/mine?limit=3` (specs 014, 018 y 017).
+servers:
+  - url: /
+security:
+  - bearerAuth: []
+paths:
+  /dashboard/admin/overview:
+    get:
+      summary: Cifras del CAE (ocupación, cuentas, PQRS)
+      tags: [Dashboard CAE]
+      x-roles: [SUPERADMIN]
+      responses:
+        '200':
+          description: Resumen calculado al consultar
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminOverview' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /dashboard/admin/changes:
+    get:
+      summary: Cancelaciones y reprogramaciones recientes (paginado)
+      tags: [Dashboard CAE]
+      x-roles: [SUPERADMIN]
+      parameters:
+        - { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 50, default: 20 } }
+      responses:
+        '200':
+          description: Cambios por fecha de cambio descendente
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data: { type: array, items: { $ref: '#/components/schemas/RecentChange' } }
+                  meta: { $ref: '#/components/schemas/PageMeta' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /dashboard/admin/rooms:
+    get:
+      summary: Salones más y menos ocupados
+      tags: [Dashboard CAE]
+      x-roles: [SUPERADMIN]
+      responses:
+        '200':
+          description: Hasta 3 salones por lista, sin repetir uno
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [most, least]
+                properties:
+                  most: { type: array, items: { $ref: '#/components/schemas/RoomUsage' } }
+                  least: { type: array, items: { $ref: '#/components/schemas/RoomUsage' } }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /dashboard/teacher:
+    get:
+      summary: Dashboard del docente autenticado
+      tags: [Dashboard docente]
+      x-roles: [TEACHER]
+      responses:
+        '200':
+          description: Próxima sesión, semana y cupo por módulo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TeacherDashboard' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /dashboard/student:
+    get:
+      summary: Inicio del estudiante autenticado
+      tags: [Dashboard estudiante]
+      x-roles: [STUDENT]
+      responses:
+        '200':
+          description: Próxima sesión, semana y cambios que lo afectan
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentDashboard' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  responses:
+    Error:
+      description: Error con código estable
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [statusCode, code, message]
+            properties:
+              statusCode: { type: integer }
+              code: { type: string }
+              message: { type: string }
+  schemas:
+    PageMeta:
+      type: object
+      required: [page, limit, total]
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+    AdminOverview:
+      type: object
+      required: [occupancy, modules, lowEnrollmentPercent, accounts, pqrs]
+      properties:
+        occupancy:
+          type: object
+          required: [enrolled, capacity, percent]
+          properties:
+            enrolled: { type: integer }
+            capacity: { type: integer }
+            percent: { type: number, minimum: 0, maximum: 100 }
+        modules:
+          type: object
+          required: [active, full, lowEnrollment]
+          properties:
+            active: { type: integer }
+            full: { type: integer }
+            lowEnrollment: { type: integer }
+        lowEnrollmentPercent: { type: integer }
+        accounts:
+          type: object
+          required: [students, teachers]
+          properties:
+            students: { type: integer }
+            teachers: { type: integer }
+        pqrs:
+          type: object
+          required: [filed, inReview, resolved, avgResponseSeconds]
+          properties:
+            filed: { type: integer }
+            inReview: { type: integer }
+            resolved: { type: integer }
+            avgResponseSeconds: { type: integer, nullable: true }
+    RecentChange:
+      type: object
+      required: [sessionId, moduleId, moduleName, kind, originalStartsAt, startsAt, changedAt]
+      properties:
+        sessionId: { type: string, format: uuid }
+        moduleId: { type: string, format: uuid }
+        moduleName: { type: string }
+        kind: { type: string, enum: [RESCHEDULED, CANCELLED] }
+        originalStartsAt: { type: string, format: date-time }
+        startsAt: { type: string, format: date-time }
+        changedAt: { type: string, format: date-time }
+    RoomUsage:
+      type: object
+      required: [roomId, name, location, percent, modules]
+      properties:
+        roomId: { type: string, format: uuid }
+        name: { type: string }
+        location: { type: string }
+        percent: { type: number, minimum: 0, maximum: 100 }
+        modules: { type: integer }
+    NextSession:
+      type: object
+      required: [sessionId, moduleId, moduleName, startsAt, endsAt, room]
+      properties:
+        sessionId: { type: string, format: uuid }
+        moduleId: { type: string, format: uuid }
+        moduleName: { type: string }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        room: { type: string }
+        attendees: { type: integer, description: Solo en el dashboard del docente }
+    TeacherDashboard:
+      type: object
+      required: [nextSession, weekSessions, modules]
+      properties:
+        nextSession: { allOf: [{ $ref: '#/components/schemas/NextSession' }], nullable: true }
+        weekSessions: { type: integer }
+        modules:
+          type: array
+          items:
+            type: object
+            required: [id, name, enrolled, capacity]
+            properties:
+              id: { type: string, format: uuid }
+              name: { type: string }
+              enrolled: { type: integer }
+              capacity: { type: integer }
+    StudentDashboard:
+      type: object
+      required: [nextSession, weekSessions, changes]
+      properties:
+        nextSession: { allOf: [{ $ref: '#/components/schemas/NextSession' }], nullable: true }
+        weekSessions: { type: integer }
+        changes:
+          type: array
+          maxItems: 5
+          items: { $ref: '#/components/schemas/RecentChange' }
