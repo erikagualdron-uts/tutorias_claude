@@ -46,3 +46,7 @@ Las e2e (`test/dashboard-*.e2e-spec.ts`) necesitan la base de datos de prueba y 
 ## Medición manual
 
 SC-001 (dashboard completo en menos de 3 segundos con 200 módulos y 200 PQRS) y SC-004 (identificar la próxima tutoría en menos de 5 segundos) se miden a mano en la app y se anotan en la tarea de pruebas manuales.
+
+## Resultado del recorrido (2026-11-22)
+
+Recorrido manual de los 16 escenarios por el equipo, con la app y la API en marcha. Resultado: sin fallos. Los tiempos de SC-001 (dashboard completo en menos de 3 s) y SC-004 (próxima tutoría en menos de 5 s) se cumplen con margen, y el diseño se aprobó. Los tiempos se reportaron sin cifras exactas.
