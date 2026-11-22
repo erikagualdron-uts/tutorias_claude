@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Pulido de PQRS, dashboards y pruebas. Cierra pendientes anotados en Design.md y en las specs 017 a 019, sin reglas de negocio nuevas: confirmación al radicar con el número de radicado, línea de tiempo del estado de una PQRS, insignia de PQRS radicadas en la pestaña del CAE, conteo animado de las tarjetas del dashboard y una prueba de la app estable."
 

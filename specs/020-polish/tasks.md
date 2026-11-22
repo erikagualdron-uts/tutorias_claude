@@ -170,7 +170,7 @@ description: "Task list for Pulido de PQRS, dashboards y pruebas"
 - [X] T038 Correr las e2e del backend de PQRS (`pqrs-mine`, `pqrs-contract`, `pqrs-roles`) con la base de datos de prueba y anotar el resultado
 - [ ] T039 Recorrer los 16 escenarios de `specs/020-polish/quickstart.md` en español e inglés con la app y la API en marcha y anotar el resultado en ese archivo, incluidos SC-002 (paso de la PQRS en menos de 5 s) y SC-004 (conteo en menos de un segundo, sin repetirse)
 - [X] T040 Ejecutar la habilidad `feature-done-check` (spec, pruebas, lint y tipos, textos es/en, diseño, documentación y decisiones) y corregir lo que reporte
-- [ ] T041 Cambiar `Status` de `specs/020-polish/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de la rama `020-polish` a la rama principal: `tutorias_uts_back` y `tutorias_uts_mobile` contra `main` y `Claude` contra `master`; `tutorias_uts_db` no lleva PR porque esta spec no lo cambia
+- [X] T041 Cambiar `Status` de `specs/020-polish/spec.md` a `Implemented`, marcar las tareas de esta lista y abrir los Pull Requests de la rama `020-polish` a la rama principal: `tutorias_uts_back` y `tutorias_uts_mobile` contra `main` y `Claude` contra `master`; `tutorias_uts_db` no lleva PR porque esta spec no lo cambia
 
 ---
 
