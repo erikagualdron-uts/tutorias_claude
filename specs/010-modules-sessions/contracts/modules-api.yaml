@@ -1,0 +1,568 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - Módulos, sesiones y festivos API
+  version: 1.0.0
+  description: >
+    Contrato de módulos, sus horarios semanales y sesiones, y del calendario de festivos. Errores
+    en el formato único de docs/Conventions.md §4 (`code` estable que la app traduce). Todo exige
+    rol SUPERADMIN (403 en otro caso). Las horas de horario son locales de America/Bogota
+    ("HH:mm"); las fechas-hora de sesión son ISO 8601 UTC; las fechas de festivo son YYYY-MM-DD.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /modules:
+    get:
+      summary: Lista módulos de un periodo (excluye eliminados)
+      parameters:
+        - { name: periodId, in: query, description: Por defecto el periodo activo, o el próximo si no hay activo, schema: { type: string, format: uuid } }
+        - { name: search, in: query, schema: { type: string } }
+        - { name: teacherId, in: query, schema: { type: string, format: uuid } }
+        - { name: roomId, in: query, schema: { type: string, format: uuid } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de módulos con cupo e inscritos
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModulePage' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Crea un módulo y genera sus sesiones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ModuleCreate' }
+      responses:
+        '201':
+          description: Módulo creado con sus horarios y la cantidad de sesiones generadas
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModuleDetail' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: >
+            PERIOD_CLOSED_READ_ONLY, MODULE_TEACHER_CONFLICT, MODULE_ROOM_CONFLICT,
+            MODULE_SCHEDULE_SELF_OVERLAP, MODULE_TEACHER_UNAVAILABLE o MODULE_ROOM_UNAVAILABLE
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '400':
+          description: VALIDATION_FAILED (formato, campos obligatorios o desconocidos)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '422':
+          description: MODULE_SCHEDULE_INVALID (fin no posterior al inicio) o MODULE_SCHEDULE_OUT_OF_HOURS (fuera de la franja configurada, 06:00 a 18:00; `details` trae `earliest` y `latest`)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /modules/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      summary: Detalle de un módulo (datos, horarios, cupo, inscritos y festivos que omiten sesiones)
+      responses:
+        '200':
+          description: Módulo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModuleDetail' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Edita nombre y descripción
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ModuleUpdate' }
+      responses:
+        '200':
+          description: Módulo actualizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModuleDetail' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/PeriodClosed' }
+    delete:
+      summary: Elimina el módulo (lógico); solo sin inscritos activos
+      responses:
+        '204': { description: Eliminado }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: PERIOD_CLOSED_READ_ONLY o MODULE_HAS_ENROLLMENTS (details.enrolled)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /modules/{id}/schedules:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    put:
+      summary: Reemplaza los horarios semanales y regenera las sesiones futuras; solo sin inscritos activos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [schedules]
+              properties:
+                schedules:
+                  type: array
+                  minItems: 1
+                  items: { $ref: '#/components/schemas/ScheduleInput' }
+      responses:
+        '200':
+          description: Módulo con los horarios nuevos
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModuleDetail' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: >
+            PERIOD_CLOSED_READ_ONLY, MODULE_HAS_ENROLLMENTS, MODULE_TEACHER_CONFLICT,
+            MODULE_ROOM_CONFLICT o MODULE_SCHEDULE_SELF_OVERLAP
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '400':
+          description: VALIDATION_FAILED (formato, campos obligatorios o desconocidos)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '422':
+          description: MODULE_SCHEDULE_INVALID (fin no posterior al inicio) o MODULE_SCHEDULE_OUT_OF_HOURS (fuera de la franja configurada, 06:00 a 18:00; `details` trae `earliest` y `latest`)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /modules/{id}/room:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    patch:
+      summary: Cambia el salón (sesiones futuras); la capacidad nueva debe ser >= inscritos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roomId]
+              properties:
+                roomId: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Módulo con el salón y el cupo nuevos
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModuleDetail' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: >
+            PERIOD_CLOSED_READ_ONLY, MODULE_ROOM_UNAVAILABLE, MODULE_ROOM_CONFLICT o
+            MODULE_ROOM_CAPACITY_BELOW_ENROLLED (details.capacity, details.enrolled)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /modules/{id}/teacher:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    patch:
+      summary: Cambia el docente (sesiones futuras)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [teacherId]
+              properties:
+                teacherId: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Módulo con el docente nuevo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModuleDetail' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: PERIOD_CLOSED_READ_ONLY, MODULE_TEACHER_UNAVAILABLE o MODULE_TEACHER_CONFLICT
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /modules/{id}/sessions:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      summary: Sesiones del módulo (excluye eliminadas), por fecha de inicio ascendente
+      parameters:
+        - { name: from, in: query, description: Fecha YYYY-MM-DD (Bogotá), schema: { type: string, format: date } }
+        - { name: to, in: query, description: Fecha YYYY-MM-DD (Bogotá), schema: { type: string, format: date } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de sesiones
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionPage' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /teachers:
+    get:
+      summary: Lista docentes (excluye eliminados) para elegirlos en un módulo
+      parameters:
+        - { name: search, in: query, description: Nombre o apellido, sin distinguir mayúsculas, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [ACTIVE, INACTIVE] } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de docentes por apellido y nombre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/PersonRef'
+                        - type: object
+                          properties:
+                            status: { type: string, enum: [ACTIVE, INACTIVE] }
+                  meta: { $ref: '#/components/schemas/PageMeta' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /holidays:
+    get:
+      summary: Lista festivos de un año (excluye eliminados)
+      parameters:
+        - { name: year, in: query, required: true, schema: { type: integer, minimum: 2000, maximum: 2100 } }
+      responses:
+        '200':
+          description: Festivos del año por fecha ascendente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Holiday' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Registra un festivo y cancela las sesiones futuras de esa fecha
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/HolidayInput' }
+      responses:
+        '201':
+          description: Festivo creado con la cantidad de sesiones canceladas
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HolidayResult' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409':
+          description: HOLIDAY_DATE_TAKEN o HOLIDAY_IN_PAST
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '400':
+          description: VALIDATION_FAILED
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /holidays/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    patch:
+      summary: Edita nombre o fecha de un festivo futuro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/HolidayInput' }
+      responses:
+        '200':
+          description: Festivo actualizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HolidayResult' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: HOLIDAY_DATE_TAKEN o HOLIDAY_IN_PAST
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    delete:
+      summary: Elimina el festivo (lógico) y restaura las sesiones que no tengan cruce
+      responses:
+        '200':
+          description: Cantidad de sesiones restauradas, generadas y las que no se pudieron restaurar
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HolidayRemoval' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: HOLIDAY_IN_PAST
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /holidays/import-preview:
+    get:
+      summary: Consulta el servicio externo y devuelve los festivos del año sin guardar nada
+      parameters:
+        - { name: year, in: query, required: true, schema: { type: integer, minimum: 2000, maximum: 2100 } }
+      responses:
+        '200':
+          description: Festivos obtenidos, marcando los que ya existen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/HolidayPreview' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '502':
+          description: HOLIDAYS_IMPORT_UNAVAILABLE (falló, tardó más de 10 s o respuesta inválida)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /holidays/import:
+    post:
+      summary: Importa las fechas confirmadas (vuelve a consultar el servicio; nada parcial si falla)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [year, dates]
+              properties:
+                year: { type: integer }
+                dates:
+                  type: array
+                  minItems: 1
+                  items: { type: string, format: date }
+      responses:
+        '200':
+          description: Festivos creados y fechas omitidas (ya existían, pasadas o fuera de la respuesta)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created: { type: integer }
+                  skipped: { type: integer }
+                  cancelledSessions: { type: integer }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '502':
+          description: HOLIDAYS_IMPORT_UNAVAILABLE
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+  responses:
+    Forbidden:
+      description: FORBIDDEN_ROLE
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: NOT_FOUND
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    PeriodClosed:
+      description: PERIOD_CLOSED_READ_ONLY
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: object
+          additionalProperties: true
+    ScheduleInput:
+      type: object
+      required: [dayOfWeek, startTime, endTime]
+      properties:
+        dayOfWeek: { type: integer, minimum: 1, maximum: 7, description: 1 = lunes, 7 = domingo }
+        startTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+        endTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+    Schedule:
+      allOf:
+        - $ref: '#/components/schemas/ScheduleInput'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            sessionsGenerated: { type: integer, description: Sesiones creadas para este horario en esta operación }
+    ModuleCreate:
+      type: object
+      required: [periodId, name, teacherId, roomId, schedules]
+      properties:
+        periodId: { type: string, format: uuid }
+        name: { type: string, minLength: 1, maxLength: 120 }
+        description: { type: string, maxLength: 1000, nullable: true }
+        teacherId: { type: string, format: uuid }
+        roomId: { type: string, format: uuid }
+        schedules:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/ScheduleInput' }
+    ModuleUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        description: { type: string, maxLength: 1000, nullable: true }
+    ModuleSummary:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        periodId: { type: string, format: uuid }
+        periodStatus: { $ref: '#/components/schemas/PeriodStatus' }
+        name: { type: string }
+        teacher: { $ref: '#/components/schemas/PersonRef' }
+        room: { $ref: '#/components/schemas/RoomRef' }
+        capacity: { type: integer, description: Capacidad actual del salón (el cupo) }
+        enrolled: { type: integer }
+        schedules:
+          type: array
+          items: { $ref: '#/components/schemas/ScheduleInput' }
+        roomUnavailable: { type: boolean, description: El salón está inactivo o eliminado }
+        teacherUnavailable: { type: boolean, description: El docente está desactivado, eliminado o ya no tiene rol docente }
+    ModuleDetail:
+      allOf:
+        - $ref: '#/components/schemas/ModuleSummary'
+        - type: object
+          properties:
+            description: { type: string, nullable: true }
+            schedules:
+              type: array
+              items: { $ref: '#/components/schemas/Schedule' }
+            holidayDates:
+              type: array
+              description: Festivos futuros del periodo que caen en un día de horario del módulo (no tienen sesión programada)
+              items: { type: string, format: date }
+            canChangeSchedules: { type: boolean }
+            canDelete: { type: boolean }
+            readOnlyReason: { type: string, nullable: true, enum: [PERIOD_CLOSED, null] }
+    ModulePage:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/ModuleSummary' }
+        meta:
+          allOf:
+            - $ref: '#/components/schemas/PageMeta'
+            - type: object
+              properties:
+                periodId: { type: string, format: uuid, nullable: true, description: Periodo mostrado (el pedido, el activo o el próximo) }
+    Session:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        originalStartsAt: { type: string, format: date-time }
+        status: { type: string, enum: [SCHEDULED, RESCHEDULED, CANCELLED] }
+        cancelReason: { type: string, enum: [HOLIDAY, TEACHER, null], nullable: true }
+        teacher: { $ref: '#/components/schemas/PersonRef' }
+        room: { $ref: '#/components/schemas/RoomRef' }
+    SessionPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Session' }
+        meta: { $ref: '#/components/schemas/PageMeta' }
+    PersonRef:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        firstName: { type: string }
+        lastName: { type: string }
+    RoomRef:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        locationName: { type: string }
+        capacity: { type: integer }
+    PeriodStatus:
+      type: string
+      enum: [UPCOMING, ACTIVE, CLOSED]
+    Holiday:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        date: { type: string, format: date }
+        name: { type: string }
+        source: { type: string, enum: [MANUAL, IMPORTED] }
+        isPast: { type: boolean }
+    HolidayInput:
+      type: object
+      required: [date, name]
+      properties:
+        date: { type: string, format: date }
+        name: { type: string, minLength: 1, maxLength: 120 }
+    HolidayResult:
+      type: object
+      properties:
+        holiday: { $ref: '#/components/schemas/Holiday' }
+        cancelledSessions: { type: integer }
+    HolidayRemoval:
+      type: object
+      properties:
+        restored: { type: integer }
+        generated: { type: integer }
+        notRestored:
+          type: array
+          items:
+            type: object
+            properties:
+              sessionId: { type: string, format: uuid }
+              moduleId: { type: string, format: uuid }
+              reason: { type: string, enum: [TEACHER_BUSY, ROOM_BUSY] }
+    HolidayPreview:
+      type: object
+      properties:
+        date: { type: string, format: date }
+        name: { type: string }
+        alreadyExists: { type: boolean }
+        isPast: { type: boolean, description: Fecha anterior a hoy en Bogotá; no se puede seleccionar ni se importa }
+    PageMeta:
+      type: object
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }

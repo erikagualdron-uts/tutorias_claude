@@ -1,0 +1,285 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - Cronograma del docente API
+  version: 1.0.0
+  description: >
+    Contrato de los módulos y sesiones del docente y de reprogramar, cancelar y reactivar sesiones.
+    Errores en el formato único de docs/Conventions.md §4 (`code` estable que la app traduce). Todo
+    exige rol TEACHER (403 en otro caso). El docente sale siempre del token: una sesión ajena
+    responde 404. Las fechas-hora son ISO 8601 UTC; las horas de horario son locales de
+    America/Bogota ("HH:mm"). Reprogramar, cancelar y reactivar exigen que falte al menos
+    `changeLeadMinutes` (120 por defecto) para el inicio de la primera sesión afectada.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /teacher/modules:
+    get:
+      summary: Módulos del periodo Activo que dicta el docente
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de módulos (vacía si no hay periodo activo)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TeacherModulePage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /teacher/sessions:
+    get:
+      summary: Próximas sesiones del docente, ordenadas por inicio
+      description: >
+        Solo sesiones futuras: por defecto desde ahora; un `from` anterior a hoy se ajusta a ahora.
+        `from` y `to` son días de calendario de Bogotá (inclusivos).
+        Incluye las canceladas con su motivo para que el docente pueda reactivar las suyas.
+      parameters:
+        - { name: moduleId, in: query, schema: { type: string, format: uuid } }
+        - { name: from, in: query, schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' } }
+        - { name: to, in: query, schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Página de sesiones
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TeacherSessionPage' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /teacher/sessions/{id}/reschedule:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      summary: Reprogramar una sesión (o ella y las futuras de su horario semanal)
+      description: >
+        `startsAt` es el nuevo inicio de la sesión elegida; las demás sesiones del alcance `SERIES`
+        se desplazan lo mismo. Con `dryRun: true` valida todo y responde sin escribir ni registrar
+        eventos, para mostrar el motivo antes de confirmar.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RescheduleRequest' }
+      responses:
+        '200':
+          description: Sesiones con su nueva hora
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionChange' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: >
+            SESSION_CHANGE_WINDOW_PASSED, SESSION_NOT_CHANGEABLE, MODULE_ROOM_CONFLICT,
+            MODULE_TEACHER_CONFLICT, SESSION_STUDENT_CONFLICT o PERIOD_CLOSED_READ_ONLY
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '422':
+          description: SESSION_RESCHEDULE_INVALID_DATE o MODULE_SCHEDULE_OUT_OF_HOURS
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /teacher/sessions/{id}/cancel:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      summary: Cancelar una sesión (o ella y las futuras de su horario semanal)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ScopeRequest' }
+      responses:
+        '200':
+          description: Sesiones canceladas con el motivo TEACHER
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionChange' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: SESSION_CHANGE_WINDOW_PASSED, SESSION_NOT_CHANGEABLE o PERIOD_CLOSED_READ_ONLY
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /teacher/sessions/{id}/restore:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      summary: Reactivar una sesión que el docente canceló (o ella y las futuras de su horario)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ScopeRequest' }
+      responses:
+        '200':
+          description: Sesiones reactivadas
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionChange' }
+        '400': { $ref: '#/components/responses/ValidationFailed' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: >
+            SESSION_CHANGE_WINDOW_PASSED, SESSION_NOT_CHANGEABLE, MODULE_ROOM_CONFLICT,
+            MODULE_TEACHER_CONFLICT, SESSION_STUDENT_CONFLICT o PERIOD_CLOSED_READ_ONLY
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+  responses:
+    ValidationFailed:
+      description: VALIDATION_FAILED
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: TOKEN_INVALID o SESSION_EXPIRED
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: FORBIDDEN_ROLE
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: NOT_FOUND (inexistente, eliminada o de otro docente)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: object
+          additionalProperties: true
+    PageMeta:
+      type: object
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+    Schedule:
+      type: object
+      properties:
+        dayOfWeek: { type: integer, minimum: 1, maximum: 7, description: 1 = lunes, 7 = domingo }
+        startTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+        endTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+    RoomRef:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        location: { type: string }
+        capacity: { type: integer }
+    TeacherSession:
+      type: object
+      nullable: true
+      description: Una sesión del docente (null cuando no hay próxima sesión)
+      properties:
+        id: { type: string, format: uuid }
+        moduleId: { type: string, format: uuid }
+        moduleName: { type: string }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        originalStartsAt: { type: string, format: date-time }
+        status: { type: string, enum: [SCHEDULED, RESCHEDULED, CANCELLED] }
+        cancelReason: { type: string, nullable: true, enum: [HOLIDAY, TEACHER, null] }
+        room: { $ref: '#/components/schemas/RoomRef' }
+        attendees: { type: integer, minimum: 0, description: Estudiantes que asisten a esta sesión (solo cantidad) }
+        canReschedule: { type: boolean }
+        canCancel: { type: boolean }
+        canRestore: { type: boolean }
+        blockReason:
+          type: string
+          nullable: true
+          enum: [WINDOW_PASSED, PERIOD_CLOSED, PAST, CANCELLED_BY_OTHER, null]
+          description: Por qué no puede cambiarse, para mostrar la regla
+    TeacherSessionPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/TeacherSession' }
+        meta:
+          allOf:
+            - $ref: '#/components/schemas/PageMeta'
+            - type: object
+              properties:
+                changeLeadMinutes: { type: integer, description: Límite configurado para cambiar una sesión }
+    TeacherModule:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        room: { $ref: '#/components/schemas/RoomRef' }
+        schedules:
+          type: array
+          items: { $ref: '#/components/schemas/Schedule' }
+        enrolled: { type: integer, minimum: 0 }
+        capacity: { type: integer }
+        readOnly: { type: boolean, description: El periodo está Cerrado }
+        nextSession: { $ref: '#/components/schemas/TeacherSession' }
+    TeacherModulePage:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/TeacherModule' }
+        meta:
+          allOf:
+            - $ref: '#/components/schemas/PageMeta'
+            - type: object
+              properties:
+                periodId: { type: string, format: uuid, nullable: true, description: Periodo activo mostrado }
+    ScopeRequest:
+      type: object
+      required: [scope]
+      additionalProperties: false
+      properties:
+        scope:
+          type: string
+          enum: [SESSION, SERIES]
+          description: SESSION solo la elegida; SERIES ella y las futuras de su mismo horario semanal
+    RescheduleRequest:
+      type: object
+      required: [scope, startsAt]
+      additionalProperties: false
+      properties:
+        scope: { type: string, enum: [SESSION, SERIES] }
+        startsAt: { type: string, format: date-time, description: Nuevo inicio de la sesión elegida }
+        dryRun: { type: boolean, default: false }
+    SessionChange:
+      type: object
+      properties:
+        scope: { type: string, enum: [SESSION, SERIES] }
+        dryRun: { type: boolean }
+        sessions:
+          type: array
+          description: Las sesiones afectadas con su estado resultante
+          items: { $ref: '#/components/schemas/TeacherSession' }

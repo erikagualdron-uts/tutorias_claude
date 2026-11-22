@@ -17,7 +17,10 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 | Término | Significado |
 |---|---|
-| **Módulo** | Una tutoría académica. Tiene docente, salón, horario y estudiantes inscritos. |
+| **Módulo** | Una tutoría académica. Tiene docente, salón, horario semanal y estudiantes inscritos. Pertenece a un periodo académico. |
+| **Periodo académico** | Semestre en el que se dictan los módulos (ej. 2026-2), con fecha de inicio y fin. |
+| **Sesión** | Cada ocurrencia semanal de un módulo, en una fecha y hora concretas. |
+| **UTS** | Institución Universitaria Tecnológica de Santander (antes Unidades Tecnológicas de Santander). Cambió su carácter académico por la Resolución MEN 019103 del 23 de julio de 2026 y conserva la sigla UTS. |
 | **CAE** | Centro de Administración Estudiantil. Es quien administra la plataforma (rol SUPERADMIN). |
 | **PQRS** | Peticiones, quejas, reclamos y sugerencias. |
 | **Borrado lógico** | El registro no se elimina de la base de datos, solo se marca como eliminado. |
@@ -31,14 +34,15 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 1. **Configuración**
    - Datos generales: cantidad de salones, capacidad de personas por salón, etc.
    - Listas desplegables administrables.
+   - Periodos académicos (semestres): crear, definir fechas de inicio y fin, y cuál está activo.
    - Correos institucionales de docentes.
-   - SMTP: configuración del servicio de envío de correos.
+   - SMTP: configurar el servidor de correo (servidor, puerto, usuario, clave y remitente), enviar un correo de prueba y ver su estado; la clave se guarda cifrada y nunca se muestra (spec 014).
 2. **Módulos**
    - **Salones**: gestión de salones y ubicaciones.
    - **Gestión de módulos**: cambiar salón de un módulo y cambiar docente de un módulo.
 3. **Notificaciones**: mensajes directos entre el CAE y los docentes (en ambos sentidos).
-4. **Docentes**: crear, generar clave temporal, actualizar datos, desactivar y borrado lógico.
-5. **Estudiantes**: ver registrados, desactivar cuentas y borrado lógico.
+4. **Docentes**: crear, ver y buscar, regenerar la clave temporal, actualizar nombre, apellido y teléfono (el correo no cambia), desactivar, reactivar y borrado lógico (spec 016).
+5. **Estudiantes**: ver y buscar a los registrados, desactivar, reactivar y borrado lógico; dar de baja cancela sus inscripciones vigentes (spec 016).
 6. **PQRS**: ver las generadas por docentes y estudiantes, atenderlas, y luego notificar al usuario o mantener la conversación por correo con la persona encargada.
 7. **Dashboard**.
 
@@ -48,9 +52,10 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
    - Enviar mensajes a los estudiantes de sus módulos.
    - Recibir mensajes de los estudiantes de sus módulos.
    - Conversar con el CAE.
+   - Bandeja de notificaciones con contador en la barra superior; los avisos de cambios de módulos van a los estudiantes y los demás tipos llegarán con sus funcionalidades (spec 014).
 2. **Cronograma**
-   - Calendario semanal con sus tutorías: hora, salón y cantidad de estudiantes.
-   - Cambiar la hora de una tutoría (consultando disponibilidad) o cancelarla. Se notifica a todos los estudiantes inscritos.
+   - Calendario semanal con sus tutorías: hora, salón y cantidad de estudiantes, en vista Día (por defecto en el teléfono) o Semana (por defecto en tableta), navegable por el periodo académico, con las próximas sesiones debajo (spec 013).
+   - Cambiar la hora de una tutoría (consultando disponibilidad) o cancelarla, solo esa sesión o ella y las futuras de su horario semanal, y reactivar lo que canceló. Se notifica a todos los estudiantes inscritos.
 3. **Dashboard**.
 4. **PQRS**: solo radicar (vista de usuario).
 
@@ -59,7 +64,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 1. **Elegir tutorías** en formato de tarjetas.
 2. **Cancelar** las tutorías en las que esté inscrito.
 3. **Cronograma** semanal de solo lectura.
-4. **Notificaciones**: anuncios de las tutorías, mensajes directos con docentes y avisos de cancelaciones.
+4. **Notificaciones**: anuncios de las tutorías, mensajes directos con docentes y avisos de cambios. Los avisos de cambios (hora, cancelación, reactivación, docente, salón y festivos) llegan a la **bandeja de la app** (campana con contador en la barra superior), por **push** y por **correo**, en el idioma del dispositivo (spec 014).
 5. **PQRS**: solo radicar (vista de usuario).
 
 ## 5. Fuera de alcance (por ahora)
@@ -84,24 +89,45 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - Los **docentes** no se registran solos: los crea el CAE con clave temporal y deben cambiarla en el primer ingreso. El CAE solo puede crearlos con un correo del dominio @correo.uts.edu.co.
 - Los borrados son **lógicos**, nunca físicos.
 - Una cuenta desactivada no puede iniciar sesión, pero conserva su historial.
+- **Gestión de cuentas (spec 016):** el CAE ve las listas de docentes y de estudiantes (estos últimos solo con el correo verificado), con búsqueda sin distinguir tildes ni mayúsculas por nombre, apellido o correo. Desactivar o eliminar cierra las sesiones de la cuenta al instante, y antes de confirmar la app muestra el efecto con números. Dar de baja a un docente no se bloquea por sus módulos (D-088): quedan marcados "docente no disponible". Dar de baja a un estudiante cancela, en la misma transacción, sus inscripciones vigentes del periodo activo y libera su cupo; al reactivarlo no se restauran, y las de un periodo Cerrado no se tocan (D-109). Eliminar es siempre lógico y el correo sigue ocupado. El CAE solo puede regenerar la clave de un docente activo: la clave anterior deja de servir, se muestra una sola vez y el docente debe cambiarla al entrar. El correo de una cuenta no se puede cambiar.
 
 ### Módulos, cupos y horarios
 - **Solo el CAE** crea módulos y define su docente, salón y horario.
-- El **cupo máximo** de un módulo se calcula automáticamente según la capacidad del salón asignado.
+- Los módulos se organizan en un **listado por periodo académico** (semestre). El estudiante ve y se inscribe a los módulos del periodo activo.
+- Cada módulo **se repite semanalmente** en su día y hora durante todo el periodo. Cada semana es una **sesión**. Los cambios de hora y las cancelaciones del docente afectan a la sesión elegida **y a todas las sesiones futuras** del módulo (ver D-069).
+- La inscripción es al módulo (todas sus sesiones del periodo) y solo a módulos del periodo **activo**.
+- El **cupo máximo** de un módulo se calcula automáticamente según la capacidad del salón asignado y se mide **por sesión**: si una cancelación suelta libera un lugar en una sesión, otro estudiante no puede inscribirse mientras alguna sesión futura esté llena (D-090).
 - Al llegar al cupo, el sistema **bloquea** nuevas inscripciones.
 - Un estudiante **no puede inscribirse** a dos módulos que se crucen en horario.
 - No hay límite de módulos por estudiante, siempre que no se crucen.
-- El estudiante puede **cancelar** una tutoría hasta **1 hora antes** de su inicio. Pasado ese tiempo, la cancelación se bloquea.
+- El estudiante puede **cancelar** hasta **1 hora antes** del inicio de la sesión, y elige el alcance: **solo esa sesión** o **el módulo completo** (su inscripción). Pasado ese tiempo, la cancelación se bloquea (ver D-070). El estudiante puede **reactivar** una sesión que canceló mientras falte más de 1 hora y haya lugar. Cancelar el módulo libera el lugar desde la primera sesión que empiece en más de 1 hora; una sesión que empieza antes conserva al estudiante (D-091).
 - Un estudiante puede **volver a inscribirse** a un módulo que canceló, mientras no se haya llenado el cupo máximo.
 - El CAE solo puede **cambiar el salón** de un módulo si la capacidad del nuevo salón es **mayor o igual** a la cantidad de estudiantes inscritos. De lo contrario, el sistema bloquea el cambio.
-- Un salón o un docente no puede tener dos módulos en el mismo horario.
-- El docente solo puede cambiar la hora **consultando disponibilidad** (salón y cruces de horario).
-- El docente puede **cambiar la hora o cancelar** una tutoría hasta **2 horas antes** de su inicio. Pasado ese tiempo, la acción se bloquea.
-- Cambiar hora, salón o docente, o cancelar un módulo, **siempre notifica** a los estudiantes inscritos.
+- Un salón o un docente no puede tener dos módulos en el mismo horario dentro del periodo; terminar a la hora en que otro empieza no es un cruce.
+- Los horarios de un módulo van **de 6:00 a. m. a 6:00 p. m.** (hora de Bogotá): ninguno puede empezar antes ni terminar después. El límite vive en configuración (`MODULE_EARLIEST_TIME` y `MODULE_LATEST_TIME`) y se aplica en el backend (ver D-089).
+- Un módulo puede tener **varios horarios semanales** (por ejemplo martes y jueves). El CAE solo cambia esos horarios mientras el módulo **no tenga inscritos**; con inscritos, la hora de una sesión o de las futuras la cambia el docente (D-084).
+- El CAE solo elimina (lógico) un módulo **sin inscritos**. Cambiar el docente o el salón se aplica a las sesiones futuras y las pasadas conservan lo que tenían (D-086).
+- Los módulos de un periodo **Cerrado** son de solo lectura, también frente a los festivos.
+- Si el docente o el salón de un módulo se desactiva o elimina después de asignarse, el módulo se marca como no disponible y el CAE lo reasigna; no se bloquea la desactivación (D-088).
+- El docente solo puede cambiar la hora **consultando disponibilidad** (salón, docente y cruces con los horarios de los estudiantes inscritos) y solo dentro de la misma semana de la sesión.
+- El docente puede **cambiar la hora o cancelar** una tutoría hasta **2 horas antes** de su inicio, y elige el alcance: **solo esa sesión** o **ella y las futuras de su mismo horario semanal** (D-069). Puede **reactivar** una sesión que él canceló mientras falten 2 horas o más. Pasado ese tiempo, la acción se bloquea.
+- Cambiar hora, salón o docente, o cancelar un módulo, **siempre notifica** a los estudiantes inscritos: un solo aviso por cambio, que no se envía a quien ya no está inscrito, ni a quien marcó ausencia en las sesiones afectadas.
+
+### Configuración del CAE (periodos, salones y listas)
+- Un periodo nace **Próximo**; el CAE lo **activa** y, si ya hay uno activo, confirma que se cierra. El periodo activo se cierra a mano o solo al pasar su fecha de fin. Un periodo **Cerrado** es de solo lectura y no se reabre. Los periodos no se solapan y solo se eliminan los Próximos sin módulos (D-071, D-072, D-076).
+- En un periodo Próximo o Activo el CAE solo edita el **nombre y las fechas**; en el activo, la fecha de fin no puede ser anterior a hoy.
+- Un salón tiene nombre único dentro de su ubicación, capacidad entera positiva y estado Activo o Inactivo. No se desactiva ni elimina un salón con módulos en el periodo activo; con módulos solo en periodos Próximos se permite, avisando cuántos quedan afectados (D-074). Eliminar una ubicación sin salones activos elimina también sus salones inactivos (D-075).
+- Las **listas desplegables** las define el sistema (ej. "Tipos de PQRS"); el CAE administra sus elementos con etiqueta en español e inglés, orden y estado. Un elemento en uso solo se desactiva (D-073).
+- Reglas que **la funcionalidad de módulos debe cumplir** porque la configuración no puede aplicarlas sola: el cupo es la capacidad del salón, un salón inactivo o eliminado no se asigna, y los módulos de un periodo cerrado no se modifican.
+
+### Festivos
+- El CAE administra un **calendario de festivos**: agrega, edita y elimina (lógico) festivos con fecha y nombre, y puede **importar** los de un año desde un servicio público (Nager.Date) revisando antes la lista. No se registran, editan, eliminan ni importan festivos con fecha anterior a hoy (D-083).
+- Las sesiones no se generan en festivos. Al registrar un festivo, las sesiones futuras de esa fecha se cancelan con el motivo "festivo" y se avisa a los inscritos; al eliminarlo, se restauran o se generan de nuevo.
+- La importación nunca es obligatoria: si el servicio externo falla, el CAE registra los festivos a mano.
 
 ### Comunicación
 - La **mensajería es en tiempo real** (chat).
-- Las notificaciones llegan por **push** y por **correo** (vía el SMTP que configura el CAE).
+- Las notificaciones llegan a la **bandeja de la app**, por **push** y por **correo** (vía el SMTP que configura el CAE). La bandeja funciona aunque se rechace el permiso de push o el correo no esté configurado, y conserva todos los avisos.
 - Quién puede escribir a quién:
   - CAE ↔ docentes.
   - Docente ↔ estudiantes de sus módulos.
@@ -148,4 +174,8 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 ## 10. Preguntas abiertas
 
-Ninguna por ahora. Agregar aquí las que surjan durante el desarrollo.
+- [x] Cuando el docente cambia la hora o cancela, ¿afecta solo esa sesión o también las semanas restantes? **Resuelto (D-069): afecta la sesión elegida y todas las futuras.**
+- [x] Cuando el estudiante cancela, ¿cancela su inscripción al módulo completo o solo su asistencia a una sesión? **Resuelto (D-070): elige entre solo la sesión o el módulo completo.**
+- [x] Al reprogramar una sesión, ¿también se valida que no choque con otras tutorías de los estudiantes inscritos? **Resuelto (D-093): sí, se rechaza y se dice cuántos estudiantes se cruzan.**
+- [x] ¿Se excluyen festivos o semanas sin tutoría dentro del periodo? **Resuelto (D-083): calendario de festivos del CAE con importación opcional.**
+- [x] ¿Un módulo puede tener más de un horario semanal (por ejemplo lunes y miércoles)? **Resuelto (D-084): sí; el CAE solo los cambia sin inscritos.**

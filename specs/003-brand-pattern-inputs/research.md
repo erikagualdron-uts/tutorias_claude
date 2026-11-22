@@ -1,0 +1,11 @@
+# Research: Ajustes visuales de marca e inputs
+
+**R-1 · Patrón de marca.** Decisión: un componente `BrandPattern` con una lista fija (`brandPatternLayouts.ts`) de ubicaciones (x %, y %, tamaño, rotación, ícono, tono), con variantes `header` (14 íconos) y `hero` (3 íconos). Íconos `mdi:leaf`, `mdi:feather`, `mdi:book-open-page-variant` declarados en el registro `src/icons/` (D-049). Memoizado, sin toques, oculto a lectores, un `FadeIn` de 350 ms (sin animación con reducir movimiento). Alternativas descartadas: SVG propio (la regla es Iconify) y posiciones aleatorias (el diseño saltaría).
+
+**R-2 · Campos.** Decisión: ampliar `TextField` (hoy sin borde en reposo y con ícono opcional) con tokens `inputFill`, `inputBorder` e `inputBorderFocus` en la paleta (derivados ya definidos en Design.md, con valores para modo oscuro). Foco y error animados 150 ms con Reanimated; el error prevalece sobre el foco. El relleno depende del fondo: prop `onCard`. Selector, área de texto, búsqueda y chat reutilizan la misma base y se montan solo donde la pantalla exista (hoy: acceso, cambio de clave y alta de docente). Alternativa descartada: componentes separados con estilos duplicados.
+
+**R-3 · Splash.** El splash nativo no dibuja componentes: se genera una imagen estática (logo + patrón) en `assets/brand/` y se referencia en `app.json` para claro y oscuro. El archivo del logo no se modifica; se compone encima.
+
+**R-4 · Nombre de la institución.** Hallazgo: el nombre antiguo solo aparece en `src/i18n/es.json` y `en.json` (`brand.institution`). Las plantillas de correo (`tutorias_uts_back/src/mail/templates`) solo dicen "UTS Tutorías" y no nombran a la institución, así que no hay nada que reemplazar. `Design.md` dice que el nombre completo aparece en los correos, pero la spec (Supuestos) prohíbe agregar texto nuevo. Decisión: seguir la spec y no tocar los correos; queda como pregunta abierta para el usuario (agregar un pie con el nombre completo sería un cambio de contenido). Se agrega una prueba que falle si el nombre antiguo reaparece.
+
+**R-5 · Círculos.** Único lugar con decoración geométrica hoy: `AuthLayout` (`circle`, `circleTop`, `circleBottom`) y el token `onGradient.circle`. Se eliminan.
