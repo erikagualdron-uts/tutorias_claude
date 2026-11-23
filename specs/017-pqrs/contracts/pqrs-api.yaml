@@ -1,0 +1,369 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - PQRS (spec 017)
+  version: 1.0.0
+  description: |
+    Todos los endpoints exigen sesión. Docentes y estudiantes (`TEACHER`, `STUDENT`) radican y consultan
+    solo lo propio bajo `/pqrs/mine`; el `SUPERADMIN` (CAE) gestiona bajo `/pqrs`. Un rol que no
+    corresponde recibe 403 y sin sesión 401. Los listados siguen la paginación del proyecto.
+    Los tipos disponibles salen de `GET /dropdown-lists/PQRS_TYPE/items` (existente, spec 006).
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+tags:
+  - name: pqrs-author
+  - name: pqrs-admin
+paths:
+  /pqrs/limits:
+    get:
+      tags: [pqrs-author]
+      summary: Largos máximos de asunto, descripción y respuesta (de la configuración)
+      description: Cualquier rol con sesión (los autores la usan para el formulario y el CAE para el límite de su respuesta).
+      responses:
+        '200':
+          description: Los límites vigentes.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsLimits' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /pqrs:
+    post:
+      tags: [pqrs-author]
+      summary: Radicar una PQRS
+      description: |
+        Roles TEACHER y STUDENT. La PQRS nace `FILED`. Un reintento con el mismo `clientRequestId`
+        del mismo autor devuelve la PQRS ya creada con 200 y no crea otra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreatePqrs' }
+      responses:
+        '201':
+          description: PQRS radicada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsMine' }
+        '200':
+          description: Reintento con la misma clave; devuelve la PQRS existente.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsMine' }
+        '400': { $ref: '#/components/responses/Validation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422':
+          description: El tipo no existe, no es de `PQRS_TYPE`, está desactivado o borrado (`PQRS_TYPE_UNAVAILABLE`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    get:
+      tags: [pqrs-admin]
+      summary: Todas las PQRS (CAE)
+      description: Rol SUPERADMIN. Filtros combinables; de la más reciente a la más antigua.
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Status' }
+        - name: typeId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: authorRole
+          in: query
+          schema: { type: string, enum: [TEACHER, STUDENT] }
+      responses:
+        '200':
+          description: Página de PQRS con el autor.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsAdminPage' }
+        '400': { $ref: '#/components/responses/Validation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /pqrs/mine:
+    get:
+      tags: [pqrs-author]
+      summary: Mis PQRS
+      description: Roles TEACHER y STUDENT. Solo las del autor que consulta.
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Status' }
+      responses:
+        '200':
+          description: Página de PQRS propias.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsMinePage' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /pqrs/mine/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      tags: [pqrs-author]
+      summary: Detalle de una PQRS propia con sus respuestas
+      responses:
+        '200':
+          description: La PQRS con las respuestas en orden cronológico.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsMineDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /pqrs/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      tags: [pqrs-admin]
+      summary: Detalle de cualquier PQRS (CAE)
+      responses:
+        '200':
+          description: La PQRS con el autor y las respuestas.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsAdminDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /pqrs/{id}/review:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [pqrs-admin]
+      summary: Pasar a "En revisión" (CAE)
+      description: Solo desde `FILED`. Avisa al autor (`PQRS_IN_REVIEW`).
+      responses:
+        '200':
+          description: La PQRS en `IN_REVIEW`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsAdminDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: No está `FILED` (`PQRS_INVALID_TRANSITION`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /pqrs/{id}/responses:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [pqrs-admin]
+      summary: Responder una PQRS (CAE)
+      description: Solo estando `IN_REVIEW`. Avisa al autor (`PQRS_RESPONDED`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Respond' }
+      responses:
+        '201':
+          description: La respuesta creada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsMessage' }
+        '400': { $ref: '#/components/responses/Validation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: No está `IN_REVIEW` (`PQRS_NOT_IN_REVIEW`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /pqrs/{id}/resolve:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [pqrs-admin]
+      summary: Marcar como "Resuelta" (CAE)
+      description: Solo desde `IN_REVIEW` y con al menos una respuesta. Avisa al autor (`PQRS_RESOLVED`). Es final.
+      responses:
+        '200':
+          description: La PQRS en `RESOLVED`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PqrsAdminDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: No está `IN_REVIEW` (`PQRS_INVALID_TRANSITION`) o no tiene respuestas (`PQRS_RESPONSE_REQUIRED`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    Status:
+      name: status
+      in: query
+      schema: { $ref: '#/components/schemas/PqrsStatus' }
+  responses:
+    Unauthorized:
+      description: Sin sesión o sesión inválida.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: El rol no corresponde a este endpoint.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: La PQRS no existe o no es del usuario (`PQRS_NOT_FOUND`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Validation:
+      description: Campos inválidos (`VALIDATION_FAILED`), con el detalle en `details.fields`.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    PqrsStatus:
+      type: string
+      enum: [FILED, IN_REVIEW, RESOLVED]
+    PageMeta:
+      type: object
+      required: [page, limit, total]
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+    PqrsLimits:
+      type: object
+      required: [subjectMaxLength, descriptionMaxLength, responseMaxLength]
+      properties:
+        subjectMaxLength: { type: integer }
+        descriptionMaxLength: { type: integer }
+        responseMaxLength: { type: integer }
+    CreatePqrs:
+      type: object
+      required: [clientRequestId, typeId, subject, description]
+      properties:
+        clientRequestId: { type: string, format: uuid, description: Una por intento de radicar; la genera la app. }
+        typeId: { type: string, format: uuid }
+        subject: { type: string }
+        description: { type: string }
+    Respond:
+      type: object
+      required: [body]
+      properties:
+        body: { type: string }
+    PqrsType:
+      type: object
+      required: [id, labelEs, labelEn]
+      description: Ambas etiquetas, también si el tipo está desactivado; la app elige según el idioma.
+      properties:
+        id: { type: string, format: uuid }
+        labelEs: { type: string }
+        labelEn: { type: string }
+    PqrsMessage:
+      type: object
+      required: [id, body, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        body: { type: string }
+        createdAt: { type: string, format: date-time }
+    PqrsMine:
+      type: object
+      required: [id, type, subject, status, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        type: { $ref: '#/components/schemas/PqrsType' }
+        subject: { type: string }
+        status: { $ref: '#/components/schemas/PqrsStatus' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    PqrsMineDetail:
+      allOf:
+        - $ref: '#/components/schemas/PqrsMine'
+        - type: object
+          required: [description, reviewedAt, resolvedAt, messages]
+          properties:
+            description: { type: string }
+            # Spec 020: the dates of the steps after filing, for the timeline of the detail.
+            reviewedAt: { type: string, format: date-time, nullable: true }
+            resolvedAt: { type: string, format: date-time, nullable: true }
+            messages:
+              type: array
+              items: { $ref: '#/components/schemas/PqrsMessage' }
+    PqrsMinePage:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/PqrsMine' }
+        meta: { $ref: '#/components/schemas/PageMeta' }
+    PqrsAuthor:
+      type: object
+      required: [id, role, firstName, lastName, email]
+      properties:
+        id: { type: string, format: uuid }
+        role: { type: string, enum: [TEACHER, STUDENT] }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string, format: email }
+    PqrsAdmin:
+      allOf:
+        - $ref: '#/components/schemas/PqrsMine'
+        - type: object
+          required: [author]
+          properties:
+            author: { $ref: '#/components/schemas/PqrsAuthor' }
+    PqrsAdminDetail:
+      allOf:
+        - $ref: '#/components/schemas/PqrsAdmin'
+        - type: object
+          required: [description, messages]
+          properties:
+            description: { type: string }
+            reviewedAt: { type: string, format: date-time, nullable: true }
+            resolvedAt: { type: string, format: date-time, nullable: true }
+            messages:
+              type: array
+              items: { $ref: '#/components/schemas/PqrsMessage' }
+    PqrsAdminPage:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/PqrsAdmin' }
+        meta: { $ref: '#/components/schemas/PageMeta' }
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code:
+          type: string
+          description: |
+            Códigos nuevos: `PQRS_NOT_FOUND`, `PQRS_TYPE_UNAVAILABLE`, `PQRS_INVALID_TRANSITION`,
+            `PQRS_NOT_IN_REVIEW`, `PQRS_RESPONSE_REQUIRED`. Además `VALIDATION_FAILED` y los de sesión.
+        message: { type: string }
+        details: { type: object }

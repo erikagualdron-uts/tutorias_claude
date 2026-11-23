@@ -366,6 +366,8 @@ A "now" line (2px #B3261E with an 8px dot) crosses the current time on today whe
 
 Implemented (spec 013): the segmented control (Day / Week, each option with its icon) opens on **Day** below 600 dp wide and on **Week** from 600 dp up; the choice is kept while navigating weeks and pressing Today. The visible hours are the allowed hours of the configuration (today 06:00 to 18:00), in whole hours and widened to show a session outside them. The week arrows only move inside the academic period; a blocked arrow looks disabled and, when pressed, shows `Outside the academic period`. While the first week loads the arrows wait. A session shows its state as text plus icon (Scheduled, Rescheduled with the original hour, Cancelled with its reason); the block label for screen readers lists module, hours, room and state. Week columns show hours, room and state only. Component: `src/components/calendar/`, reusable by the student and the CAE.
 
+**Student (spec 021)**: the student Schedule tab is this same calendar, read only, and nothing else (no upcoming list, no sheet). A block shows the hour range, the module, the room and the teacher's name; its state is text plus icon: Scheduled, Rescheduled (the new hour and `Before: date · time`), Cancelled for a holiday, Cancelled by the teacher and Cancelled by you (a session the student skipped for themselves), the cancelled ones struck through, and the cause that the institution gave wins over the student's own choice. Tapping a block opens that module's detail, where the student cancels under the usual rules; the calendar offers no Cancel, Restore or Reschedule. A student with no enrollments sees an empty state ("You are not enrolled in any module yet") with an "Explore modules" button instead of the calendar; the calendar asks the week again when the tab regains focus.
+
 Session block: #F2F4EF fill, 4px #34531F left border, 8px radius, 8px padding, minimum height 44px.
 - Teacher block: time range, module name, room, student count (`18 students`).
 - Student block: time range, module name, room, teacher name.
@@ -407,23 +409,43 @@ The Messages tab has a segmented control at the top: **Alerts** and **Chats**.
 
 **Chat screen**:
 - App bar with avatar, name and a subtitle (`Module name` or connection state).
-- Bubbles: max width 78%, 16px radius, with a 4px radius on the tail corner. Sent: #34531F fill, white text, right aligned. Received: #F2F4EF fill, #132F20 text, left aligned. A timestamp (Metadata) under the last message of each group of consecutive messages.
+- Bubbles: max width 78%, 16px radius, with a 4px radius on the tail corner. Sent: #34531F fill, white text, right aligned. Received: white fill with a soft level-1 shadow, #132F20 text, left aligned (D-115). Consecutive messages from the same person form a group: only the first has the tail corner (top, 4px) and the writer's name; 2px between messages of a group, 16px between groups. The time and the state icon sit inside the bubble, bottom right.
 - Date separators: centered neutral chip (`Today`, `Yesterday`, date).
 - Message states: sending (clock icon, 60% opacity), sent (single check), failed (red icon with "Tap to retry").
 - Teacher announcements to a module are not bubbles: they are full-width banner cards (#F8E9D4) labeled "Announcement" with the teacher's name.
-- Composer: pinned above the keyboard, #F2F4EF pill input with a 1px #C9D0C3 border (min 48px, grows to 5 lines), 48px circular send button (#34531F, white icon). The send button is disabled while the input is empty.
+- Composer: sits right above the tab bar and rises with the keyboard (measured against the window, D-115), pinned above the keyboard, #F2F4EF pill input with a 1px #C9D0C3 border (min 48px, grows to 5 lines), 48px circular send button (#34531F, white icon). The send button is disabled while the input is empty.
 - Typing indicator: three #575756 dots animating, in a received-style bubble.
 - Connection: while reconnecting, a #F8E9D4 banner under the app bar says `Reconnecting…`. Messages typed offline stay in the "sending" state and are sent when the connection returns.
 - Lists load newest first with infinite scroll upward.
 
+**As built (spec 018)**: the tab has a segmented control "Alerts" (the inbox of spec 014) and "Chats". Chats: a "New message" button with the add icon above the list; each row has a 48px avatar circle (person icon, or group icon for a module chat), the name or module, the last message in one line (prefixed "Announcement:" for an announcement), the time and an unread pill whose text is the count. Chat screen: a title header (the module chat adds "Module chat"), an inverted list with date separators ("Today", "Yesterday", date), bubbles as above (the writer's name above a message of someone else in a module chat), announcements as full-width cream cards with the label and the teacher's name, the "Reconnecting…" warning banner under the header, and the composer at the bottom: a pill input with the character counter under it, a 48px circular icon-only send button (label "Send", disabled while empty; D-115) and, only for the teacher of a module, a segmented control "Message" and "Announcement". What I send shows its state as an icon with an accessibility label ("Sending…" at 60% opacity, "Sent"); "Not sent" keeps its text and "Tap to retry". A read-only conversation hides the composer and shows the rule in an info banner (no shared module, closed period, unavailable account).
+
+**Built in spec 022**:
+- **Initials**: the avatar of a person shows the initial of the first name and of the last name in capitals (one letter with a single name; the person icon without a name) on the `surface` fill with the letters in primary; a module chat keeps the group icon. The chat header now has the same avatar to the left of the title. The letters are hidden from screen readers (the name is written next to it).
+- **Typing indicator**: in a direct chat, three #575756 dots in a received-style bubble at the foot of the list with the words "is typing…"; the dots breathe at different paces and stand still with "reduce motion", the words stay. It turns off after 5 seconds without a signal, when a message of that person arrives or when the connection drops. A module chat never shows it.
+- **Pending messages**: an unsent message is kept on the device and goes out when the app opens again with a connection. A message that is sending or failed shows a **Discard** action (trash icon, 48px) under the bubble; a failed one also keeps "Tap to retry". They belong to the user who wrote them and are erased on sign out.
+
+**Not built yet (chat)**: read receipts, floating action button, avatar photos, editing or deleting a message and attachments.
+
 ### PQRS
 **Status chips**: Filed (Neutral badge), In review (Warning badge), Resolved (Success badge). Type labels: Petition, Complaint, Claim, Suggestion.
 
-**Filing screen (students and teachers)**: single column form. Type as a chip group (single select), Subject input, Description textarea with counter. Primary full-width "Submit". After submitting: confirmation screen with a check icon, the filing number in Source Code Pro, and a button "View my PQRS".
+**Filing screen (students and teachers, spec 017)**: single column form. Type as a chip group (single select, only the active types, in the device language), Subject input and Description textarea with counter; the limits come from the API. Primary full-width "File" button with the send icon; the screen goes back to the list when it succeeds. A missing field is named under the field; a type that is no longer available shows the rule as an error banner.
 
-**My PQRS (students and teachers)**: card list, each card with the subject (2 lines), type label, status badge, and relative date (`3 days ago`). Detail screen: header with subject and status, a vertical status timeline (dots connected by a 2px #E5E5E5 line; completed dots #34531F), and the conversation thread below, using the same bubble style as chat. Users can reply only while the PQRS is not resolved.
+**My PQRS (students and teachers)**: card list, newest first, with a status filter chip bar (All, Filed, In review, Resolved) and a "New PQRS" button with the add icon above it. Each card has the subject, the type label, the filing date and the status badge. Detail screen: status badge, subject, type and date, a card with the description, and the replies of the CAE in chronological order, or a line saying there are none yet. The author does not reply inside a PQRS.
 
-**Management (CAE)**: list with a filter chip bar (All, Filed, In review, Resolved, plus type chips), oldest unattended first, and a count badge on the PQRS tab for items in "Filed". Detail screen adds a status control (tonal button with a bottom sheet to change status) and two actions: **Notify user** (sends an in-app notification) and **Reply by email** (opens a compose sheet; the thread keeps a copy of what was sent).
+**Management (CAE)**: list newest first with three chip bars that combine (status, type, including deactivated types, and author role); each card adds the name and role of the author. Detail screen: author card (name, role, email), the same body as the author view, and the actions of its state. "Filed" shows the rule "move it to In review first" and a button "Move to In review". "In review" shows the reply field with counter, "Send reply" and "Mark as resolved" (success button, disabled with its rule while there is no reply, and a confirmation dialog before it runs). "Resolved" shows that it no longer accepts changes.
+
+**Status badge**: outlined pill with an icon and the state as text (never color alone): Filed `solar:clipboard-text` in primary, In review `solar:clock-circle` in warning, Resolved `solar:check-circle` in success; the text is always #132F20.
+
+**Built in spec 020**:
+- **Filing number**: `N.º A1B2C3D4` in `typography.code` (Source Code Pro) on every PQRS card and detail, for the author and the CAE. It is the first 8 characters of the id in capitals, not consecutive.
+- **Confirmation screen**: after filing, the form is replaced (back never returns to the sent form) by a screen with the success icon, "Your PQRS was filed", a card with the filing number (large, in code type), the filing date and time in Bogota and the status badge, and two stacked buttons 16px apart: "View my PQRS" (primary, `solar:clipboard-text`) and "Back to my PQRS" (outlined, back icon).
+- **Status timeline** (author and CAE detail, between the description and the replies): a vertical rail with the three steps Filed, In review and Resolved. Each step has its icon (`clipboard-text`, `clock-circle`, `check-circle`), its name in text and, once it happened, its date and time in Bogota. The current step is in semibold with the word "Current"; pending steps are muted with the word "Pending" and no date; a done step without a stored date shows no time. Each step reads as one phrase for screen readers.
+- **Count badge on the CAE tab**: the "PQRS" tab shows the number of PQRS in "Filed" as the unread tab badge (#B3261E, white number, `99+` above 99, hidden at zero). Teacher and student tabs have none.
+- **Count-up**: the whole numbers of the metric cards count from 0 to their value in 600ms the first time they show, later changes show at once, "reduce motion" shows the final value, and the screen reader always reads the final value.
+
+**Not built yet**: the Notify user and Reply by email actions (the CAE continues by email outside the app).
 
 ### Dashboards
 Layout: Screen Title, an optional period selector chip (`This week`, `This month`, `Semester`), then content blocks stacked with 16px gaps.
@@ -452,6 +474,10 @@ Layout: Screen Title, an optional period selector chip (`This week`, `This month
 2. Metric cards: enrolled sessions this week, unread alerts and messages.
 3. Recent changes: list of cancellations and reschedules affecting them.
 4. My PQRS: up to 3 recent items with status badges.
+
+**Built (spec 019)**: the three dashboards replace the empty tab screens. Each block loads on its own and has its four states (loading, empty with its sentence, error with a "Try again" button, data), so one failing block never hides the others; pull-to-refresh and a refresh when the tab regains focus. Every block leads to where that data is worked with: the hero card to the module (teacher: the schedule), the unread counters to Messages and the inbox, "My PQRS" and the PQRS-by-status legend to the PQRS list (the CAE opens it already filtered by the tapped state), and each change to its module. The hero "View details" button uses the new **Accent** button variant (lime fill, #132F20 text and icon, dark surfaces only).
+
+**Recent changes list (CAE)**: opened from "See all" in the Recent changes block. A screen on the Screen background with one white card per change (icon, module, `Cancelled · 5 min ago` or `Rescheduled · 2 h ago`), loading more pages at the end, with the four states. The kind of change is always written, never only an icon.
 
 ### Admin management patterns
 - **Lists (teachers, students, rooms)**: search field, filter chips (All, Active, Inactive), rows with avatar, name, email (Metadata) and a status badge (Active neutral-success, Inactive neutral). Overflow menu per row: Edit, Deactivate/Reactivate, Delete. Deleting is a logical delete and always uses a destructive confirmation dialog; its text says the record is hidden, not erased.

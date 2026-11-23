@@ -43,7 +43,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 3. **Notificaciones**: mensajes directos entre el CAE y los docentes (en ambos sentidos).
 4. **Docentes**: crear, ver y buscar, regenerar la clave temporal, actualizar nombre, apellido y teléfono (el correo no cambia), desactivar, reactivar y borrado lógico (spec 016).
 5. **Estudiantes**: ver y buscar a los registrados, desactivar, reactivar y borrado lógico; dar de baja cancela sus inscripciones vigentes (spec 016).
-6. **PQRS**: ver las generadas por docentes y estudiantes, atenderlas, y luego notificar al usuario o mantener la conversación por correo con la persona encargada.
+6. **PQRS**: ver todas las de docentes y estudiantes con filtros por estado, tipo y rol del autor; pasarlas a "En revisión", responderlas y resolverlas (spec 017); si hace falta, mantener la conversación por correo con la persona.
 7. **Dashboard**.
 
 ### 4.2 DOCENTE
@@ -63,7 +63,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 1. **Elegir tutorías** en formato de tarjetas.
 2. **Cancelar** las tutorías en las que esté inscrito.
-3. **Cronograma** semanal de solo lectura.
+3. **Cronograma** semanal de solo lectura: un calendario (vistas Día y Semana) con las sesiones de los módulos en los que asiste, cada una con hora, módulo, salón y docente, y su estado (programada, reprogramada con la hora original, cancelada por festivo, por el docente o por él mismo). Se navega por las semanas del periodo académico y al tocar una sesión se abre su módulo; desde el calendario no se cambia nada (spec 021, D-118).
 4. **Notificaciones**: anuncios de las tutorías, mensajes directos con docentes y avisos de cambios. Los avisos de cambios (hora, cancelación, reactivación, docente, salón y festivos) llegan a la **bandeja de la app** (campana con contador en la barra superior), por **push** y por **correo**, en el idioma del dispositivo (spec 014).
 5. **PQRS**: solo radicar (vista de usuario).
 
@@ -126,19 +126,30 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - La importación nunca es obligatoria: si el servicio externo falla, el CAE registra los festivos a mano.
 
 ### Comunicación
-- La **mensajería es en tiempo real** (chat).
+- La **mensajería es en tiempo real** (chat) y solo de texto (spec 018).
 - Las notificaciones llegan a la **bandeja de la app**, por **push** y por **correo** (vía el SMTP que configura el CAE). La bandeja funciona aunque se rechace el permiso de push o el correo no esté configurado, y conserva todos los avisos.
 - Quién puede escribir a quién:
   - CAE ↔ docentes.
-  - Docente ↔ estudiantes de sus módulos.
+  - Docente ↔ estudiantes inscritos en sus módulos.
   - El estudiante **puede iniciar** la conversación con el docente de un módulo en el que está inscrito.
+  - No hay chat entre estudiantes ni entre un estudiante y el CAE.
+  - Dos personas tienen **una sola conversación** entre ellas. Si un estudiante y un docente dejan de compartir un módulo (baja, periodo cerrado o módulo borrado), la conversación queda de **solo lectura** para los dos y la app muestra la regla; lo mismo si la cuenta de la otra persona se desactiva o se elimina (D-113).
+- Cada **módulo** tiene un **chat grupal** donde escriben el docente y los inscritos; el docente publica **anuncios**, que se ven como tarjetas distintas de los mensajes. El estudiante solo lo ve mientras está inscrito, y solo lo publicado mientras lo estuvo; quien se da de baja deja de verlo. Con el periodo cerrado es de solo lectura. El CAE no participa (D-113).
+- Un mensaje que no alcanzó a enviarse (sin conexión o porque la app se cerró) se conserva en el dispositivo y sale solo al volver a abrir la app con conexión; el usuario puede **descartarlo**, y se borra al cerrar sesión (spec 022, D-119). En un chat directo se ve cuándo la otra persona está escribiendo; en un chat de módulo no. Los avatares de personas muestran sus iniciales.
+- **Avisos del chat:** quien no tiene la conversación abierta recibe un **push** con el nombre de quien escribe y el texto. En un chat individual, uno por ráfaga de mensajes; en el chat de un módulo, solo para los anuncios (los demás mensajes suman al contador). No hay correo por mensaje. Un mensaje escrito sin conexión se reenvía solo mientras la app sigue abierta (D-114).
 - **Retención del historial:**
   - Mensajes de módulo (anuncios y chats grupales): **6 meses** (lo que dura un semestre).
   - Chats individuales: se conservan **2 años**.
 
 ### PQRS
-- Docentes y estudiantes solo **radican** PQRS.
-- Solo el CAE las **gestiona**: las atiende, notifica al usuario o continúa la conversación por correo.
+- Docentes y estudiantes solo **radican** PQRS, con tipo (lista administrable "Tipos de PQRS"), asunto y descripción. Cada uno ve solo las suyas y su estado.
+- Solo el CAE las **gestiona**: ve todas con filtros por estado, tipo y rol del autor, las atiende y puede continuar la conversación por correo.
+- Estados: **Radicada → En revisión → Resuelta**, sin saltos ni retrocesos (spec 017, D-111). El CAE solo puede responder y resolver una PQRS **En revisión**, y para resolverla debe haber escrito al menos una respuesta. Una PQRS resuelta no admite respuestas ni cambios y no se reabre.
+- Las respuestas van del CAE al autor dentro de la PQRS; el autor no responde en ella (si necesita aportar algo más, radica otra). No hay adjuntos.
+- Cada cambio de estado y cada respuesta avisan al autor por la bandeja, el push y el correo, en el idioma del dispositivo; el aviso no copia el texto de la respuesta (D-112).
+- Un tipo de PQRS con PQRS asociadas solo se desactiva; las PQRS conservan su tipo (D-073).
+- Al radicar, el autor ve una confirmación con el **número de radicado** para citar la PQRS: un código de 8 caracteres derivado del identificador (por ejemplo `A1B2C3D4`), no consecutivo, que se muestra igual en la lista y el detalle del autor y del CAE (spec 020, D-117).
+- El detalle muestra una **línea de tiempo** con los tres pasos (Radicada, En revisión, Resuelta), la fecha y hora de cada paso cumplido en `America/Bogota` y el paso actual. El CAE ve en su pestaña "PQRS" cuántas están en "Radicada".
 
 ## 8. Dashboards (métricas propuestas)
 
@@ -164,6 +175,15 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 - Cancelaciones o cambios recientes.
 - Notificaciones y mensajes sin leer.
 - Estado de las PQRS que radicó.
+
+### Cómo se calculan (spec 019, D-116)
+- **Ocupación general:** inscritos activos sobre la suma de las capacidades de los módulos activos (no eliminados, del periodo vigente). Una cuenta desactivada o eliminada no cuenta como inscrita. Con capacidad total 0 se muestra 0 %.
+- **Módulo lleno:** inscritos igual o mayor que la capacidad. **Baja inscripción:** menos del 30 % del cupo y no lleno; el 30 % es el valor por defecto de la configuración `dashboard.lowEnrollmentPercent`.
+- **Uso de un salón:** el cupo ocupado de sus módulos activos (inscritos sobre capacidad). Se muestran los 3 más y los 3 menos ocupados, sin repetir uno.
+- **Tiempo promedio de respuesta:** de la radicación a la resolución, solo de las PQRS resueltas.
+- **Semana:** de lunes a domingo en `America/Bogota`; las sesiones canceladas no se cuentan. La próxima sesión es la primera futura no cancelada; las sesiones que un estudiante omitió no cuentan para él.
+- **Cambios recientes:** reprogramaciones y cancelaciones del docente, de la más reciente a la más antigua. No incluyen las cancelaciones por festivo (las genera el calendario) ni las sesiones ya restauradas. El estudiante ve solo las de sus módulos inscritos.
+- Los dashboards solo leen datos que ya existen; no hay selector de periodo.
 
 ## 9. Idiomas
 

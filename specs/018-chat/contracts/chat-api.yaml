@@ -1,0 +1,339 @@
+openapi: 3.0.3
+info:
+  title: UTS Tutorías - chat y anuncios (spec 018)
+  version: 1.0.0
+  description: |
+    Todos los endpoints exigen sesión, con cualquiera de los tres roles; lo que cada rol puede ver o
+    escribir lo decide el servidor en cada llamada. Una conversación ajena responde 404. La entrega al
+    instante va por WebSocket (ver `chat-socket.md`); estos endpoints son las órdenes y las lecturas.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+tags:
+  - name: chat
+paths:
+  /chat/contacts:
+    get:
+      tags: [chat]
+      summary: Personas a las que puedo escribir
+      description: |
+        CAE: docentes activos. Docente: estudiantes con inscripción activa en sus módulos y el CAE.
+        Estudiante: docentes de los módulos en los que está inscrito.
+      parameters:
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200':
+          description: Contactos ordenados por nombre.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ContactList' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /chat/conversations:
+    get:
+      tags: [chat]
+      summary: Mis conversaciones
+      description: |
+        Individuales con al menos un mensaje y los chats de mis módulos (también sin mensajes), del último
+        mensaje al más viejo. Asegura la fila del chat de cada módulo del usuario.
+      responses:
+        '200':
+          description: Conversaciones con el último mensaje y los sin leer.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConversationList' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [chat]
+      summary: Abrir o crear la conversación individual con alguien
+      description: Devuelve la misma conversación si ya existía (200) o la crea (201).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateDirect' }
+      responses:
+        '201':
+          description: Conversación creada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConversationDetail' }
+        '200':
+          description: Ya existía.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConversationDetail' }
+        '400': { $ref: '#/components/responses/Validation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: Esa pareja no puede conversar (`CHAT_PARTNER_NOT_ALLOWED`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /chat/conversations/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      tags: [chat]
+      summary: Una conversación con su estado de escritura
+      responses:
+        '200':
+          description: La conversación, si puedo escribir y por qué no, y los límites.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConversationDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /chat/conversations/{id}/messages:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    get:
+      tags: [chat]
+      summary: Historial por tramos, de lo más nuevo a lo más viejo
+      parameters:
+        - name: before
+          in: query
+          description: Cursor `next` de la página anterior.
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 30 }
+      responses:
+        '200':
+          description: Mensajes visibles para mí, con el cursor del siguiente tramo.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessagePage' }
+        '400': { $ref: '#/components/responses/Validation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [chat]
+      summary: Enviar un mensaje o un anuncio
+      description: |
+        Se guarda y luego se entrega. Un reintento con el mismo `clientMessageId` devuelve el mensaje ya
+        guardado con 200 y no vuelve a entregarlo. `kind: ANNOUNCEMENT` solo vale en el chat de un módulo y
+        solo para su docente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SendMessage' }
+      responses:
+        '201':
+          description: Mensaje guardado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Message' }
+        '200':
+          description: 'Reintento: el mensaje ya existía.'
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Message' }
+        '400': { $ref: '#/components/responses/Validation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: Solo el docente del módulo publica anuncios (`CHAT_ANNOUNCEMENT_FORBIDDEN`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: La conversación es de solo lectura (`CHAT_READ_ONLY`, con `details.reason`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /chat/conversations/{id}/read:
+    parameters:
+      - { $ref: '#/components/parameters/Id' }
+    post:
+      tags: [chat]
+      summary: Marcar la conversación como leída
+      responses:
+        '200':
+          description: Cuántos sin leer quedan en total.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UnreadCount' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /chat/unread-count:
+    get:
+      tags: [chat]
+      summary: Total de mensajes sin leer
+      responses:
+        '200':
+          description: El total (para la pestaña y los dashboards).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UnreadCount' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    Search:
+      name: search
+      in: query
+      description: Parte del nombre o apellido, sin distinguir mayúsculas ni tildes.
+      schema: { type: string, maxLength: 100 }
+  responses:
+    Unauthorized:
+      description: Sin sesión o sesión inválida.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: La conversación no existe o no es mía (`CHAT_NOT_FOUND`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Validation:
+      description: Campos inválidos (`VALIDATION_FAILED`), con el detalle en `details.fields`.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    ConversationType:
+      type: string
+      enum: [DIRECT, MODULE]
+    MessageKind:
+      type: string
+      enum: [TEXT, ANNOUNCEMENT]
+    ReadOnlyReason:
+      type: string
+      enum: [NO_SHARED_MODULE, PERIOD_CLOSED, PARTNER_UNAVAILABLE]
+    Person:
+      type: object
+      required: [id, role, firstName, lastName]
+      properties:
+        id: { type: string, format: uuid }
+        role: { type: string, enum: [SUPERADMIN, TEACHER, STUDENT] }
+        firstName: { type: string }
+        lastName: { type: string }
+    Contact:
+      allOf:
+        - $ref: '#/components/schemas/Person'
+        - type: object
+          required: [modules]
+          properties:
+            modules:
+              type: array
+              description: Módulos que comparten (vacío para el CAE).
+              items: { type: string }
+    ContactList:
+      type: array
+      items: { $ref: '#/components/schemas/Contact' }
+    ConversationList:
+      type: array
+      items: { $ref: '#/components/schemas/ConversationSummary' }
+    CreateDirect:
+      type: object
+      required: [userId]
+      properties:
+        userId: { type: string, format: uuid }
+    ModuleRef:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+    Message:
+      type: object
+      required: [id, conversationId, sender, kind, body, clientMessageId, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        conversationId: { type: string, format: uuid }
+        sender: { $ref: '#/components/schemas/Person' }
+        kind: { $ref: '#/components/schemas/MessageKind' }
+        body: { type: string }
+        clientMessageId: { type: string, format: uuid }
+        createdAt: { type: string, format: date-time }
+    SendMessage:
+      type: object
+      required: [clientMessageId, body]
+      properties:
+        clientMessageId: { type: string, format: uuid, description: Uno por mensaje; lo genera la app. }
+        body: { type: string }
+        kind: { $ref: '#/components/schemas/MessageKind' }
+    MessagePage:
+      type: object
+      required: [data, next]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Message' }
+        next:
+          type: string
+          nullable: true
+          description: Cursor para pedir el tramo anterior; nulo si no hay más.
+    ConversationSummary:
+      type: object
+      required: [id, type, unread, lastMessage, lastMessageAt]
+      properties:
+        id: { type: string, format: uuid }
+        type: { $ref: '#/components/schemas/ConversationType' }
+        partner:
+          anyOf:
+            - $ref: '#/components/schemas/Person'
+            - type: object
+              nullable: true
+              enum: [null]
+          description: La otra persona (solo en las individuales).
+        module:
+          anyOf:
+            - $ref: '#/components/schemas/ModuleRef'
+            - type: object
+              nullable: true
+              enum: [null]
+          description: El módulo (solo en los chats de módulo).
+        unread: { type: integer, minimum: 0 }
+        lastMessage:
+          anyOf:
+            - $ref: '#/components/schemas/Message'
+            - type: object
+              nullable: true
+              enum: [null]
+        lastMessageAt: { type: string, format: date-time, nullable: true }
+    ConversationDetail:
+      allOf:
+        - $ref: '#/components/schemas/ConversationSummary'
+        - type: object
+          required: [canWrite, canAnnounce, limits]
+          properties:
+            canWrite: { type: boolean }
+            readOnlyReason:
+              type: string
+              nullable: true
+              enum: [NO_SHARED_MODULE, PERIOD_CLOSED, PARTNER_UNAVAILABLE, null]
+            canAnnounce: { type: boolean, description: Solo el docente en el chat de su módulo. }
+            limits:
+              type: object
+              required: [messageMaxLength]
+              properties:
+                messageMaxLength: { type: integer }
+    UnreadCount:
+      type: object
+      required: [unread]
+      properties:
+        unread: { type: integer, minimum: 0 }
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code:
+          type: string
+          description: |
+            Códigos nuevos: `CHAT_NOT_FOUND`, `CHAT_PARTNER_NOT_ALLOWED`, `CHAT_READ_ONLY`,
+            `CHAT_ANNOUNCEMENT_FORBIDDEN`. Además `VALIDATION_FAILED` y los de sesión.
+        message: { type: string }
+        details: { type: object }

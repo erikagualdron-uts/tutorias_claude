@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: Student calendar API (spec 021)
+  version: 1.0.0
+  description: |
+    Solo lectura. Un endpoint, gemelo de `GET /teacher/calendar` (spec 013). Exige rol `STUDENT`
+    (`403 FORBIDDEN` con otro rol, `401` sin sesión). El estudiante es el del token, nunca un parámetro.
+servers:
+  - url: /
+security:
+  - bearerAuth: []
+paths:
+  /student/calendar:
+    get:
+      summary: Sesiones del estudiante en un rango de hasta 7 días
+      tags: [Cronograma del estudiante]
+      x-roles: [STUDENT]
+      parameters:
+        - { name: from, in: query, required: true, schema: { type: string, format: date }, description: 'Día de Bogotá, YYYY-MM-DD' }
+        - { name: to, in: query, required: true, schema: { type: string, format: date }, description: 'Día de Bogotá, YYYY-MM-DD; no antes de from y a lo sumo 7 días en total' }
+      responses:
+        '200':
+          description: Sesiones del rango (pasadas y futuras, cualquier estado) y datos del periodo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentCalendar' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  responses:
+    Error:
+      description: Error con código estable
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer }
+        code: { type: string }
+        message: { type: string }
+    StudentCalendar:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/StudentSession' }
+        meta: { $ref: '#/components/schemas/StudentCalendarMeta' }
+    StudentSession:
+      type: object
+      required: [id, moduleId, moduleName, teacherName, room, startsAt, endsAt, originalStartsAt, status, cancelReason, absent]
+      properties:
+        id: { type: string, format: uuid }
+        moduleId: { type: string, format: uuid }
+        moduleName: { type: string }
+        teacherName: { type: string }
+        room: { $ref: '#/components/schemas/Room' }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        originalStartsAt: { type: string, format: date-time }
+        status: { type: string, enum: [SCHEDULED, RESCHEDULED, CANCELLED] }
+        cancelReason: { type: string, enum: [HOLIDAY, TEACHER, null], nullable: true }
+        absent:
+          type: boolean
+          description: El estudiante canceló esta sesión solo para sí; la sesión sigue en la lista.
+    Room:
+      type: object
+      required: [id, name, location, capacity]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        location: { type: string }
+        capacity: { type: integer }
+    StudentCalendarMeta:
+      type: object
+      required: [from, to, period, hours, hasEnrollments]
+      properties:
+        from: { type: string, format: date }
+        to: { type: string, format: date }
+        period:
+          oneOf:
+            - { $ref: '#/components/schemas/CalendarPeriod' }
+            - { type: 'null' }
+        hours:
+          type: object
+          required: [earliest, latest]
+          properties:
+            earliest: { type: string, example: '06:00' }
+            latest: { type: string, example: '18:00' }
+        hasEnrollments:
+          type: boolean
+          description: Tiene alguna inscripción en un módulo del periodo mostrado.
+    CalendarPeriod:
+      type: object
+      required: [id, name, startsOn, endsOn, status]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        startsOn: { type: string, format: date }
+        endsOn: { type: string, format: date }
+        status: { type: string, enum: [ACTIVE, CLOSED] }
