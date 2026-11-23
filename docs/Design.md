@@ -29,10 +29,11 @@ Source: UTS corporate identity manual. Colors marked *(brand)* come directly fro
 - **Input Fill** (#F2F4EF): Fill of text fields placed on white cards. On the Screen background, fields use a white fill instead. *(derived)*
 - **Input Border** (#C9D0C3): 1px border of every text field, soft by design *(derived)*
 - **Input Border Focus** (#4E7A2F): 2px border when a field is focused *(derived)*
-- **Placeholder** (#767676): Placeholder text inside fields
+- **Placeholder** (#6E6E6E, *derived*): Placeholder text inside fields. #767676 was 4.1:1 on the field fill; #6E6E6E is 4.6:1 (spec 023)
 - **Success** (#2BA640): Available, resolved, active. Icon or fill only, not text on white.
 - **Warning** (#FB8C00): Last spots, in review, rescheduled. Icon or fill with #132F20 text, not text on white.
 - **Error** (#B3261E): Failures, blocked actions, cancellations *(derived)*
+- **Error text** (`errorText`: #B3261E in light, **#FF8A80** in dark, *derived*): error as text or icon on a card or screen. #B3261E is 2.2:1 on the dark card; #FF8A80 is 6.3:1. Fills, borders and buttons keep #B3261E (spec 023)
 - **Error Pressed** (#6D100A): Pressed state for error elements — UTS Burgundy *(brand, Pantone 4975 C)*
 
 ### Dark mode
@@ -65,6 +66,10 @@ Source: UTS corporate identity manual. Colors marked *(brand)* come directly fro
 | #C3D730 on #FFFFFF | 1.6:1 | **Fails.** Decorative fills only |
 | #FB8C00 on #FFFFFF | 2.4:1 | **Fails.** Icons and fills only |
 | #2BA640 on #FFFFFF | 3.2:1 | **Fails for text.** Icons and fills only |
+| #FF8A80 on #132F20 | 6.3:1 | Error text and icons in dark mode |
+| #6E6E6E on #F2F4EF | 4.6:1 | Placeholder on the field fill |
+
+The orange #FB8C00 (2.4:1 on white) is a fill with #132F20 text on top, or an icon that sits beside its own text; it is never the only carrier of a state on a light surface. `src/theme/__tests__/contrast.test.ts` checks every text pair at 4.5:1 and every icon pair at 3:1, in the light and the dark palette, so changing a color that stops meeting AA fails the suite.
 
 ## Typography
 - **Corporate Font**: **Myriad Pro**, the institutional typeface of the UTS. Weights used: Regular (400), Semibold (600) and Bold (700).
@@ -245,7 +250,7 @@ Every text field must read clearly as a field: it always has **both a fill and a
   - On a white card or sheet: fill #F2F4EF + 1px #C9D0C3 border.
   - On the Screen background (#F2F4EF): fill #FFFFFF + the same border.
 - **Icons:** a leading 20px icon in #575756 (email, lock, search, and so on) and, when needed, a trailing icon button (show/hide password, clear, dropdown chevron).
-- **Placeholder:** #767676, Body style.
+- **Placeholder:** #6E6E6E (light), Body style.
 - **Focus:** 2px #4E7A2F border, fill #FFFFFF, soft glow `0 0 0 4px rgba(78,122,47,0.15)`, label turns #34531F. The change animates over 150ms.
 - **Error:** 1px #B3261E border, glow `rgba(179,38,30,0.12)`, and the message below with an error icon, in #B3261E.
 - **Disabled:** 60% opacity, no glow.
