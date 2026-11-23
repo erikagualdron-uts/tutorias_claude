@@ -537,6 +537,12 @@
 - **Motivo:** Los permisos eran la regla más repetida y nada impedía que una ruta nueva quedara abierta por olvido; la accesibilidad dependía de la memoria de cada spec; las metas de rendimiento se habían medido a mano con pocos datos. Un gancho global cubre también las pantallas futuras sin una línea por prueba.
 - **Descartado:** Exigir `@Roles` en todas las rutas (borra la diferencia entre "a propósito" y "por olvido") o negar por defecto (cambio de seguridad mayor); una prueba nueva de accesibilidad por pantalla (duplica los mocks); una herramienta externa de auditoría o de carga (dependencia nueva y más ruido); cambiar el rojo de error en el tema oscuro para todos los usos (rompería el blanco sobre los botones destructivos); agregar un color nuevo para el ícono de advertencia (no es el único portador del estado); reutilizar la semilla de desarrollo (pocos datos) o datos al azar (dos corridas no se comparan).
 
+### D-122 · El correo de los avisos sigue los dominios institucionales, no el rol
+- **Estado:** Aceptada (spec 025).
+- **Decisión:** Una entrega por correo se envía si la dirección es del dominio de estudiantes (`auth.studentEmailDomain`) **o** del del personal (`auth.staffEmailDomain`), ambos de configuración y leídos en cada envío; otra dirección se omite con `EMAIL_DOMAIN_NOT_ALLOWED`. Las entregas ya omitidas no se reenvían. No se agregan avisos ni destinatarios: el CAE sigue sin recibir avisos. (D-121 es de la spec 024.)
+- **Motivo:** La regla nació cuando solo se avisaba a estudiantes y dejó sin correo a los docentes autores de una PQRS; decidir por dominio corrige la causa y conserva la salvaguarda de no escribir fuera de la institución.
+- **Descartado:** Quitar la comprobación (pierde la salvaguarda), decidir por rol (duplica la regla y no cubre cuentas con otro dominio) y una lista administrable de direcciones (más configuración y pantalla).
+
 ---
 
 ## Plantilla para nuevas decisiones

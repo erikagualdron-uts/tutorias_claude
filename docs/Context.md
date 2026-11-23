@@ -127,7 +127,7 @@ Aplicación móvil (Android e iOS) para la gestión de **tutorías académicas**
 
 ### Comunicación
 - La **mensajería es en tiempo real** (chat) y solo de texto (spec 018).
-- Las notificaciones llegan a la **bandeja de la app**, por **push** y por **correo** (vía el SMTP que configura el CAE). La bandeja funciona aunque se rechace el permiso de push o el correo no esté configurado, y conserva todos los avisos.
+- Las notificaciones llegan a la **bandeja de la app**, por **push** y por **correo** (vía el SMTP que configura el CAE). La bandeja funciona aunque se rechace el permiso de push o el correo no esté configurado, y conserva todos los avisos. El correo se envía a cualquier cuenta activa con dirección del dominio de estudiantes o del personal (ambos de configuración); a otra dirección no se escribe y el motivo queda registrado (D-122).
 - Quién puede escribir a quién:
   - CAE ↔ docentes.
   - Docente ↔ estudiantes inscritos en sus módulos.
