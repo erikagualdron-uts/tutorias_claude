@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Pulido del chat. Cierra los pendientes que Design.md marca como 'Not built yet' del chat y que no piden reglas de negocio nuevas: los mensajes sin enviar sobreviven al cierre de la app, los avatares muestran iniciales y el indicador 'está escribiendo'. Quedan fuera editar o borrar mensajes, acuses de lectura y adjuntos."
 
