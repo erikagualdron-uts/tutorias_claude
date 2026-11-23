@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Calidad y accesibilidad. Una revisión transversal sin funcionalidad nueva, antes de entregar la app: que cada ruta del backend tenga su regla de acceso comprobada por una prueba, que la app se pueda usar con lector de pantalla, con letra grande y en modo oscuro, y que las pantallas y los endpoints principales respondan bien con el volumen de una institución real."
 

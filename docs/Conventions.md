@@ -134,8 +134,12 @@ Formato único de error:
 - **Autenticación y roles:** cada endpoint sensible se prueba con un rol sin permiso y debe responder `403`.
 - **Retención de datos:** los jobs que eliminan chats antiguos.
 - **Componentes de la app con estados:** tarjeta de módulo (los siete estados), bloque de sesión, burbuja de chat.
+- **Acceso por ruta (spec 023):** `test/route-access.e2e-spec.ts` falla, nombrando `MÉTODO /ruta`, si una ruta no es pública y listada, no lleva `@Roles` y no está en la lista de "cualquier rol". Toda ruta nueva declara `@Roles(...)` o entra en `test/utils/route-policy.ts` (`PUBLIC_ROUTES` o `ANY_ROLE_ROUTES`) con su motivo; nunca se desactiva la prueba. Una ruta pública nueva también exige límite de tasa y su caso en `test/public-rate-limit.e2e-spec.ts`.
+- **Respuestas y registros:** `test/response-secrets.e2e-spec.ts` recorre las lecturas de cada rol y falla ante claves de credenciales o, para docente y estudiante, `email` o `phone` ajenos. Un endpoint de lectura nuevo se agrega a su tabla.
+- **Accesibilidad de la app:** cada prueba de pantalla (`.tsx`) pasa sola por `src/testing/setupA11y.ts`, que falla si lo renderizado deja un control sin nombre, sin rol o declarado bajo 48 px (`allowControlIssues()` solo para quien renderiza un control malo a propósito). `reduceMotion.test.ts` exige que todo archivo que anima consulte "reducir movimiento", `fontScaling.test.ts` prohíbe apagar o limitar el escalado de letra, y `contrast.test.ts` exige AA en los dos temas.
 
 ### Herramientas
+- Rendimiento: `npm run perf` en el backend (aparte de `test` y `test:e2e`) mide el p95 de los endpoints principales contra la base de carga; ver `Architecture.md` §12.
 - Backend: Jest. Pruebas unitarias de servicios y pruebas de integración con una base de datos PostgreSQL de prueba. Las pruebas de concurrencia lanzan varias inscripciones simultáneas y verifican que nunca se supere el cupo.
 - App: Jest + React Native Testing Library.
 

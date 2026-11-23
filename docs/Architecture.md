@@ -250,6 +250,7 @@ Para Android, se usa el emulador de Android Studio sin ningún inconveniente.
 ## 12. Entornos y despliegue
 
 - **Desarrollo:** `docker-compose` con PostgreSQL y Redis; API local.
+- **Carga y rendimiento (spec 023):** una base aparte, `tutorias_load` (el nombre debe terminar en `_load`), con las mismas migraciones y los datos sintéticos de `npm run seed:load` en `tutorias_uts_db` (200 módulos, 4.800 sesiones, unas 3.500 inscripciones, 200 PQRS, 541 cuentas, 200 conversaciones y 4.000 mensajes; determinista; se niega a correr sin `LOAD_SEED_CONFIRM=yes`). `npm run perf` en `tutorias_uts_back`, con `PERF_DATABASE_URL`, arranca la API contra esa base, mide 15 endpoints (3 llamadas de calentamiento y 20 medidas) y falla si algún p95 supera `PERF_MAX_MS` (300 por defecto); el resultado depende de la máquina y se anota con su entorno, y no forma parte de CI.
 - **Producción:** por definir (VPS, contenedor en la nube o servicio gestionado).
 - **Builds de la app:** EAS Build.
 
