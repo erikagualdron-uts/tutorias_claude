@@ -567,6 +567,12 @@
 - **Motivo:** El recorrido en el teléfono señaló los filtros de PQRS como feos y molestos: la lista del CAE apilaba tres filas de chips de 48 px con salto de línea y ocupaba media pantalla antes de la primera solicitud. La revisión del código midió además dos indicadores con menos de 3:1 en un modo y la burbuja ajena sin borde en oscuro.
 - **Descartado:** Solo compactar los chips sin desplazamiento (los chips de tipo seguirían envolviéndose); una hoja de filtros con un botón «filtros» (añade un paso y un texto nuevo, contra «sin textos nuevos»); medir y desplazar el chip activo a la vista (código sin que nadie lo pidiera: el chip cortado en el borde ya indica que hay más).
 
+### D-128 · Cabecera de marca en módulos del estudiante y en los horarios
+- **Estado:** Aceptada (spec 031, aspecto de las pantallas de estudiante y docente).
+- **Decisión:** (1) `ScreenHeader` (spec 029) en la lista de módulos del estudiante (con el número de módulos solo en el segmento de disponibles), en el horario del estudiante y en el del docente (sin número); `Design.md` las suma al registro «sobrio con cabecera» y el horario deja de figurar en el sobrio. (2) La cabecera va dentro del área que se desplaza, encima de la tarjeta del calendario, para no restar altura permanente al calendario; el calendario, `CalendarHeader`, la navegación de semana y las tarjetas de sesión no cambian. (3) El detalle de módulo del estudiante sigue sobrio y los inicios expresivos; `headerBudget.test.ts` lo comprueba. (4) Sin textos nuevos: los títulos son `student.modules.title`, `tabs.schedule` y `teacher.schedule.title`.
+- **Motivo:** La persona dueña del producto no vio defectos pero quiere pantallas más modernas y refrescantes en estudiante y docente, igual que administración, mensajes y PQRS, para que la app no quede con un tercio de pantallas con otro aspecto.
+- **Descartado:** Integrar la cabecera dentro del calendario o de `CalendarHeader` (cambiaría una pieza compartida con el docente); cabecera fija encima del área que se desplaza (resta altura al calendario); cabecera solo en la vista de semana (rompe la consistencia entre vistas); más color en las tarjetas de sesión (sería otra spec).
+
 ---
 
 ## Plantilla para nuevas decisiones

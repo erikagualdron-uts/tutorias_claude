@@ -123,3 +123,13 @@ Auditoría de los 11 formularios y detalle (sin cabecera): cada botón lleva íc
 Auditoría de las pantallas de chat, PQRS y cambio de clave contra las 8 reglas: cada botón lleva ícono a la izquierda, hay un solo primario por estado, los formularios usan `FieldBox` y los estados vacío, de carga y de error usan las piezas compartidas; el envío de mensajes no tiene un estado bloqueado en la interfaz que explicar. Sin otros defectos vistos.
 
 **Cierre del inventario:** con esta fase quedan cubiertas las 58 pantallas de la spec 026 (fases 1 a 4).
+
+## Spec 031: cabecera en estudiante y docente
+
+| Pantalla | Cambio |
+|---|---|
+| Módulos del estudiante | `ScreenHeader` con el título y el número de módulos disponibles (sin número en «mis módulos») |
+| Horario del estudiante | `ScreenHeader` encima del calendario, con el texto de su pestaña |
+| Horario del docente | `ScreenHeader` en lugar del título de texto |
+
+El detalle de módulo del estudiante sigue sobrio y los inicios expresivos. Sin defectos vistos en el teléfono; el pedido fue de aspecto (más moderno y refrescante).
