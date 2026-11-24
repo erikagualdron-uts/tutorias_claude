@@ -573,6 +573,12 @@
 - **Motivo:** La persona dueña del producto no vio defectos pero quiere pantallas más modernas y refrescantes en estudiante y docente, igual que administración, mensajes y PQRS, para que la app no quede con un tercio de pantallas con otro aspecto.
 - **Descartado:** Integrar la cabecera dentro del calendario o de `CalendarHeader` (cambiaría una pieza compartida con el docente); cabecera fija encima del área que se desplaza (resta altura al calendario); cabecera solo en la vista de semana (rompe la consistencia entre vistas); más color en las tarjetas de sesión (sería otra spec).
 
+### D-129 · «Mi cuenta» desde el avatar
+- **Estado:** Aceptada (spec 032).
+- **Decisión:** (1) «Mi cuenta» es una pantalla sin pestaña por rol (`account`), alcanzable desde un ítem nuevo del menú del avatar y declarada en `ROLE_TABS[...].hidden` como el buzón (D-121). (2) Es solo de consulta: nombre, correo y rol de la sesión; no hay endpoint de edición. (3) El cambio de contraseña voluntario tiene su propia pantalla (`account-password`) y no cierra la sesión; el obligatorio por clave temporal no cambia y comparte con ella el componente `PasswordFields`. (4) Al terminar, vuelve a «Mi cuenta» con el parámetro `passwordChanged` que muestra la confirmación. (5) Una fila de notificaciones reutiliza el estado y la activación de push ya existentes. (6) 14 textos nuevos en español e inglés, excepción a «sin textos nuevos». Registro: sobrio con cabecera.
+- **Motivo:** El usuario no tenía dónde ver su cuenta ni cambiar la clave cuando quisiera; el backend ya lo permitía y la ruta `/change-password` solo se abre con clave temporal.
+- **Descartado:** Una hoja modal sin ruta (sin regreso estándar ni pruebas de ruta); reutilizar `/change-password` quitándole la regla de la clave temporal (cambiaría el cambio obligatorio); un estado global de confirmación (un parámetro de ruta basta); cerrar la sesión al cambiar la clave; editar el nombre y el idioma (otra spec).
+
 ---
 
 ## Plantilla para nuevas decisiones

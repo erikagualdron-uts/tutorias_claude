@@ -244,7 +244,7 @@ Two registers, chosen by the type of screen. The type decides the register, not 
 | Register | Screens | What it looks like |
 |---|---|---|
 | **Sober** | Lists, module and session detail, administration forms and detail, chat, PQRS, settings | `screen` background, `card` surfaces, `primary` only on actions and active states, hierarchy by type and spacing. No gradient and no brand pattern |
-| **Sober with header** | Administration lists (modules, locations, rooms, teachers, students, periods, holidays, dropdown lists and items), the changes list, the "More" index, the messages list, the PQRS lists (my PQRS and the CAE's), the student's module list and the schedules (calendar) of the student and the teacher | Everything of the sober register plus one compact `ScreenHeader` at the top: brand gradient, `screenTitle` in `onGradient.text`, a 4px `accent` line and an optional count in `metricNumber`. No `BrandPattern`; the title is an existing text and the count is a number, never a new string |
+| **Sober with header** | Administration lists (modules, locations, rooms, teachers, students, periods, holidays, dropdown lists and items), the changes list, the "More" index, the messages list, the PQRS lists (my PQRS and the CAE's), the student's module list, the schedules (calendar) of the student and the teacher, and "My account" | Everything of the sober register plus one compact `ScreenHeader` at the top: brand gradient, `screenTitle` in `onGradient.text`, a 4px `accent` line and an optional count in `metricNumber`. No `BrandPattern`; the title is an existing text and the count is a number, never a new string |
 | **Expressive** | Login and password screens, the home of each role, empty states | Brand gradient or colored header, `BrandPattern` leaves, feathers and books, `accent` highlights over dark green |
 
 Rules to check a screen (they turn "elegant", "modern", "consistent" and "close to the UTS" into something a reviewer can verify):
@@ -258,7 +258,7 @@ Rules to check a screen (they turn "elegant", "modern", "consistent" and "close 
 8. **Brand.** The UTS logo, the green and the lime appear as in "University brand elements"; the pattern is the only decoration.
 
 ## Navigation
-Bottom tab bar, 64px plus safe area, white, 1px #E5E5E5 top border, Level 1. Active tab: icon inside a 56 x 32px #F2F4EF pill, icon and label in #34531F with weight 700. Inactive: #575756. Unread tab badge: #B3261E circle with white number, 16px min. Top app bar 56px, white, Level 1 on scroll, screen title left, then the notifications bell and the user avatar on the right (the avatar opens profile and sign out). The bell (`solar:bell-linear`, bold when there is something unread) is a 48px target with the unread count in a #B3261E badge with a white number (16px min, `99+` above 99); it opens the inbox of the role.
+Bottom tab bar, 64px plus safe area, white, 1px #E5E5E5 top border, Level 1. Active tab: icon inside a 56 x 32px #F2F4EF pill, icon and label in #34531F with weight 700. Inactive: #575756. Unread tab badge: #B3261E circle with white number, 16px min. Top app bar 56px, white, Level 1 on scroll, screen title left, then the notifications bell and the user avatar on the right (the avatar opens a menu with "My account" and "Sign out"). The bell (`solar:bell-linear`, bold when there is something unread) is a 48px target with the unread count in a #B3261E badge with a white number (16px min, `99+` above 99); it opens the inbox of the role.
 
 Tabs per role:
 - **STUDENT**: Home · Modules · Schedule · Messages · PQRS
@@ -269,7 +269,7 @@ After login, the app routes to the tab set of the user's role. If `mustChangePas
 
 
 ### Screens without a tab
-A screen that has no tab (the notifications inbox for all roles and the CAE changes list) is **hidden from the bar but reachable by route** (D-121). It never leaves a gap in the bar, and going back returns to the screen the person came from (the tab history). Every hidden screen has a visible way back and appears in the route tests. The tab bar and the top bar keep their shape; only their colors change with the mode (`tabActive`, `tabInactive`, `card`).
+A screen that has no tab (the notifications inbox for all roles, the CAE changes list, and `account` and `account-password` of "My account", reached from the avatar menu and with a back button) is **hidden from the bar but reachable by route** (D-121). It never leaves a gap in the bar, and going back returns to the screen the person came from (the tab history). Every hidden screen has a visible way back and appears in the route tests. The tab bar and the top bar keep their shape; only their colors change with the mode (`tabActive`, `tabInactive`, `card`).
 
 ## Components
 
