@@ -73,8 +73,8 @@ Rutas del front relativas a `tutorias_uts_mobile/`; las de documentos, a `Claude
 - [X] T012 Ejecutar `npm test`, `npm run lint` y `npm run typecheck` completos en `tutorias_uts_mobile`; confirmar SC-004 y SC-005 (0 textos o reglas de negocio cambiados, guardas de las specs 026 a 030 en verde).
 - [X] T013 [P] En `docs/Decisions.md` agregar D-128 (cabecera de marca en módulos del estudiante y en los dos horarios, dentro del área que se desplaza para no restar altura al calendario, detalle de módulo e inicios sin cabecera, guarda ampliada), con su motivo y alternativas descartadas (R-1, R-3).
 - [X] T014 [P] Completar `specs/026-design-system/screen-inventory.md`: estado de las 3 pantallas en claro y oscuro y una línea indicando que el detalle de módulo y los inicios siguen en su registro.
-- [ ] T015 [manual, usuario] Recorrido de `quickstart.md` en el teléfono: las 3 pantallas en claro y oscuro, español e inglés, vista de día y de semana, con y sin sesiones e inscripciones, comprobando que la vista del día muestra las primeras horas sin desplazar en un teléfono de unos 640 px (SC-003); si no se ve, avisarme para reducir el relleno de la cabecera solo en estas pantallas (SC-002, SC-006).
-- [ ] T016 Marcar la spec como implementada (`Status` en `spec.md`) cuando T015 esté confirmado.
+- [X] T015 [manual, usuario] Recorrido de `quickstart.md` en el teléfono: las 3 pantallas en claro y oscuro, español e inglés, vista de día y de semana, con y sin sesiones e inscripciones, comprobando que la vista del día muestra las primeras horas sin desplazar en un teléfono de unos 640 px (SC-003); si no se ve, avisarme para reducir el relleno de la cabecera solo en estas pantallas (SC-002, SC-006).
+- [X] T016 Marcar la spec como implementada (`Status` en `spec.md`) cuando T015 esté confirmado.
 
 ---
 

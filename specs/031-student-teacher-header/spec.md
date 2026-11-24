@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-24
 
-**Status**: Implemented (pending manual review: T015)
+**Status**: Implemented
 
 **Input**: User description: "Spec 031: llevar a las pantallas de estudiante y docente el aspecto más moderno y llamativo que la spec 029 dio a administración, y que la fase 2 (spec 028) dejó sobrio: lista de módulos y detalle de módulo del estudiante, horario del estudiante, horario del docente y las demás pantallas propias de estudiante y docente que sigan en registro sobrio sin cabecera. Cabecera de marca compacta (`ScreenHeader`) y presencia visual coherente con administración y con los inicios, sin patrón y sin romper la regla de un solo bloque de color por pantalla; consistencia entre estudiante y docente, cercanía a la identidad UTS y modo oscuro sin errores visuales. Sin cambios de backend, de textos, de reglas de negocio ni funcionalidad nueva."
 
