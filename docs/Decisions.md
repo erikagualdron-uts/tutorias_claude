@@ -549,6 +549,12 @@
 - **Motivo:** En el recorrido en el teléfono se vieron botones y elementos con poco contraste en modo oscuro y chips «All» recortados. El texto de los botones ya pasaba; faltaba medir el borde de los controles y el estado presionado, y la matriz de la spec 026 no los cubría.
 - **Descartado:** Bordes de 2 px (el rol seguiría faltando); subir `border` para todo (separa filas y tarjetas, donde un 3:1 sería ruido); quitar el espaciado entre letras de `label` (cambia todo el texto pequeño); un estado vacío solo para las 12 pantallas (habría dos estilos distintos en la app).
 
+### D-125 · Indicadores de estado con roles de texto de severidad
+- **Estado:** Aceptada (spec 028, fase 2 del rediseño: módulos y horario).
+- **Decisión:** (1) Un ícono, línea o relleno de barra que indica un estado usa `errorText`, `warningText`, `successText` o `primary` (3:1 sobre `card`, `screen` y `surface`); los roles `error`, `warning` y `success` quedan solo para rellenos (botones, avisos, insignia numérica). (2) Se aplicó a `SessionBlock`, `TeacherSessionCard`, `NowLine`, `OfferCard` (barra e insignias de últimos cupos y bloqueado) y `CapacityBar`; el borde de los días sin seleccionar de `DayStrip` usa `controlBorder`. (3) La prueba `severityIndicators.test.ts` falla si una carpeta ya revisada usa `palette.error`, `palette.warning` o `palette.success`; cada fase añade sus carpetas. (4) La matriz de contraste añade `errorText`, `warningText` y `primary` sobre `surface` y `screen`.
+- **Motivo:** El recorrido en el teléfono no mostró defectos, pero la revisión del código midió indicadores de menos de 3:1 en un modo (por ejemplo `error` sobre `surface` oscuro 1.84:1 y `warning` sobre `card` claro 2.37:1). La matriz de la 026 medía pares de texto, no el rol que un componente toma para un indicador.
+- **Descartado:** Un rol nuevo `indicator*` (los roles de texto de severidad ya miden lo mismo); engrosar líneas y barras (el contraste seguiría sin cumplirse); una regla de lint propia (más infraestructura que una prueba que lee archivos).
+
 ---
 
 ## Plantilla para nuevas decisiones
