@@ -243,8 +243,8 @@ Two registers, chosen by the type of screen. The type decides the register, not 
 
 | Register | Screens | What it looks like |
 |---|---|---|
-| **Sober** | Lists, schedule, module and session detail, administration forms and detail, chat, PQRS, settings | `screen` background, `card` surfaces, `primary` only on actions and active states, hierarchy by type and spacing. No gradient and no brand pattern |
-| **Sober with header** | Administration lists (modules, locations, rooms, teachers, students, periods, holidays, dropdown lists and items), the changes list, the "More" index, the messages list and the PQRS lists (my PQRS and the CAE's) | Everything of the sober register plus one compact `ScreenHeader` at the top: brand gradient, `screenTitle` in `onGradient.text`, a 4px `accent` line and an optional count in `metricNumber`. No `BrandPattern`; the title is an existing text and the count is a number, never a new string |
+| **Sober** | Lists, module and session detail, administration forms and detail, chat, PQRS, settings | `screen` background, `card` surfaces, `primary` only on actions and active states, hierarchy by type and spacing. No gradient and no brand pattern |
+| **Sober with header** | Administration lists (modules, locations, rooms, teachers, students, periods, holidays, dropdown lists and items), the changes list, the "More" index, the messages list, the PQRS lists (my PQRS and the CAE's), the student's module list and the schedules (calendar) of the student and the teacher | Everything of the sober register plus one compact `ScreenHeader` at the top: brand gradient, `screenTitle` in `onGradient.text`, a 4px `accent` line and an optional count in `metricNumber`. No `BrandPattern`; the title is an existing text and the count is a number, never a new string |
 | **Expressive** | Login and password screens, the home of each role, empty states | Brand gradient or colored header, `BrandPattern` leaves, feathers and books, `accent` highlights over dark green |
 
 Rules to check a screen (they turn "elegant", "modern", "consistent" and "close to the UTS" into something a reviewer can verify):
