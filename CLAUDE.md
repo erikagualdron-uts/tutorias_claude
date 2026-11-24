@@ -63,7 +63,7 @@ npm run typecheck            # verificación de tipos
 - La clave temporal de un docente se muestra una sola vez.
 
 **Diseño:**
-- Usa solo los colores de `Design.md`. No agregues colores nuevos sin marcarlos como derivados.
+- Usa solo los colores de `Design.md`: cada color sale de un rol de su tabla (claro y oscuro) y nunca se escribe un hex en un componente. No agregues colores nuevos sin marcarlos como derivados.
 - El lima `#C3D730` nunca va como texto o ícono sobre blanco.
 - Toda acción bloqueada muestra al usuario la regla que la bloquea.
 - Objetivos táctiles de mínimo 48 px.
