@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented (pending manual review: T023)
+**Status**: Implemented
 
 **Input**: User description: "Spec 030, fase 4 del rediseño de la app: el resto de pantallas (chat, PQRS, perfil y las que queden del inventario con fase 4). Aplicar el sistema de diseño de las specs 026 a 029 con el registro que corresponda a cada pantalla (sobrio, o sobrio con cabecera en las listas como mensajes y PQRS). Más elegante, moderno y llamativo, consistente entre estudiante, docente y CAE, cercano a la identidad UTS y con modo oscuro sin errores visuales. Incluir los indicadores pendientes en StatusBadge y PqrsFiledScreen y ampliar a esta fase las guardas severityIndicators y headerBudget. Sin cambios de backend, de textos, de reglas de negocio ni funcionalidad nueva. Incorporar los defectos del recorrido manual en el teléfono, incluida la etiqueta All de los chips que en inglés se veía como Al."
 

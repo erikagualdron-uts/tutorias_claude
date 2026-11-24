@@ -85,8 +85,8 @@ Rutas del front relativas a `tutorias_uts_mobile/`; las de documentos, a `Claude
 - [X] T020 Ejecutar `npm test`, `npm run lint` y `npm run typecheck` completos en `tutorias_uts_mobile`; confirmar SC-005 y SC-006 (0 textos o reglas de negocio cambiados, guardas de las specs 026 a 029 en verde, `severityIndicators` y `headerBudget` en verde).
 - [X] T021 [P] En `docs/Decisions.md` agregar D-127 (filtros compactos de PQRS con `scroll`, cabecera en mensajes y las dos listas de PQRS, `StatusBadge` y `PqrsFiledScreen` con roles de texto, borde de la burbuja ajena en oscuro, guardas ampliadas), con su motivo y alternativas descartadas (R-1, R-2, R-3).
 - [X] T022 [P] Completar `specs/026-design-system/screen-inventory.md`: estado de cada pantalla de la fase 4 en claro y oscuro, el defecto de los filtros con su causa y corrección, la confirmación pendiente de «All» y una línea de cierre: con esta fase queda cubierto todo el inventario.
-- [ ] T023 [manual, usuario] Recorrido de `quickstart.md` en el teléfono: las 3 pantallas con cabecera, los filtros de PQRS (CAE con sus 3 grupos, y la primera solicitud visible sin desplazar la pantalla en un teléfono de unos 640 px de alto: SC-008), una conversación, el ícono de radicada y las insignias en claro y oscuro, en español e inglés (incluido «All» con letra grande), y el cambio de modo con cada pantalla abierta (SC-002, SC-007, SC-008).
-- [ ] T024 Marcar la spec como implementada (`Status` en `spec.md`) cuando T023 esté confirmado.
+- [X] T023 [manual, usuario] Recorrido de `quickstart.md` en el teléfono: las 3 pantallas con cabecera, los filtros de PQRS (CAE con sus 3 grupos, y la primera solicitud visible sin desplazar la pantalla en un teléfono de unos 640 px de alto: SC-008), una conversación, el ícono de radicada y las insignias en claro y oscuro, en español e inglés (incluido «All» con letra grande), y el cambio de modo con cada pantalla abierta (SC-002, SC-007, SC-008).
+- [X] T024 Marcar la spec como implementada (`Status` en `spec.md`) cuando T023 esté confirmado.
 
 ---
 
