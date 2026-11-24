@@ -34,32 +34,32 @@ Generado el 2026-11-23 desde `tutorias_uts_mobile/app` (58 rutas). Las columnas 
 | `(teacher)/pqrs/index.tsx` | teacher | sober | BrandLoader, Button, EmptyState, FilterChips | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 4 |
 | `(teacher)/pqrs/new.tsx` | teacher | sober | Banner, BrandLoader, Button, EmptyState, FilterChips, TextAreaField, TextField | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 4 |
 | `(teacher)/schedule/index.tsx` | teacher | sober | BrandLoader, Button, Card, EmptyState, FilterChips | sí | ninguno (028) | línea, ícono y hora actual con `error` y `warning`; borde de días: corregido en 028 | 2 |
-| `(admin)/changes.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState | sí | por revisar | por revisar | 3 |
+| `(admin)/changes.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
 | `(admin)/index.tsx` | admin | expressive | Button, Card | sí | sin bloque destacado: corregido en 027 | contraste del borde de botones: corregido en 027 (`controlBorder`) | 1 |
 | `(admin)/messages/[id].tsx` | admin | sober | BrandLoader, Button, EmptyState | sí | por revisar | por revisar | 4 |
 | `(admin)/messages/index.tsx` | admin | sober | Banner, BrandLoader, Button, EmptyState, SegmentedControl | sí | por revisar | por revisar | 4 |
 | `(admin)/messages/new.tsx` | admin | sober | Banner, BrandLoader, Button, Card, EmptyState, SearchField | sí | por revisar | por revisar | 4 |
-| `(admin)/modules/[id].tsx` | admin | sober | Banner, BrandLoader, Button, Card, ConfirmDialog, EmptyState, LoadingScreen | sí | por revisar | por revisar | 3 |
-| `(admin)/modules/index.tsx` | admin | sober | BrandLoader, Button, EmptyState, SearchField, SelectField | sí | por revisar | por revisar | 3 |
-| `(admin)/modules/location-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, EmptyState, LoadingScreen, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/modules/locations.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState | sí | por revisar | por revisar | 3 |
-| `(admin)/modules/module-form.tsx` | admin | sober | Banner, Button, Card, EmptyState, LoadingScreen, SelectField, TextAreaField, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/modules/room-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, EmptyState, LoadingScreen, SelectField, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/modules/rooms.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState, FilterChips, SearchField | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 3 |
-| `(admin)/more/create-teacher.tsx` | admin | sober | Banner, Button, TemporaryPasswordDialog, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/more/dropdown-item-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, EmptyState, LoadingScreen, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/more/dropdown-items.tsx` | admin | sober | Banner, BrandLoader, Button, Card, EmptyState | sí | por revisar | por revisar | 3 |
-| `(admin)/more/dropdown-lists.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState | sí | por revisar | por revisar | 3 |
-| `(admin)/more/holiday-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, DateField, LoadingScreen, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/more/holidays.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState, FilterChips | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 3 |
-| `(admin)/more/holidays-import.tsx` | admin | sober | Banner, BrandLoader, Button, Card, FilterChips | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 3 |
-| `(admin)/more/index.tsx` | admin | sober | Button, Card | sí | por revisar | por revisar | 3 |
-| `(admin)/more/period-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, DateField, EmptyState, LoadingScreen, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/more/periods.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState, FilterChips | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 3 |
-| `(admin)/more/smtp.tsx` | admin | sober | Banner, Button, Card, EmptyState, LoadingScreen, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/more/students.tsx` | admin | sober | - | no | por revisar | por revisar | 3 |
-| `(admin)/more/teacher-edit.tsx` | admin | sober | Banner, BrandLoader, Button, TextField | sí | por revisar | por revisar | 3 |
-| `(admin)/more/teachers.tsx` | admin | sober | - | no | por revisar | por revisar | 3 |
+| `(admin)/modules/[id].tsx` | admin | sober | Banner, BrandLoader, Button, Card, ConfirmDialog, EmptyState, LoadingScreen | sí | ninguno (029) | ninguno (029) | 3 |
+| `(admin)/modules/index.tsx` | admin | sober | BrandLoader, Button, EmptyState, SearchField, SelectField | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/modules/location-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, EmptyState, LoadingScreen, TextField | sí | ninguno (029) | borde de campo con error `error` en oscuro: corregido en 029 (`FieldBox`) | 3 |
+| `(admin)/modules/locations.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/modules/module-form.tsx` | admin | sober | Banner, Button, Card, EmptyState, LoadingScreen, SelectField, TextAreaField, TextField | sí | ninguno (029) | borde de campo con error `error` en oscuro: corregido en 029 (`FieldBox`) | 3 |
+| `(admin)/modules/room-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, EmptyState, LoadingScreen, SelectField, TextField | sí | ninguno (029) | borde de campo con error `error` en oscuro: corregido en 029 (`FieldBox`) | 3 |
+| `(admin)/modules/rooms.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState, FilterChips, SearchField | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/more/create-teacher.tsx` | admin | sober | Banner, Button, TemporaryPasswordDialog, TextField | sí | ninguno (029) | borde de campo con error `error` en oscuro: corregido en 029 (`FieldBox`) | 3 |
+| `(admin)/more/dropdown-item-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, EmptyState, LoadingScreen, TextField | sí | ninguno (029) | borde de campo con error `error` en oscuro: corregido en 029 (`FieldBox`) | 3 |
+| `(admin)/more/dropdown-items.tsx` | admin | sober | Banner, BrandLoader, Button, Card, EmptyState | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/more/dropdown-lists.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/more/holiday-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, DateField, LoadingScreen, TextField | sí | ninguno (029) | borde de campo con error `error` en oscuro: corregido en 029 (`FieldBox`) | 3 |
+| `(admin)/more/holidays.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState, FilterChips | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/more/holidays-import.tsx` | admin | sober | Banner, BrandLoader, Button, Card, FilterChips | sí | ninguno (029) | ninguno (029) | 3 |
+| `(admin)/more/index.tsx` | admin | sober | Button, Card | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/more/period-form.tsx` | admin | sober | Banner, Button, ConfirmDialog, DateField, EmptyState, LoadingScreen, TextField | sí | ninguno (029) | borde de campo con error `error` en oscuro: corregido en 029 (`FieldBox`) | 3 |
+| `(admin)/more/periods.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState, FilterChips | sí | ninguno (029) | cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/more/smtp.tsx` | admin | sober | Banner, Button, Card, EmptyState, LoadingScreen, TextField | sí | ninguno (029) | borde e ícono del estado con `warning` y `success`: corregido en 029 | 3 |
+| `(admin)/more/students.tsx` | admin | sober | - | no | ninguno (029) | ícono de cuenta activa con `success`: corregido en 029; cabecera de marca añadida (registro sobrio con cabecera) | 3 |
+| `(admin)/more/teacher-edit.tsx` | admin | sober | Banner, BrandLoader, Button, TextField | sí | ninguno (029) | borde de campo con error `error` en oscuro: corregido en 029 (`FieldBox`) | 3 |
+| `(admin)/more/teachers.tsx` | admin | sober | - | no | ninguno (029) | ícono de cuenta activa con `success`: corregido en 029; cabecera de marca añadida (registro sobrio con cabecera) | 3 |
 | `(admin)/notifications.tsx` | admin | sober | Banner, BrandLoader, Button, EmptyState | sí | ninguno (027) | aviso de cancelación con `error` y borde de botones: corregido en 027 | 1 |
 | `(admin)/pqrs/[id].tsx` | admin | sober | Banner, BrandLoader, Button, Card, ConfirmDialog, EmptyState, TextAreaField | sí | por revisar | por revisar | 4 |
 | `(admin)/pqrs/index.tsx` | admin | sober | BrandLoader, Button, EmptyState, FilterChips | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 4 |
@@ -91,3 +91,18 @@ Estado de las 12 pantallas de la fase 1: auditadas contra las 8 reglas de `Desig
 Auditoría de las 4 pantallas y de `CancelSheet` y `SessionActionsSheet` contra las 8 reglas: cumplen (registro sobrio, un botón primario por estado, regla visible en el botón bloqueado, estados vacío, carga y error con las piezas compartidas, estudiante y docente con el mismo `WeekCalendar`). Sin defectos vistos en el teléfono.
 
 **Pendiente para las fases 3 y 4** (usos de `error`, `warning` o `success` como indicador): `AppBar` (borde del ítem), `AccountCard` (ícono `success`), `StatusStackBar` y `StatusBadge` (colores de estado de PQRS), `PqrsFiledScreen` (ícono `success`), `SmtpSettingsScreen` (estado). Cada fase añade sus carpetas a la prueba `severityIndicators.test.ts`.
+
+## Fase 3 (spec 029): administración del CAE
+
+| Pieza | Cambio |
+|---|---|
+| `ScreenHeader` (nueva) | Cabecera compacta de marca en 10 pantallas: módulos, sedes, salones, docentes, estudiantes, periodos, festivos, listas desplegables, elementos de lista, cambios e índice de «Más» (docentes y estudiantes comparten pantalla) |
+| `AppBar` | Borde de «Cerrar sesión» con `errorText` |
+| `AccountCard` | Ícono de cuenta activa con `successText` |
+| `StatusStackBar` | Segmentos con `warningText` y `successText` |
+| `SmtpSettingsScreen` | Un solo `textColor` para borde, ícono y texto del estado |
+| `FieldBox` | Borde de campo con error con `errorText` |
+
+Auditoría de los 11 formularios y detalle (sin cabecera): cada botón lleva ícono a la izquierda, solo hay un primario por estado y sus campos usan `FieldBox`; sin defectos vistos en el teléfono.
+
+**Pendiente para la fase 4**: `StatusBadge` y `PqrsFiledScreen` (PQRS), chat y perfil; cada fase añade sus carpetas a `severityIndicators.test.ts` y sus pantallas a `headerBudget.test.ts` si usan cabecera.
