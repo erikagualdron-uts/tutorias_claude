@@ -133,3 +133,12 @@ Auditoría de las pantallas de chat, PQRS y cambio de clave contra las 8 reglas:
 | Horario del docente | `ScreenHeader` en lugar del título de texto |
 
 El detalle de módulo del estudiante sigue sobrio y los inicios expresivos. Sin defectos vistos en el teléfono; el pedido fue de aspecto (más moderno y refrescante).
+
+## Spec 032: Mi cuenta
+
+| Pantalla | Registro |
+|---|---|
+| Mi cuenta (`account`) | Sobrio con cabecera: datos de la sesión, notificaciones, cambiar contraseña y cerrar sesión |
+| Cambiar contraseña (`account-password`) | Sobrio sin cabecera: los dos campos y un botón principal |
+
+Las dos se alcanzan desde el avatar. La edición del nombre queda para otra spec.
