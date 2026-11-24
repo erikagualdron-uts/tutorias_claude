@@ -10,7 +10,7 @@ Three roles share one app: `SUPERADMIN` (CAE), `TEACHER`, `STUDENT`. Each role g
 The visual feel is **modern and smooth**: soft shadows, generous radii, subtle gradients in the institutional greens, fluid micro-animations and consistent line icons. The identity of the university is present through its official logo, colors and brand elements (see "University brand elements").
 
 ## Colors
-Source: UTS corporate identity manual. Roles marked *brand* come directly from the manual; roles marked *derived* were added to complete the system and are measured against the contrast rules below. **The role table is the single source of truth**: `mobile/src/theme/colors.ts` defines exactly these 39 roles in both modes, and a test (`designDoc.test.ts`) fails when the table and the theme differ. Components use roles, never a hex value.
+Source: UTS corporate identity manual. Roles marked *brand* come directly from the manual; roles marked *derived* were added to complete the system and are measured against the contrast rules below. **The role table is the single source of truth**: `mobile/src/theme/colors.ts` defines exactly these 40 roles in both modes, and a test (`designDoc.test.ts`) fails when the table and the theme differ. Components use roles, never a hex value.
 
 ### Role table
 | Role | Light | Dark | Origin | Use |
@@ -21,7 +21,7 @@ Source: UTS corporate identity manual. Roles marked *brand* come directly from t
 | `surface` | `#F2F4EF` | `#1B3D2A` | derived | Chips, inactive controls, received chat bubbles, fields on cards; in dark it is lighter than the card |
 | `surfaceWarm` | `#F8E9D4` | `#2E2718` | brand (UTS Cream, Pantone 451 C); dark derived | Announcements and important notices; in dark a dark cream, never the light one |
 | `primary` | `#34531F` | `#C3D730` | brand (UTS Green, Pantone 2266 C); dark = lime | Main buttons, active states, progress bars |
-| `primaryPressed` | `#132F20` | `#C3D730` | brand (UTS Deep Green, Pantone 5535 C) | Pressed state of green interactive elements |
+| `primaryPressed` | `#132F20` | `#9FB01F` | brand (UTS Deep Green, Pantone 5535 C); dark value derived | Pressed state of green interactive elements (dark: a darker lime so the press shows; `onPrimary` 6.0:1) |
 | `onPrimary` | `#FFFFFF` | `#132F20` | base | Text and icons on `primary` |
 | `accent` | `#C3D730` | `#C3D730` | brand (UTS Lime, Pantone 382 C) | Highlights, selected indicators, dark surfaces. Never text or icon on white (1.6:1) |
 | `onAccent` | `#132F20` | `#132F20` | brand | Text on `accent`, on success and on warning fills |
@@ -54,6 +54,7 @@ Source: UTS corporate identity manual. Roles marked *brand* come directly from t
 | `selected` | `#E4EBDD` | `#224A33` | derived | Selected row, chip or card |
 | `tabActive` | `#34531F` | `#C3D730` | derived | Active tab icon and label (3:1 on the bar) |
 | `tabInactive` | `#575756` | `#B3B3B3` | derived | Inactive tab icon and label (3:1 on the bar) |
+| `controlBorder` | `#76827A` | `#7A9A85` | derived | Border of outlined and tonal buttons and of unselected chips (3:1 on `card`, `screen` and `selected`) |
 
 ### Gradients and brand
 - **Gradient Brand** (#34531F → #132F20, 135°): Hero cards, login header, splash. Always paired with white text. Same in light and dark.
@@ -89,6 +90,7 @@ Every text, icon and indicator pair of the role table is measured in both modes 
 | `warningText` on `screen` | 6.1:1 | 10.6:1 |
 | `onSurfaceWarm` on `surfaceWarm` | 12.1:1 | 12.4:1 |
 | `tabActive` / `tabInactive` on `card` | 8.7:1 / 7.2:1 | 9.0:1 / 6.9:1 |
+| `controlBorder` on `card` / `screen` / `selected` | 4.0:1 / 3.6:1 / 3.3:1 | 4.7:1 / 5.9:1 / 3.2:1 |
 
 Fails by design, fills and icons only: `accent` on white (1.6:1), `warning` on white (2.4:1), `success` on white (3.2:1), `inputBorder` on white (about 1.6:1). The field is identified by its fill, label and focus border (`inputBorderFocus`, 3:1), not by its soft border (D-123).
 
@@ -228,6 +230,7 @@ A decorative pattern inspired by the elements of the university crest replaces a
 - **Component:** one `BrandPattern` component with a fixed list of placements (position in %, size, rotation, icon). The list is deterministic, never random per render, so the layout does not jump.
 - **Style:** about 14 icons in the login header, sizes 30 to 64px, rotations between -30° and 30°, a mix of the three icons staggered (not in straight rows). White at 8-12% opacity; up to 3 icons in lime #C3D730 at 14-18% for warmth. In dark mode, white at 6%.
 - **Clear zone:** nothing is placed in the central area where the logo and title sit, so the logo keeps its clear space and the text stays legible.
+- **Empty variant:** `BrandPattern variant="empty"` (4 fixed icons at the corners, 38 to 46px) sits behind the icon of every empty state, over `screen` or `card` instead of the green gradient (`onSurface`: the icons take the `primary` role, at 12-14% in light and 6% in dark). It is the one pattern of that screen.
 - **Clipping:** icons may be cut by the edge of the header or card; that is intended.
 - **Where:** headers of login, registration, password recovery and change-password screens, the splash background, and hero cards (3 icons at 10%, bottom-right corner). Never on regular content screens, lists or inside cards.
 - **Behavior:** static. A single 350ms fade-in on first show; with reduce motion, no animation. The pattern ignores touches and is hidden from screen readers.
@@ -361,6 +364,7 @@ Every interactive component has these states, using roles only (the role table g
 | Primary button | `primaryPressed`, scale 0.97 | 2px `inputBorderFocus` ring | `surface` fill, `disabledText`, helper line says why | compact BrandLoader in place of the icon | not applicable | not applicable |
 | Destructive button | `errorPressed` | ring | as above | as above | not applicable | not applicable |
 | Outlined / tonal button | `selected` fill | ring | as above | as above | not applicable | not applicable |
+| Control boundary | not applicable | not applicable | not applicable | not applicable | not applicable | Outlined and tonal buttons and unselected chips draw a 1px `controlBorder` (3:1 on `card`, `screen` and `selected`). Filled buttons are told apart by their text (4.5:1); the text field keeps its soft border (D-123) |
 | Text field | not applicable | 2px `inputBorderFocus`, `focusGlow`, label `inputLabelFocus` | 60% opacity, no glow | not applicable | 1px `error` border, `errorGlow`, message in `errorText` with icon | not applicable |
 | Chip / segment | scale 0.98 | ring | `surface`, `disabledText` | not applicable | not applicable | `primary` fill with `onPrimary` text, or `selected` with `textPrimary` and a check icon |
 | Card (tappable) | scale 0.98 | ring | 60% opacity | skeleton blocks | `error` icon and text in `errorText` | `selected` fill and `primary` 2px border |

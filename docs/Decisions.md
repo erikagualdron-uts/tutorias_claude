@@ -543,6 +543,12 @@
 - **Motivo:** El tema ya tenía roles, pero el modo oscuro tenía huecos (crema clara, tarjeta igual a superficie, sombras invisibles, texto de estado ilegible) y nada comprobaba que documento, tema y componentes coincidieran.
 - **Descartado:** Un sistema de dos capas de tokens (primitivos y semánticos), porque no había un defecto que lo exigiera; borde de campos de 3:1, porque rompe la regla de borde tenue de `CLAUDE.md`; pruebas de capturas de pantalla, por frágiles y por requerir infraestructura nueva; rediseñar la barra y la cabecera, que se decidió dejar solo en color.
 
+### D-124 · Borde de controles, color de presionado en oscuro y estado vacío con marca
+- **Estado:** Aceptada (spec 027, fase 1 del rediseño: entrada y portada).
+- **Decisión:** (1) Nuevo rol derivado `controlBorder` (claro `#76827A`, oscuro `#7A9A85`, 40 roles en total) para el borde de los botones `outlined` y `tonal` y de los chips sin seleccionar, con 3:1 sobre `card`, `screen` y `selected`; los botones rellenos se identifican por su texto y el campo conserva el borde tenue (D-123). (2) `primaryPressed` oscuro pasa de `#C3D730` a `#9FB01F`, para que presionar cambie el color. (3) El chip de filtro no se encoge y tiene ancho mínimo de 48 px; la etiqueta no se encoge (corrige «All» que se veía «Al»). (4) El inicio del CAE abre con un bloque destacado (`HeroCard`) con la ocupación, igual que estudiante y docente. (5) `EmptyState` lleva el patrón de marca (variante `empty`, tono `primary` sobre la superficie). (6) El aviso de cancelación usa `errorText`, legible en oscuro.
+- **Motivo:** En el recorrido en el teléfono se vieron botones y elementos con poco contraste en modo oscuro y chips «All» recortados. El texto de los botones ya pasaba; faltaba medir el borde de los controles y el estado presionado, y la matriz de la spec 026 no los cubría.
+- **Descartado:** Bordes de 2 px (el rol seguiría faltando); subir `border` para todo (separa filas y tarjetas, donde un 3:1 sería ruido); quitar el espaciado entre letras de `label` (cambia todo el texto pequeño); un estado vacío solo para las 12 pantallas (habría dos estilos distintos en la app).
+
 ---
 
 ## Plantilla para nuevas decisiones
