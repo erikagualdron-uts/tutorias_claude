@@ -10,41 +10,63 @@ Three roles share one app: `SUPERADMIN` (CAE), `TEACHER`, `STUDENT`. Each role g
 The visual feel is **modern and smooth**: soft shadows, generous radii, subtle gradients in the institutional greens, fluid micro-animations and consistent line icons. The identity of the university is present through its official logo, colors and brand elements (see "University brand elements").
 
 ## Colors
-Source: UTS corporate identity manual. Colors marked *(brand)* come directly from the manual; colors marked *(derived)* were added to complete the system.
+Source: UTS corporate identity manual. Roles marked *brand* come directly from the manual; roles marked *derived* were added to complete the system and are measured against the contrast rules below. **The role table is the single source of truth**: `mobile/src/theme/colors.ts` defines exactly these 39 roles in both modes, and a test (`designDoc.test.ts`) fails when the table and the theme differ. Components use roles, never a hex value.
 
-- **Primary** (#34531F): Main buttons, active states, progress bars — UTS Green *(brand, Pantone 2266 C)*
-- **Primary Hover** (#132F20): Pressed state for green interactive elements — UTS Deep Green *(brand, Pantone 5535 C)*
-- **Accent** (#C3D730): Highlights, selected indicators, dark surfaces — UTS Lime *(brand, Pantone 382 C, logo color)*. Never used as text or icon on white (contrast 1.6:1). Always paired with #132F20 text or placed over dark green.
-- **Secondary** (#4E7A2F): Text links and inline mentions — Link Green *(derived, 5.0:1 on white)*
-- **Neutral** (#575756): Secondary text, metadata, icon buttons — Cool Gray 4 *(brand, Pantone Cool Gray 4 C)*
-- **Background** (#FFFFFF): Light mode primary background
-- **Surface** (#F2F4EF): Inputs, chat bubbles received, metric cards, inactive chips — Soft Green Gray *(derived)*
-- **Surface Warm** (#F8E9D4): Announcements, important notices — UTS Cream *(brand, Pantone 451 C)*
-- **Text Primary** (#132F20): Titles, names, primary content — UTS Deep Green *(brand)*
-- **Text Secondary** (#575756): Metadata, timestamps, descriptions — Cool Gray 4 *(brand)*
-- **Border** (#E5E5E5): Dividers, input outlines
-- **Screen** (#F2F4EF): Background of list and dashboard screens, so white cards stand out softly
-- **Card** (#FFFFFF): Cards, metric cards, sheets
-- **Gradient Brand** (#34531F → #132F20, 135°): Hero cards, login header, splash. Always paired with white text.
-- **Input Fill** (#F2F4EF): Fill of text fields placed on white cards. On the Screen background, fields use a white fill instead. *(derived)*
-- **Input Border** (#C9D0C3): 1px border of every text field, soft by design *(derived)*
-- **Input Border Focus** (#4E7A2F): 2px border when a field is focused *(derived)*
-- **Placeholder** (#6E6E6E, *derived*): Placeholder text inside fields. #767676 was 4.1:1 on the field fill; #6E6E6E is 4.6:1 (spec 023)
-- **Success** (#2BA640): Available, resolved, active. Icon or fill only, not text on white.
-- **Warning** (#FB8C00): Last spots, in review, rescheduled. Icon or fill with #132F20 text, not text on white.
-- **Error** (#B3261E): Failures, blocked actions, cancellations *(derived)*
-- **Error text** (`errorText`: #B3261E in light, **#FF8A80** in dark, *derived*): error as text or icon on a card or screen. #B3261E is 2.2:1 on the dark card; #FF8A80 is 6.3:1. Fills, borders and buttons keep #B3261E (spec 023)
-- **Error Pressed** (#6D100A): Pressed state for error elements — UTS Burgundy *(brand, Pantone 4975 C)*
+### Role table
+| Role | Light | Dark | Origin | Use |
+|---|---|---|---|---|
+| `background` | `#FFFFFF` | `#0B1710` | base | Base background of the app, sheets and dialogs |
+| `screen` | `#F2F4EF` | `#0B1710` | derived | Background of list and dashboard screens, so cards stand out softly |
+| `card` | `#FFFFFF` | `#132F20` | base | Cards, metric cards, sheets, top bar and tab bar |
+| `surface` | `#F2F4EF` | `#1B3D2A` | derived | Chips, inactive controls, received chat bubbles, fields on cards; in dark it is lighter than the card |
+| `surfaceWarm` | `#F8E9D4` | `#2E2718` | brand (UTS Cream, Pantone 451 C); dark derived | Announcements and important notices; in dark a dark cream, never the light one |
+| `primary` | `#34531F` | `#C3D730` | brand (UTS Green, Pantone 2266 C); dark = lime | Main buttons, active states, progress bars |
+| `primaryPressed` | `#132F20` | `#C3D730` | brand (UTS Deep Green, Pantone 5535 C) | Pressed state of green interactive elements |
+| `onPrimary` | `#FFFFFF` | `#132F20` | base | Text and icons on `primary` |
+| `accent` | `#C3D730` | `#C3D730` | brand (UTS Lime, Pantone 382 C) | Highlights, selected indicators, dark surfaces. Never text or icon on white (1.6:1) |
+| `onAccent` | `#132F20` | `#132F20` | brand | Text on `accent`, on success and on warning fills |
+| `link` | `#4E7A2F` | `#C3D730` | derived | Text links and inline mentions |
+| `textPrimary` | `#132F20` | `#F2F4EF` | brand | Titles, names, primary content |
+| `textSecondary` | `#575756` | `#B3B3B3` | brand (Cool Gray 4 C; dark Cool Gray 5 C) | Metadata, timestamps, descriptions, icon buttons |
+| `border` | `#E5E5E5` | `rgba(255,255,255,0.08)` | derived | Dividers and outlines of cards in dark |
+| `error` | `#B3261E` | `#B3261E` | derived | Fill of errors, blocked actions and cancellations |
+| `errorText` | `#B3261E` | `#FF8A80` | derived | Error as text or icon; in dark a lighter red (the fill is 2.2:1 on dark) |
+| `errorPressed` | `#6D100A` | `#6D100A` | brand (UTS Burgundy, Pantone 4975 C) | Pressed state of error elements |
+| `onError` | `#FFFFFF` | `#FFFFFF` | base | Text and icons on `error` |
+| `success` | `#2BA640` | `#2BA640` | derived | Fill or icon for available, resolved, active. Not text |
+| `successPressed` | `#3DBB55` | `#3DBB55` | derived | Pressed state of success |
+| `warning` | `#FB8C00` | `#FB8C00` | derived | Fill or icon for last spots, in review, rescheduled. Not text |
+| `warningPressed` | `#E07B00` | `#E07B00` | derived | Pressed state of warning |
+| `disabledText` | `#878787` | `#878787` | brand (Pantone 877 C) | Disabled text and icons (exempt from contrast, WCAG) |
+| `scrim` | `rgba(0,0,0,0.4)` | `rgba(0,0,0,0.4)` | derived | Backdrop of dialogs and sheets |
+| `inputFill` | `#F2F4EF` | `#0B1710` | derived | Fill of text fields placed on cards |
+| `inputFillOnScreen` | `#FFFFFF` | `#0B1710` | derived | Fill of text fields placed on the screen background |
+| `inputBorder` | `#C9D0C3` | `rgba(255,255,255,0.16)` | derived | 1px soft border of every text field (exempt from 3:1 by design) |
+| `inputBorderFocus` | `#4E7A2F` | `#C3D730` | derived | 2px border of a focused field (3:1) |
+| `inputLabelFocus` | `#34531F` | `#C3D730` | derived | Label of a focused field |
+| `inputPlaceholder` | `#6E6E6E` | `#B3B3B3` | derived | Placeholder text inside fields (4.6:1 on the fill; #767676 was 4.1:1, spec 023) |
+| `focusGlow` | `rgba(78,122,47,0.15)` | `rgba(195,215,48,0.18)` | derived | Glow around a focused field |
+| `errorGlow` | `rgba(179,38,30,0.12)` | `rgba(179,38,30,0.25)` | derived | Glow around a field with an error |
+| `onSurfaceWarm` | `#132F20` | `#F8E9D4` | derived | Text and icons on `surfaceWarm` |
+| `shadow` | `#132F20` | `#000000` | derived | Color of shadows; deep green in light, black in dark |
+| `successText` | `#1B7A2E` | `#5BD16E` | derived | Success as text (4.5:1 on card and screen) |
+| `warningText` | `#8A4B00` | `#FFB74D` | derived | Warning as text (4.5:1 on card and screen) |
+| `selected` | `#E4EBDD` | `#224A33` | derived | Selected row, chip or card |
+| `tabActive` | `#34531F` | `#C3D730` | derived | Active tab icon and label (3:1 on the bar) |
+| `tabInactive` | `#575756` | `#B3B3B3` | derived | Inactive tab icon and label (3:1 on the bar) |
+
+### Gradients and brand
+- **Gradient Brand** (#34531F → #132F20, 135°): Hero cards, login header, splash. Always paired with white text. Same in light and dark.
+- Never use the lime `accent` as text or icon on a white or light surface; pair it with `onAccent` text or place it over dark green.
+- `success` and `warning` are fills and icons. Text that states a status uses `successText` and `warningText`.
 
 ### Dark mode
-- **Background** (#0B1710) *(derived)*
-- **Surface** (#132F20) *(brand)*
-- **Primary** (#C3D730) with #132F20 text
-- **Text Primary** (#F2F4EF)
-- **Text Secondary** (#B3B3B3) *(brand, Cool Gray 5 C)*
-- **Border** (rgba(255,255,255,0.08))
-- **Input Fill** (#0B1710) with a 1px `rgba(255,255,255,0.16)` border; focus border #C3D730
-- Sent chat bubbles use #34531F with white text; received bubbles use #132F20.
+- Dark is a set of roles, not an inversion: every role above has a dark value, and no component may paint a light-mode color in dark.
+- The app follows the system mode and changes without restarting; there is no in-app switch.
+- Elevation in dark is told by surface and border, not by shadow (see Elevation): `card` over `screen`, `surface` lighter than `card`, and a 1px `border` on cards.
+- `primary` is lime in dark, with `onPrimary` text (deep green). Sent chat bubbles use `#34531F` with white text; received bubbles use `card`.
+- The cream notice is dark cream (`surfaceWarm`) with light cream text (`onSurfaceWarm`); a light notice on a dark screen is a defect.
+- The splash and the system bars follow the mode.
 
 ### Chart palette
 - Series 1: #34531F
@@ -54,22 +76,21 @@ Source: UTS corporate identity manual. Colors marked *(brand)* come directly fro
 - Never rely on color alone: every bar, segment and line has a direct value label or legend text.
 
 ### Contrast reference
-| Pair | Ratio | Use |
-|---|---|---|
-| #34531F on #FFFFFF | 8.7:1 | Buttons, headings |
-| #FFFFFF on #34531F | 8.7:1 | Text on primary buttons and sent bubbles |
-| #4E7A2F on #FFFFFF | 5.0:1 | Text links |
-| #575756 on #FFFFFF | 7.2:1 | Secondary text |
-| #132F20 on #C3D730 | 9.0:1 | Text on accent fills |
-| #C3D730 on #132F20 | 9.0:1 | Accent on dark surfaces |
-| #B3261E on #FFFFFF | 6.5:1 | Error text |
-| #C3D730 on #FFFFFF | 1.6:1 | **Fails.** Decorative fills only |
-| #FB8C00 on #FFFFFF | 2.4:1 | **Fails.** Icons and fills only |
-| #2BA640 on #FFFFFF | 3.2:1 | **Fails for text.** Icons and fills only |
-| #FF8A80 on #132F20 | 6.3:1 | Error text and icons in dark mode |
-| #6E6E6E on #F2F4EF | 4.6:1 | Placeholder on the field fill |
+Every text, icon and indicator pair of the role table is measured in both modes by `contrast.test.ts` (text 4.5:1; icons, focus and active-state indicators 3:1). The main pairs:
 
-The orange #FB8C00 (2.4:1 on white) is a fill with #132F20 text on top, or an icon that sits beside its own text; it is never the only carrier of a state on a light surface. `src/theme/__tests__/contrast.test.ts` checks every text pair at 4.5:1 and every icon pair at 3:1, in the light and the dark palette, so changing a color that stops meeting AA fails the suite.
+| Pair | Light | Dark |
+|---|---|---|
+| `textPrimary` on `card` | 14.4:1 | 13.0:1 |
+| `textSecondary` on `card` / on `surface` (dark) | 7.2:1 | 6.9:1 / 5.7:1 |
+| `onPrimary` on `primary` | 8.7:1 | 9.0:1 |
+| `link` on `card` | 5.1:1 | 9.0:1 |
+| `errorText` on `card` | 6.5:1 | 6.3:1 |
+| `successText` on `screen` | 4.9:1 | 9.4:1 |
+| `warningText` on `screen` | 6.1:1 | 10.6:1 |
+| `onSurfaceWarm` on `surfaceWarm` | 12.1:1 | 12.4:1 |
+| `tabActive` / `tabInactive` on `card` | 8.7:1 / 7.2:1 | 9.0:1 / 6.9:1 |
+
+Fails by design, fills and icons only: `accent` on white (1.6:1), `warning` on white (2.4:1), `success` on white (3.2:1), `inputBorder` on white (about 1.6:1). The field is identified by its fill, label and focus border (`inputBorderFocus`, 3:1), not by its soft border (D-123).
 
 ## Typography
 - **Corporate Font**: **Myriad Pro**, the institutional typeface of the UTS. Weights used: Regular (400), Semibold (600) and Bold (700).
@@ -95,17 +116,19 @@ If a component spec elsewhere in this file mentions a size or weight, the named 
 - **Button Text**: Myriad Pro 15px/20px, Semibold
 - **Code**: Source Code Pro 14px/20px, Regular
 
+The theme names (`typography`): `screenTitle`, `sectionTitle`, `cardTitle`, `metricNumber`, `body`, `bodySmall`, `metadata`, `label`, `button` and `code`. A component uses one of them and never writes a size.
+
 Metadata lines use the separator " · " in this order: `Prof. Name · Mon 10:00–12:00 · Room 301`.
 
 ## Elevation
-Soft and layered. Shadows are tinted with the deep green (#132F20), never pure black, to keep the look warm and smooth.
+Soft and layered. In light mode shadows use the `shadow` role (deep green #132F20), never pure black, to keep the look warm and smooth. Components get the levels from `useShadows()`, which applies the color of the current mode.
 
 - **Level 0:** flat. Screen background, dividers, inputs.
 - **Level 1 (cards):** `0 2px 8px rgba(19,47,32,0.06)`. Default for cards and metric cards. No border.
 - **Level 2 (raised):** `0 8px 24px rgba(19,47,32,0.10)`. Hero cards, floating buttons, pressed-and-lifted states, menus and popovers.
 - **Level 3 (overlays):** `0 16px 48px rgba(19,47,32,0.18)`. Bottom sheets, dialogs and modals.
 
-On Android, map each level to the closest `elevation` value. In dark mode, shadows are replaced by a 1px `rgba(255,255,255,0.06)` border and a slightly lighter surface.
+On Android, map each level to the closest `elevation` value. In dark mode a shadow does not read on the dark background, so elevation is told by **surface and border**: the screen is `screen`, cards are `card` with a 1px `border`, and anything raised above a card (`surface`, menus, sheets) is lighter than it. The `shadow` role in dark is black, and the level shadow stays only as a soft hint.
 
 ## Spacing
 - Base unit: 8px
@@ -116,6 +139,7 @@ On Android, map each level to the closest `elevation` value. In dark mode, shado
 - Minimum touch target: 48 x 48px (smaller visuals get extra hit area)
 - Always respect safe areas (notch, home indicator, Android system bars)
 - Tablets: lists become 2 columns from 600px width
+- Names in the theme (`spacing`): `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 24 · `xxl` 32 · `xxxl` 48 · `huge` 64. Screen padding is `lg`; section spacing is `xl`; the gap between cards is `md`.
 
 ## Border Radius
 - 4px: Tooltips, message tail corner
@@ -125,6 +149,7 @@ On Android, map each level to the closest `elevation` value. In dark mode, shado
 - 20px: Hero cards, dialogs
 - 24px: Top corners of bottom sheets, login card, curved header bottom (32px)
 - 9999px: Buttons, chips, avatars, composer, capacity pills
+- Names in the theme (`radius`): `tooltip` 4 · `badge` 8 · `input` 12 · `banner` 12 · `card` 16 · `hero` 20 · `sheet` 24 · `header` 32 · `pill` 9999.
 
 ## Iconography (Iconify)
 
@@ -210,6 +235,24 @@ A decorative pattern inspired by the elements of the university crest replaces a
 
 
 
+## Visual registers
+Two registers, chosen by the type of screen. The type decides the register, not the taste of whoever builds the screen.
+
+| Register | Screens | What it looks like |
+|---|---|---|
+| **Sober** | Lists, schedule, module and session detail, administration, chat, PQRS, settings | `screen` background, `card` surfaces, `primary` only on actions and active states, hierarchy by type and spacing. No gradient and no brand pattern |
+| **Expressive** | Login and password screens, the home of each role, empty states | Brand gradient or colored header, `BrandPattern` leaves, feathers and books, `accent` highlights over dark green |
+
+Rules to check a screen (they turn "elegant", "modern", "consistent" and "close to the UTS" into something a reviewer can verify):
+1. **One focus.** At most one primary button per screen area and one `accent` element per screen.
+2. **Expressive budget.** An expressive screen has at most one gradient or colored block and one `BrandPattern`; a sober screen has none.
+3. **Hierarchy by type.** Each screen has one `screenTitle`; sections use `sectionTitle`; a screen never uses more than four type styles.
+4. **Rhythm.** Spacing only from the `spacing` scale; 16px screen padding, 12px between cards, 24px between sections.
+5. **Surfaces.** A card is always `card` on `screen`; nothing is a card inside a card.
+6. **Roles only.** No hex value, font name or size in a component (a test fails on loose colors).
+7. **Both modes.** A screen is reviewed in light and dark; a leftover of one mode in the other is a defect.
+8. **Brand.** The UTS logo, the green and the lime appear as in "University brand elements"; the pattern is the only decoration.
+
 ## Navigation
 Bottom tab bar, 64px plus safe area, white, 1px #E5E5E5 top border, Level 1. Active tab: icon inside a 56 x 32px #F2F4EF pill, icon and label in #34531F with weight 700. Inactive: #575756. Unread tab badge: #B3261E circle with white number, 16px min. Top app bar 56px, white, Level 1 on scroll, screen title left, then the notifications bell and the user avatar on the right (the avatar opens profile and sign out). The bell (`solar:bell-linear`, bold when there is something unread) is a 48px target with the unread count in a #B3261E badge with a white number (16px min, `99+` above 99); it opens the inbox of the role.
 
@@ -219,6 +262,10 @@ Tabs per role:
 - **SUPERADMIN**: Dashboard · Modules · Messages · PQRS · More (Teachers, Students, Settings)
 
 After login, the app routes to the tab set of the user's role. If `mustChangePassword` is true, the change-password screen blocks all navigation until done.
+
+
+### Screens without a tab
+A screen that has no tab (the notifications inbox for all roles and the CAE changes list) is **hidden from the bar but reachable by route** (D-121). It never leaves a gap in the bar, and going back returns to the screen the person came from (the tab history). Every hidden screen has a visible way back and appears in the route tests. The tab bar and the top bar keep their shape; only their colors change with the mode (`tabActive`, `tabInactive`, `card`).
 
 ## Components
 
@@ -305,6 +352,21 @@ The app's own loading indicator replaces the system spinner everywhere (`Activit
 Circle, 40px in lists and 48px in conversation lists. Fallback: initials on #F2F4EF with #132F20 text.
 
 **Profile menu** (avatar in the app bar): the 40px avatar has a 1px #575756 outline so it stays visible in dark mode. The menu opens right under the avatar (app bar height plus the top safe area), has a 1px border and holds the Sign out item: 48px high, 1px #B3261E outline with rounded corners, and icon and text in #B3261E so it reads as the session action.
+
+### Component states
+Every interactive component has these states, using roles only (the role table gives both modes). A state never relies on color alone: it also changes shape, text or icon.
+
+| Component | Pressed | Focused | Disabled | Loading | Error | Selected |
+|---|---|---|---|---|---|---|
+| Primary button | `primaryPressed`, scale 0.97 | 2px `inputBorderFocus` ring | `surface` fill, `disabledText`, helper line says why | compact BrandLoader in place of the icon | not applicable | not applicable |
+| Destructive button | `errorPressed` | ring | as above | as above | not applicable | not applicable |
+| Outlined / tonal button | `selected` fill | ring | as above | as above | not applicable | not applicable |
+| Text field | not applicable | 2px `inputBorderFocus`, `focusGlow`, label `inputLabelFocus` | 60% opacity, no glow | not applicable | 1px `error` border, `errorGlow`, message in `errorText` with icon | not applicable |
+| Chip / segment | scale 0.98 | ring | `surface`, `disabledText` | not applicable | not applicable | `primary` fill with `onPrimary` text, or `selected` with `textPrimary` and a check icon |
+| Card (tappable) | scale 0.98 | ring | 60% opacity | skeleton blocks | `error` icon and text in `errorText` | `selected` fill and `primary` 2px border |
+| List row | `selected` fill | ring | `disabledText` | skeleton rows | row note in `errorText` | `selected` fill |
+| Tab | not applicable | ring | not applicable | not applicable | not applicable | `tabActive` icon (bold) and label; the others `tabInactive` |
+| Banner | not applicable | not applicable | not applicable | not applicable | `error` fill with `onError` | not applicable |
 
 ## Screen patterns
 
