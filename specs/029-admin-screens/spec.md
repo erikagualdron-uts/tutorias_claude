@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented (pending manual review: T028)
+**Status**: Implemented
 
 **Input**: User description: "Spec 029, fase 3 del rediseño de la app: administración del CAE. Aplicar el sistema de diseño de las specs 026, 027 y 028 (registro sobrio) a las 22 pantallas de la fase 3 del inventario (módulos, más/administración y cambios del CAE). Más elegante y moderno, consistente entre pantallas de administración (listas, formularios, tarjetas, estados de cuenta y de sesión), cercano a la identidad UTS y con modo oscuro sin errores visuales. Incluir los usos de error, warning y success como indicador que la spec 028 dejó pendientes según correspondan a esta fase. Sin cambios de backend, de textos, de reglas de negocio ni funcionalidad nueva. Incorporar los defectos del recorrido manual en el teléfono."
 
