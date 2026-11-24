@@ -88,8 +88,8 @@ Rutas del front relativas a `tutorias_uts_mobile/`; las de documentos, a `Claude
 - [X] T025 Ejecutar `npm test`, `npm run lint` y `npm run typecheck` completos en `tutorias_uts_mobile`; confirmar SC-005 y SC-006 (0 textos o reglas de negocio cambiados, guardas de las specs 026 a 028 en verde, `severityIndicators` y `headerBudget` en verde).
 - [X] T026 [P] En `docs/Decisions.md` agregar D-126 (registro «sobrio con cabecera» y `ScreenHeader`, 10 pantallas con cabecera y formularios sin ella, 5 indicadores corregidos, guarda `headerBudget`), con su motivo y alternativas descartadas (R-1, R-2, R-4, R-5).
 - [X] T027 [P] Completar `specs/026-design-system/screen-inventory.md`: estado de cada una de las 22 pantallas de la fase 3 en claro y oscuro, los 5 indicadores corregidos y lo que queda para la fase 4 (`StatusBadge`, `PqrsFiledScreen`, chat, PQRS, perfil).
-- [ ] T028 [manual, usuario] Recorrido de `quickstart.md` en el teléfono: las 10 pantallas con cabecera y los formularios en claro y oscuro, español e inglés, con datos, sin datos y con error; cambio de modo con cada pantalla abierta (SC-002, SC-007, SC-008).
-- [ ] T029 Marcar la spec como implementada (`Status` en `spec.md`) cuando T028 esté confirmado.
+- [X] T028 [manual, usuario] Recorrido de `quickstart.md` en el teléfono: las 10 pantallas con cabecera y los formularios en claro y oscuro, español e inglés, con datos, sin datos y con error; cambio de modo con cada pantalla abierta (SC-002, SC-007, SC-008).
+- [X] T029 Marcar la spec como implementada (`Status` en `spec.md`) cuando T028 esté confirmado.
 
 ---
 
