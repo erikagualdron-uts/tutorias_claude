@@ -555,6 +555,12 @@
 - **Motivo:** El recorrido en el teléfono no mostró defectos, pero la revisión del código midió indicadores de menos de 3:1 en un modo (por ejemplo `error` sobre `surface` oscuro 1.84:1 y `warning` sobre `card` claro 2.37:1). La matriz de la 026 medía pares de texto, no el rol que un componente toma para un indicador.
 - **Descartado:** Un rol nuevo `indicator*` (los roles de texto de severidad ya miden lo mismo); engrosar líneas y barras (el contraste seguiría sin cumplirse); una regla de lint propia (más infraestructura que una prueba que lee archivos).
 
+### D-126 · Registro «sobrio con cabecera» y cinco indicadores corregidos en administración
+- **Estado:** Aceptada (spec 029, fase 3 del rediseño: administración del CAE).
+- **Decisión:** (1) Nuevo registro «sobrio con cabecera» en `Design.md`: lo del sobrio más un `ScreenHeader` compacto (degradado de marca, título, línea lima de 4 px y número opcional), sin `BrandPattern`; regla 2 ajustada y comprobada por `headerBudget.test.ts`. (2) Lo llevan 10 pantallas: las 8 listas de administración (docentes y estudiantes comparten pantalla), los cambios y el índice de «Más»; los formularios y el detalle de módulo siguen sobrios. (3) Sin textos nuevos: el título es un texto existente y el número es un dato que ya carga la pantalla. (4) Indicadores corregidos con roles de texto (D-125): borde de «Cerrar sesión» (`AppBar`), ícono de cuenta activa (`AccountCard`), segmentos de PQRS (`StatusStackBar`), borde e ícono del estado SMTP y borde de campo con error (`FieldBox`); `severityIndicators.test.ts` suma las carpetas de la fase, sin `shell` (sus insignias son rellenos).
+- **Motivo:** La persona dueña del producto no vio defectos pero pidió pantallas de administración más modernas y llamativas; el registro sobrio las dejaba sin identidad frente a los inicios. La revisión del código midió además cinco indicadores de menos de 3:1 en un modo.
+- **Descartado:** Cabecera con patrón de marca como los inicios (rompe «un solo bloque de color y un patrón» y carga las pantallas de datos); solo pulir íconos y sombras sin cabecera (no daba la presencia pedida); una pantalla genérica de lista (filtros, paginación y acciones difieren y las pruebas dependen de cada estructura); textos de cantidad nuevos, por ejemplo «12 salones» (sin textos nuevos en esta fase).
+
 ---
 
 ## Plantilla para nuevas decisiones

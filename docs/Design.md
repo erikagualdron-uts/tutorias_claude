@@ -243,12 +243,13 @@ Two registers, chosen by the type of screen. The type decides the register, not 
 
 | Register | Screens | What it looks like |
 |---|---|---|
-| **Sober** | Lists, schedule, module and session detail, administration, chat, PQRS, settings | `screen` background, `card` surfaces, `primary` only on actions and active states, hierarchy by type and spacing. No gradient and no brand pattern |
+| **Sober** | Lists, schedule, module and session detail, administration forms and detail, chat, PQRS, settings | `screen` background, `card` surfaces, `primary` only on actions and active states, hierarchy by type and spacing. No gradient and no brand pattern |
+| **Sober with header** | Administration lists (modules, locations, rooms, teachers, students, periods, holidays, dropdown lists and items), the changes list and the "More" index | Everything of the sober register plus one compact `ScreenHeader` at the top: brand gradient, `screenTitle` in `onGradient.text`, a 4px `accent` line and an optional count in `metricNumber`. No `BrandPattern`; the title is an existing text and the count is a number, never a new string |
 | **Expressive** | Login and password screens, the home of each role, empty states | Brand gradient or colored header, `BrandPattern` leaves, feathers and books, `accent` highlights over dark green |
 
 Rules to check a screen (they turn "elegant", "modern", "consistent" and "close to the UTS" into something a reviewer can verify):
 1. **One focus.** At most one primary button per screen area and one `accent` element per screen.
-2. **Expressive budget.** An expressive screen has at most one gradient or colored block and one `BrandPattern`; a sober screen has none.
+2. **Expressive budget.** An expressive screen has at most one gradient or colored block and one `BrandPattern`; a sober screen has none; a sober screen with header has exactly one `ScreenHeader` and no `BrandPattern` (a test, `headerBudget`, checks it).
 3. **Hierarchy by type.** Each screen has one `screenTitle`; sections use `sectionTitle`; a screen never uses more than four type styles.
 4. **Rhythm.** Spacing only from the `spacing` scale; 16px screen padding, 12px between cards, 24px between sections.
 5. **Surfaces.** A card is always `card` on `screen`; nothing is a card inside a card.
@@ -366,7 +367,7 @@ Every interactive component has these states, using roles only (the role table g
 | Outlined / tonal button | `selected` fill | ring | as above | as above | not applicable | not applicable |
 | Control boundary | not applicable | not applicable | not applicable | not applicable | not applicable | Outlined and tonal buttons and unselected chips draw a 1px `controlBorder` (3:1 on `card`, `screen` and `selected`). Filled buttons are told apart by their text (4.5:1); the text field keeps its soft border (D-123) |
 | Status indicator | not applicable | not applicable | not applicable | not applicable | not applicable | An icon, line or bar fill that tells a state (session status, now line, capacity bar, badge border) uses `errorText`, `warningText`, `successText` or `primary` (3:1 on `card`, `screen` and `surface`). `error`, `warning` and `success` are fills only (buttons, notices, the numeric badge) |
-| Text field | not applicable | 2px `inputBorderFocus`, `focusGlow`, label `inputLabelFocus` | 60% opacity, no glow | not applicable | 1px `error` border, `errorGlow`, message in `errorText` with icon | not applicable |
+| Text field | not applicable | 2px `inputBorderFocus`, `focusGlow`, label `inputLabelFocus` | 60% opacity, no glow | not applicable | 1px `errorText` border, `errorGlow`, message in `errorText` with icon | not applicable |
 | Chip / segment | scale 0.98 | ring | `surface`, `disabledText` | not applicable | not applicable | `primary` fill with `onPrimary` text, or `selected` with `textPrimary` and a check icon |
 | Card (tappable) | scale 0.98 | ring | 60% opacity | skeleton blocks | `error` icon and text in `errorText` | `selected` fill and `primary` 2px border |
 | List row | `selected` fill | ring | `disabledText` | skeleton rows | row note in `errorText` | `selected` fill |
