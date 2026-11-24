@@ -537,6 +537,13 @@
 - **Motivo:** Los permisos eran la regla más repetida y nada impedía que una ruta nueva quedara abierta por olvido; la accesibilidad dependía de la memoria de cada spec; las metas de rendimiento se habían medido a mano con pocos datos. Un gancho global cubre también las pantallas futuras sin una línea por prueba.
 - **Descartado:** Exigir `@Roles` en todas las rutas (borra la diferencia entre "a propósito" y "por olvido") o negar por defecto (cambio de seguridad mayor); una prueba nueva de accesibilidad por pantalla (duplica los mocks); una herramienta externa de auditoría o de carga (dependencia nueva y más ruido); cambiar el rojo de error en el tema oscuro para todos los usos (rompería el blanco sobre los botones destructivos); agregar un color nuevo para el ícono de advertencia (no es el único portador del estado); reutilizar la semilla de desarrollo (pocos datos) o datos al azar (dos corridas no se comparan).
 
+### D-121 · Pantallas sin pestaña: ocultas con el botón de la pestaña, no con `href: null`
+- **Estado:** Aceptada (spec 024)
+- **Decisión:** `RoleTabs` oculta las pantallas sin pestaña (la bandeja de avisos de los tres roles y la lista de cambios del CAE) con `tabBarItemStyle: { display: 'none' }`, declaradas en un solo lugar (`roleTabs.config.ts`). Fija `backBehavior="history"`, de modo que "atrás" desde esas pantallas regresa a la pestaña de origen, y da a cada pestaña visible su etiqueta de lector de pantalla con la posición y el total de las visibles (`tabs.position`, en es y en). Una prueba con el router real (`hiddenScreens.test.tsx`) abre cada pantalla sin pestaña, toca la campana y revisa la barra y que cada ruta de `app/(rol)` esté declarada.
+- **Motivo:** En Expo Router 58, `href: null` se traduce a `hidden: true`, que **redirige** la navegación a la primera pestaña: la campana y el enlace "Cambios" terminaban en el inicio. Las pruebas anteriores simulaban el router y no lo vieron. La barra contaba las pantallas ocultas ("1 de 6" con 5 pestañas), de ahí la etiqueta propia.
+- **Descartado:** `tabBarButton: () => null` (puede dejar un hueco del ancho de una pestaña); mover esas pantallas fuera de las pestañas con un `Stack` padre (reorganiza todas las rutas de `app/`); seguir probando solo con el router simulado.
+- **Consecuencia aceptada:** con `backBehavior="history"` el botón atrás de Android recorre las pestañas visitadas en vez de saltar siempre al inicio. **Pendiente:** iOS no tiene botón atrás del sistema y ni la bandeja ni la lista de cambios tienen botón propio; se sale con la barra inferior. Agregar uno a la barra superior es un cambio de diseño y sería otra spec.
+
 ---
 
 ## Plantilla para nuevas decisiones
