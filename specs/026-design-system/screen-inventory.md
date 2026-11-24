@@ -16,14 +16,14 @@ Generado el 2026-11-23 desde `tutorias_uts_mobile/app` (58 rutas). Las columnas 
 | `(student)/messages/[id].tsx` | student | sober | BrandLoader, Button, EmptyState | sí | por revisar | por revisar | 4 |
 | `(student)/messages/index.tsx` | student | sober | Banner, BrandLoader, Button, EmptyState, SegmentedControl | sí | por revisar | por revisar | 4 |
 | `(student)/messages/new.tsx` | student | sober | Banner, BrandLoader, Button, Card, EmptyState, SearchField | sí | por revisar | por revisar | 4 |
-| `(student)/modules/[id].tsx` | student | sober | Banner, Button, Card, EmptyState, LoadingScreen | sí | por revisar | por revisar | 2 |
-| `(student)/modules/index.tsx` | student | sober | BrandLoader, Button, EmptyState, FilterChips, SearchField | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 2 |
+| `(student)/modules/[id].tsx` | student | sober | Banner, Button, Card, EmptyState, LoadingScreen | sí | ninguno (028) | barra y borde de insignia con `warning` y `error`: corregido en 028 (`warningText`, `errorText`) | 2 |
+| `(student)/modules/index.tsx` | student | sober | BrandLoader, Button, EmptyState, FilterChips, SearchField | sí | ninguno (028) | barra y borde de insignia con `warning` y `error`: corregido en 028 (`warningText`, `errorText`) | 2 |
 | `(student)/notifications.tsx` | student | sober | Banner, BrandLoader, Button, EmptyState | sí | ninguno (027) | aviso de cancelación con `error` y borde de botones: corregido en 027 | 1 |
 | `(student)/pqrs/[id].tsx` | student | sober | BrandLoader, Button, EmptyState | sí | por revisar | por revisar | 4 |
 | `(student)/pqrs/filed.tsx` | student | sober | Button, Card | sí | por revisar | por revisar | 4 |
 | `(student)/pqrs/index.tsx` | student | sober | BrandLoader, Button, EmptyState, FilterChips | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 4 |
 | `(student)/pqrs/new.tsx` | student | sober | Banner, BrandLoader, Button, EmptyState, FilterChips, TextAreaField, TextField | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 4 |
-| `(student)/schedule.tsx` | student | sober | BrandLoader, Button, Card, EmptyState | sí | por revisar | por revisar | 2 |
+| `(student)/schedule.tsx` | student | sober | BrandLoader, Button, Card, EmptyState | sí | ninguno (028) | línea, ícono y hora actual con `error` y `warning`; borde de días: corregido en 028 | 2 |
 | `(teacher)/index.tsx` | teacher | expressive | Card | sí | ninguno (027) | ninguno (027) | 1 |
 | `(teacher)/messages/[id].tsx` | teacher | sober | BrandLoader, Button, EmptyState | sí | por revisar | por revisar | 4 |
 | `(teacher)/messages/index.tsx` | teacher | sober | Banner, BrandLoader, Button, EmptyState, SegmentedControl | sí | por revisar | por revisar | 4 |
@@ -33,7 +33,7 @@ Generado el 2026-11-23 desde `tutorias_uts_mobile/app` (58 rutas). Las columnas 
 | `(teacher)/pqrs/filed.tsx` | teacher | sober | Button, Card | sí | por revisar | por revisar | 4 |
 | `(teacher)/pqrs/index.tsx` | teacher | sober | BrandLoader, Button, EmptyState, FilterChips | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 4 |
 | `(teacher)/pqrs/new.tsx` | teacher | sober | Banner, BrandLoader, Button, EmptyState, FilterChips, TextAreaField, TextField | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 4 |
-| `(teacher)/schedule/index.tsx` | teacher | sober | BrandLoader, Button, Card, EmptyState, FilterChips | sí | chip «All» cortado («Al»): corregido en 027 | chip «All» cortado y borde de chips: corregido en 027 | 2 |
+| `(teacher)/schedule/index.tsx` | teacher | sober | BrandLoader, Button, Card, EmptyState, FilterChips | sí | ninguno (028) | línea, ícono y hora actual con `error` y `warning`; borde de días: corregido en 028 | 2 |
 | `(admin)/changes.tsx` | admin | sober | BrandLoader, Button, Card, EmptyState | sí | por revisar | por revisar | 3 |
 | `(admin)/index.tsx` | admin | expressive | Button, Card | sí | sin bloque destacado: corregido en 027 | contraste del borde de botones: corregido en 027 (`controlBorder`) | 1 |
 | `(admin)/messages/[id].tsx` | admin | sober | BrandLoader, Button, EmptyState | sí | por revisar | por revisar | 4 |
@@ -78,3 +78,16 @@ Generado el 2026-11-23 desde `tutorias_uts_mobile/app` (58 rutas). Las columnas 
 | 2 | Botones «All» mostraban «Al» | Chip y etiqueta se encogían; Android recorta la última letra con la fuente corporativa y el espaciado entre letras | `FilterChips`: sin encoger, ancho mínimo de 48 px y margen derecho de la etiqueta; confirmar en el teléfono (T009) |
 
 Estado de las 12 pantallas de la fase 1: auditadas contra las 8 reglas de `Design.md`; las autenticaciones, el arranque y los inicios de estudiante y docente cumplen; el inicio del CAE ganó bloque destacado; la bandeja usa `errorText` y el estado vacío con patrón de marca.
+
+## Fase 2 (spec 028): módulos y horario
+
+| Pieza | Uso corregido | Rol nuevo del indicador |
+|---|---|---|
+| `SessionBlock`, `TeacherSessionCard` | Línea e ícono de estado con `error` y `warning` | `errorText`, `warningText`, `primary` |
+| `NowLine` | Línea de la hora actual con `error` | `errorText` |
+| `OfferCard`, `CapacityBar` | Relleno de barra y borde de insignia con `warning` y `error` | `warningText`, `errorText` |
+| `DayStrip` | Borde de días sin seleccionar con `border` | `controlBorder` |
+
+Auditoría de las 4 pantallas y de `CancelSheet` y `SessionActionsSheet` contra las 8 reglas: cumplen (registro sobrio, un botón primario por estado, regla visible en el botón bloqueado, estados vacío, carga y error con las piezas compartidas, estudiante y docente con el mismo `WeekCalendar`). Sin defectos vistos en el teléfono.
+
+**Pendiente para las fases 3 y 4** (usos de `error`, `warning` o `success` como indicador): `AppBar` (borde del ítem), `AccountCard` (ícono `success`), `StatusStackBar` y `StatusBadge` (colores de estado de PQRS), `PqrsFiledScreen` (ícono `success`), `SmtpSettingsScreen` (estado). Cada fase añade sus carpetas a la prueba `severityIndicators.test.ts`.
