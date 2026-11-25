@@ -544,6 +544,12 @@
 - **Descartado:** `tabBarButton: () => null` (puede dejar un hueco del ancho de una pestaña); mover esas pantallas fuera de las pestañas con un `Stack` padre (reorganiza todas las rutas de `app/`); seguir probando solo con el router simulado.
 - **Consecuencia aceptada:** con `backBehavior="history"` el botón atrás de Android recorre las pestañas visitadas en vez de saltar siempre al inicio. **Pendiente:** iOS no tiene botón atrás del sistema y ni la bandeja ni la lista de cambios tienen botón propio; se sale con la barra inferior. Agregar uno a la barra superior es un cambio de diseño y sería otra spec.
 
+### D-122 · El correo de los avisos sigue los dominios institucionales, no el rol
+- **Estado:** Aceptada (spec 025).
+- **Decisión:** Una entrega por correo se envía si la dirección es del dominio de estudiantes (`auth.studentEmailDomain`) **o** del del personal (`auth.staffEmailDomain`), ambos de configuración y leídos en cada envío; otra dirección se omite con `EMAIL_DOMAIN_NOT_ALLOWED`. Las entregas ya omitidas no se reenvían. No se agregan avisos ni destinatarios: el CAE sigue sin recibir avisos.
+- **Motivo:** La regla nació cuando solo se avisaba a estudiantes y dejó sin correo a los docentes autores de una PQRS; decidir por dominio corrige la causa y conserva la salvaguarda de no escribir fuera de la institución.
+- **Descartado:** Quitar la comprobación (pierde la salvaguarda), decidir por rol (duplica la regla y no cubre cuentas con otro dominio) y una lista administrable de direcciones (más configuración y pantalla).
+
 ---
 
 ## Plantilla para nuevas decisiones
