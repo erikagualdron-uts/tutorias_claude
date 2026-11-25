@@ -269,7 +269,7 @@ After login, the app routes to the tab set of the user's role. If `mustChangePas
 
 
 ### Screens without a tab
-A screen that has no tab (the notifications inbox for all roles, the CAE changes list, and `account` and `account-password` of "My account", reached from the avatar menu and with a back button) is **hidden from the bar but reachable by route** (D-121). It never leaves a gap in the bar, and going back returns to the screen the person came from (the tab history). Every hidden screen has a visible way back and appears in the route tests. The tab bar and the top bar keep their shape; only their colors change with the mode (`tabActive`, `tabInactive`, `card`).
+A screen that has no tab (the notifications inbox for all roles, the CAE changes list, and `account`, `account-password` and, for students only, `account-name` of "My account", reached from the avatar menu and with a back button) is **hidden from the bar but reachable by route** (D-121). It never leaves a gap in the bar, and going back returns to the screen the person came from (the tab history). Every hidden screen has a visible way back and appears in the route tests. The tab bar and the top bar keep their shape; only their colors change with the mode (`tabActive`, `tabInactive`, `card`).
 
 ## Components
 

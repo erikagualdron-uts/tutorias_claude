@@ -579,6 +579,12 @@
 - **Motivo:** El usuario no tenía dónde ver su cuenta ni cambiar la clave cuando quisiera; el backend ya lo permitía y la ruta `/change-password` solo se abre con clave temporal.
 - **Descartado:** Una hoja modal sin ruta (sin regreso estándar ni pruebas de ruta); reutilizar `/change-password` quitándole la regla de la clave temporal (cambiaría el cambio obligatorio); un estado global de confirmación (un parámetro de ruta basta); cerrar la sesión al cambiar la clave; editar el nombre y el idioma (otra spec).
 
+### D-130 · Solo el estudiante edita su nombre, con registro interno
+- **Estado:** Aceptada (spec 033).
+- **Decisión:** (1) Solo el rol `STUDENT` cambia su propio nombre y apellido, con `PATCH /students/me` (el servidor usa la cuenta del token y nunca recibe un id). (2) El docente no lo edita: su nombre lo gestiona el CAE; el CAE no tiene nombre (no tiene perfil) y se identifica por su correo. El correo no se edita. (3) El nombre y el apellido se validan en el servidor como en el registro (obligatorios tras recortar espacios, máximo 100). (4) Cada cambio efectivo guarda un registro interno de solo inserción (`student_name_changes`: persona, fecha en UTC, nombre y apellido anteriores y nuevos) en la misma transacción que el cambio; si el nombre no cambia no se escribe nada. El registro no tiene pantalla ni endpoint de consulta. (5) «Mi cuenta» muestra la acción solo al estudiante; al docente le muestra la regla.
+- **Motivo:** Un nombre mal escrito al registrarse no tenía arreglo. El nombre se ve en el chat y en las PQRS, así que cambiarlo debe dejar constancia para poder investigar una suplantación; la pantalla no esconde la regla a quien no puede editar.
+- **Descartado:** Dar un perfil al CAE (migración y reglas nuevas sin necesidad); dejar al docente editar su nombre libremente (lo gestiona el CAE); no guardar registro, o guardarlo y mostrarlo en la app (más superficie sin pedido); un sistema de auditoría genérico; una hoja modal sin ruta.
+
 ---
 
 ## Plantilla para nuevas decisiones
