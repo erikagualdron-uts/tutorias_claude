@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: Editar mi nombre (spec 033)
+  version: 1.0.0
+paths:
+  /students/me:
+    patch:
+      summary: El estudiante cambia su propio nombre y apellido
+      description: >
+        Solo rol STUDENT y solo sobre la cuenta del token. Valida en el servidor.
+        Si el nombre y el apellido recortados no cambian, responde 200 sin escribir ni registrar.
+        Un cambio efectivo actualiza el perfil y crea un registro interno en la misma transacción.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [firstName, lastName]
+              properties:
+                firstName: { type: string, minLength: 1, maxLength: 100 }
+                lastName: { type: string, minLength: 1, maxLength: 100 }
+      responses:
+        '200':
+          description: Cuenta actualizada (mismo UserSummary de GET /auth/me)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
+        '400':
+          description: Validación (nombre o apellido vacío o de más de 100 caracteres)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Sin sesión o sesión expirada
+        '403':
+          description: Rol docente o CAE (sin permiso)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    UserSummary:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string }
+        role: { type: string, enum: [SUPERADMIN, TEACHER, STUDENT] }
+        firstName: { type: string }
+        lastName: { type: string }
+        locale: { type: string, enum: [es, en] }
+        mustChangePassword: { type: boolean }
+    Error:
+      type: object
+      properties:
+        code: { type: string, description: Estable, en UPPER_SNAKE_CASE }
+        message: { type: string }

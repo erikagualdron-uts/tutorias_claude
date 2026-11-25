@@ -141,4 +141,12 @@ El detalle de módulo del estudiante sigue sobrio y los inicios expresivos. Sin 
 | Mi cuenta (`account`) | Sobrio con cabecera: datos de la sesión, notificaciones, cambiar contraseña y cerrar sesión |
 | Cambiar contraseña (`account-password`) | Sobrio sin cabecera: los dos campos y un botón principal |
 
-Las dos se alcanzan desde el avatar. La edición del nombre queda para otra spec.
+Las dos se alcanzan desde el avatar.
+
+## Spec 033: Editar mi nombre
+
+| Pantalla | Registro |
+|---|---|
+| Editar nombre (`account-name`, solo estudiante) | Sobrio sin cabecera: nombre y apellido con relleno y borde, y un botón principal con ícono |
+
+Se alcanza desde «Mi cuenta». El docente ve en «Mi cuenta» la regla de que el CAE gestiona su nombre; el CAE no tiene acción de edición.
